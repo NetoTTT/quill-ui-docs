@@ -18,7 +18,7 @@ function Overview() {
       <Callout kind="tip" title="New in 0.2.0-alpha.3">
         <P>
           Layout-driven screen headers, keyboard shortcuts, two-colour gradients, contrast helpers and
-          configurable click sounds. See <DocLink to="fundamentals/screen">Screens</DocLink>,{" "}
+          click sounds on toggles and tabs. See <DocLink to="fundamentals/screen">Screens</DocLink>,{" "}
           <DocLink to="fundamentals/drawing">Drawing Helpers</DocLink> and{" "}
           <DocLink to="reference/colors">Theme Reference</DocLink>.
         </P>
