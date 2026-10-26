@@ -6,6 +6,7 @@ import { Sidebar } from "./Sidebar";
 import { Toc } from "./Toc";
 import { LogoMark } from "./Logo";
 import { Icon } from "./Icons";
+import { ThemeToggle } from "./ThemeToggle";
 import { C, Callout, DocLink, P } from "./prose";
 import { cn } from "@/utils/cn";
 
@@ -45,10 +46,10 @@ export function DocLayout({ path, section, onSearch }: { path: string; section: 
   const Page = found?.page.component;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface">
       <button
         type="button"
-        className="sr-only z-[70] rounded-md bg-ink px-3 py-2 text-sm text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+        className="sr-only z-[70] rounded-md bg-primary px-3 py-2 text-sm text-on-primary focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
         onClick={() => titleRef.current?.focus()}
       >
         Skip to content
@@ -58,7 +59,7 @@ export function DocLayout({ path, section, onSearch }: { path: string; section: 
 
       <div className="lg:pl-72">
         {/* Mobile / tablet top bar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-white/90 px-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-surface/90 px-3 backdrop-blur lg:hidden">
           <button
             type="button"
             onClick={() => setDrawer(true)}
@@ -76,6 +77,7 @@ export function DocLayout({ path, section, onSearch }: { path: string; section: 
           <button type="button" onClick={onSearch} className="rounded-md p-2 text-ink hover:bg-mist" aria-label="Search documentation">
             <Icon name="search" size={19} />
           </button>
+          <ThemeToggle />
         </header>
 
         <div className="mx-auto flex max-w-[76rem] justify-center gap-10 px-5 sm:px-8 xl:px-10">
@@ -112,7 +114,7 @@ export function DocLayout({ path, section, onSearch }: { path: string; section: 
                       <span
                         className={cn(
                           "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                          found.page.status === "stub" ? "border-[#f0d49a] bg-[#fffaf0] text-[#8a5d0c]" : "border-baby bg-mist text-link",
+                          found.page.status === "stub" ? "border-warn bg-warn-surface text-warn-ink" : "border-baby bg-mist text-link",
                         )}
                       >
                         <Icon name="pencil" size={12} />

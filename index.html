@@ -8,7 +8,23 @@
       name="description"
       content="Documentation for Quill UI, a small client-side UI framework for Fabric mods on Minecraft 26.3."
     />
-    <meta name="theme-color" content="#EAF6FF" />
+    <meta name="theme-color" content="#EAF6FF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F1620" media="(prefers-color-scheme: dark)" />
+    <script>
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem("quill-ui-theme");
+        } catch (e) {}
+        var dark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        try {
+          var root = document.documentElement;
+          if (dark) root.classList.add("dark");
+          root.dataset.theme = dark ? "dark" : "light";
+          root.style.colorScheme = dark ? "dark" : "light";
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

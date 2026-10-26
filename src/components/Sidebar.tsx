@@ -4,6 +4,7 @@ import { SITE, repoLinkTitle } from "@/docs/site";
 import { href } from "@/lib/router";
 import { Logo } from "./Logo";
 import { Icon } from "./Icons";
+import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/utils/cn";
 
 const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -31,14 +32,14 @@ export function Sidebar({
   return (
     <>
       <div
-        className={cn("fixed inset-0 z-40 bg-ink/30 backdrop-blur-[2px] transition-opacity lg:hidden", open ? "opacity-100" : "pointer-events-none opacity-0")}
+        className={cn("fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] transition-opacity lg:hidden", open ? "opacity-100" : "pointer-events-none opacity-0")}
         onClick={onClose}
         aria-hidden="true"
       />
       <aside
         id="site-nav"
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[18.5rem] max-w-[86vw] flex-col border-r border-line bg-white transition-[transform,visibility] duration-200 ease-out lg:w-72 lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-[18.5rem] max-w-[86vw] flex-col border-r border-line bg-surface transition-[transform,visibility] duration-200 ease-out lg:w-72 lg:translate-x-0",
           open ? "translate-x-0 shadow-soft" : "max-lg:invisible max-lg:-translate-x-full",
         )}
         aria-label="Documentation sidebar"
@@ -48,7 +49,8 @@ export function Sidebar({
             <Logo size={30} />
           </a>
           <div className="flex items-center gap-2">
-            <span className="rounded-full border border-line bg-mist px-2 py-0.5 text-[0.6875rem] font-medium text-link">{SITE.version}</span>
+            <span className="hidden rounded-full border border-line bg-mist px-2 py-0.5 text-[0.6875rem] font-medium text-link sm:inline">{SITE.version}</span>
+            <ThemeToggle className="h-7 w-7" />
             <button type="button" onClick={onClose} className="-mr-1 rounded-md p-1.5 text-muted hover:bg-mist lg:hidden" aria-label="Close navigation">
               <Icon name="close" size={18} />
             </button>
@@ -59,7 +61,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={onSearch}
-            className="flex h-9 w-full items-center gap-2 rounded-md border border-line bg-white px-2.5 text-sm text-muted transition-colors hover:border-primary hover:bg-mist/60"
+            className="flex h-9 w-full items-center gap-2 rounded-md border border-line bg-surface px-2.5 text-sm text-muted transition-colors hover:border-primary hover:bg-mist/60"
           >
             <Icon name="search" size={15} />
             <span className="flex-1 text-left">Search docs</span>
@@ -103,7 +105,7 @@ export function Sidebar({
                           className={cn(
                             "relative -ml-px flex items-center justify-between gap-2 rounded-r-md border-l-2 py-1.5 pr-2 pl-4 text-[0.875rem] transition-colors",
                             active
-                              ? "border-primary bg-mist font-semibold text-[#1d5c87]"
+                              ? "border-primary bg-mist font-semibold text-link"
                               : "border-transparent text-muted hover:border-baby hover:bg-mist/50 hover:text-ink",
                           )}
                         >

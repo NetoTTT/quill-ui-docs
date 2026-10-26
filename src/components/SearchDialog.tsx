@@ -85,8 +85,8 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center px-3 pt-[10vh] sm:px-6" onKeyDown={onKeyDown}>
-      <div className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]" onClick={onClose} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-label="Search documentation" className="fade-in relative w-full max-w-xl overflow-hidden rounded-lg border border-line bg-white shadow-[0_24px_60px_-20px_rgb(37_55_70/0.35)]">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onClose} aria-hidden="true" />
+      <div role="dialog" aria-modal="true" aria-label="Search documentation" className="fade-in relative w-full max-w-xl overflow-hidden rounded-lg border border-line bg-surface shadow-[0_24px_60px_-20px_rgb(0_0_0/0.45)]">
         <div className="flex items-center gap-3 border-b border-line px-4">
           <Icon name="search" size={18} className="shrink-0 text-muted" />
           <input

@@ -6,6 +6,7 @@ The mod lives in a separate repository: **https://github.com/NetoTTT/quill-ui**.
 
 - Live site: **https://netottt.github.io/quill-ui-docs/**
 - Built with React, Vite and Tailwind CSS
+- Light and dark themes, following the system preference by default
 - Single-file production build, deployed to GitHub Pages
 
 ## Run locally

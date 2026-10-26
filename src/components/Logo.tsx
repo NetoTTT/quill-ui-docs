@@ -2,7 +2,7 @@ import iconUrl from "@/assets/quill-ui-icon.png";
 
 /** Official Quill UI mark (the same icon shipped in the mod jar). */
 export function LogoMark({ size = 28 }: { size?: number }) {
-  return <img src={iconUrl} width={size} height={size} alt="" aria-hidden="true" className="shrink-0 rounded-[6px]" />;
+  return <img src={iconUrl} width={size} height={size} alt="" aria-hidden="true" className="shrink-0 rounded-[6px] ring-1 ring-line/70" />;
 }
 
 export function Logo({ size = 28 }: { size?: number }) {

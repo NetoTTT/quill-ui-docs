@@ -51,7 +51,7 @@ export function P({ children }: { children: ReactNode }) {
 /** Inline code. */
 export function C({ children }: { children: ReactNode }) {
   return (
-    <code className="rounded-xs border border-line bg-mist px-[0.35em] py-[0.1em] font-mono text-[0.86em] font-medium text-[#1d5c87] break-words">
+    <code className="rounded-xs border border-line bg-mist px-[0.35em] py-[0.1em] font-mono text-[0.86em] font-medium text-link break-words">
       {children}
     </code>
   );
@@ -97,7 +97,7 @@ export function ExtLink({ href: url, children }: { href: string; children: React
 
 export function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="rounded-xs border border-line border-b-2 bg-white px-1.5 py-0.5 font-mono text-[0.75rem] font-medium text-muted">
+    <kbd className="rounded-xs border border-line border-b-2 bg-surface px-1.5 py-0.5 font-mono text-[0.75rem] font-medium text-muted">
       {children}
     </kbd>
   );
@@ -111,9 +111,9 @@ type CalloutKind = "note" | "tip" | "warning" | "draft";
 
 const CALLOUT: Record<CalloutKind, { icon: IconName; label: string; wrap: string; icon_cls: string }> = {
   note: { icon: "info", label: "Note", wrap: "border-primary/60 bg-mist", icon_cls: "text-link" },
-  tip: { icon: "lightbulb", label: "Tip", wrap: "border-baby bg-white", icon_cls: "text-link" },
-  warning: { icon: "alert", label: "Heads up", wrap: "border-[#f0d49a] bg-[#fffaf0]", icon_cls: "text-[#9a6a10]" },
-  draft: { icon: "pencil", label: "Draft", wrap: "border-dashed border-primary bg-white", icon_cls: "text-link" },
+  tip: { icon: "lightbulb", label: "Tip", wrap: "border-baby bg-surface", icon_cls: "text-link" },
+  warning: { icon: "alert", label: "Heads up", wrap: "border-warn bg-warn-surface", icon_cls: "text-warn-ink" },
+  draft: { icon: "pencil", label: "Draft", wrap: "border-dashed border-primary bg-surface", icon_cls: "text-link" },
 };
 
 export function Callout({ kind = "note", title, children }: { kind?: CalloutKind; title?: string; children: ReactNode }) {

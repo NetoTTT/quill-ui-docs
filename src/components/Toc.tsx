@@ -56,7 +56,7 @@ export function Toc({ articleKey }: { articleKey: string }) {
               className={cn(
                 "-ml-px block border-l-2 py-1 leading-snug transition-colors",
                 h.level === 3 ? "pl-7" : "pl-4",
-                active === h.id ? "border-primary font-medium text-[#1d5c87]" : "border-transparent text-muted hover:text-ink",
+                active === h.id ? "border-primary font-medium text-link" : "border-transparent text-muted hover:text-ink",
               )}
             >
               {h.text}

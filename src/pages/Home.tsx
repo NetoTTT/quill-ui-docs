@@ -3,6 +3,7 @@ import { SITE, docsRepoLinkTitle, repoLinkTitle } from "@/docs/site";
 import { href } from "@/lib/router";
 import { Logo, LogoMark } from "@/components/Logo";
 import { Icon, type IconName } from "@/components/Icons";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { CodeBlock } from "@/components/prose";
 import { McButton, McCard, McList, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
 
@@ -16,7 +17,7 @@ const NAV = [
 function HeroScene() {
   return (
     <div className="relative mx-auto w-full max-w-[34rem]" aria-label="Preview of Quill UI components">
-      <div className="overflow-hidden rounded-lg border border-line bg-white shadow-soft">
+      <div className="overflow-hidden rounded-lg border border-line bg-surface shadow-soft">
         <div className="flex items-center gap-2 border-b border-line bg-mist/70 px-4 py-2.5 text-xs text-muted">
           <span className="h-2 w-2 rounded-full bg-primary" />
           <span className="font-medium">Component preview</span>
@@ -166,8 +167,8 @@ export function Home({ onSearch }: { onSearch: () => void }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="sticky top-0 z-30 border-b border-line/80 bg-white/85 backdrop-blur">
+    <div className="min-h-screen bg-surface">
+      <header className="sticky top-0 z-30 border-b border-line/80 bg-surface/85 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:px-6">
           <a href={href("")} className="rounded-md" aria-label="Quill UI home">
             <Logo />
@@ -188,6 +189,7 @@ export function Home({ onSearch }: { onSearch: () => void }) {
               <span className="hidden sm:inline">Search</span>
               <kbd className="hidden rounded-xs border border-line px-1 font-mono text-[0.6875rem] sm:inline">/</kbd>
             </button>
+            <ThemeToggle />
             <a href={SITE.repoUrl} target="_blank" rel="noopener noreferrer" title={repoLinkTitle} className="rounded-md p-2 text-ink/80 hover:bg-mist hover:text-link" aria-label="GitHub repository">
               <Icon name="github" size={20} />
             </a>
@@ -198,12 +200,12 @@ export function Home({ onSearch }: { onSearch: () => void }) {
       <main>
         {/* Hero */}
         <section className="hero-bg relative overflow-hidden border-b border-line">
-          <div className="pointer-events-none absolute -top-10 -right-16 h-[26rem] w-[26rem] rotate-6 opacity-15">
+          <div className="hero-mark pointer-events-none absolute -top-10 -right-16 h-[26rem] w-[26rem] rotate-6 opacity-15">
             <LogoMark size={416} />
           </div>
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:py-24">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-baby bg-white px-3 py-1 text-xs font-medium text-link">
+              <span className="inline-flex items-center gap-2 rounded-full border border-baby bg-surface px-3 py-1 text-xs font-medium text-link">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 Client-side UI framework for Fabric · {SITE.version}
               </span>
@@ -215,10 +217,10 @@ export function Home({ onSearch }: { onSearch: () => void }) {
                 panels, cards, tabs, buttons, scroll lists and a clean backend action boundary.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-ink shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-[#79bdea]">
+                <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-on-primary shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-primary-hover">
                   Get Started <Icon name="arrow-right" size={16} />
                 </a>
-                <a href={href("components/overview")} className="inline-flex h-11 items-center rounded-md border border-line bg-white px-5 text-[0.9375rem] font-semibold text-ink transition-colors hover:border-primary hover:bg-mist">
+                <a href={href("components/overview")} className="inline-flex h-11 items-center rounded-md border border-line bg-surface px-5 text-[0.9375rem] font-semibold text-ink transition-colors hover:border-primary hover:bg-mist">
                   Explore Components
                 </a>
               </div>
@@ -300,7 +302,7 @@ public final class ExampleScreen extends QuillScreen {
             </div>
             <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
               {COMPONENTS.map((c) => (
-                <div key={c.name} className="flex flex-col bg-white">
+                <div key={c.name} className="flex flex-col bg-surface">
                   <div className="dot-grid flex min-h-36 flex-wrap items-center justify-center gap-3 border-b border-line bg-mist/50 p-5">{c.preview}</div>
                   <a href={href(c.to)} className="group flex-1 p-5">
                     <h3 className="font-semibold text-ink group-hover:text-link">
