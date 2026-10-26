@@ -15,16 +15,25 @@ function Overview() {
         state itself.
       </P>
 
+      <Callout kind="tip" title="New in 0.2.0-alpha.3">
+        <P>
+          Layout-driven screen headers, keyboard shortcuts, two-colour gradients, contrast helpers and
+          configurable click sounds. See <DocLink to="fundamentals/screen">Screens</DocLink>,{" "}
+          <DocLink to="fundamentals/drawing">Drawing Helpers</DocLink> and{" "}
+          <DocLink to="reference/colors">Theme Reference</DocLink>.
+        </P>
+      </Callout>
+
       <H2>What is in the box</H2>
       <DocTable
         head={["Area", "Entry points", "Package"]}
         rows={[
-          ["Theme", "QuillThemeData, QuillTheme, QuillSpacing, QuillTypography, QuillRadii, QuillElevation", <C key="t">com.quillui.theme</C>],
+          ["Theme", "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation", <C key="t">com.quillui.theme</C>],
           ["Colours", "QuillColors", <C key="c">com.quillui.theme</C>],
           ["Layout", "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid", <C key="l">com.quillui.layout</C>],
-          ["Drawing", "QuillRender, QuillTooltips", <C key="r">com.quillui.render</C>],
+          ["Drawing", "QuillRender, QuillGradient, QuillTooltips", <C key="r">com.quillui.render</C>],
           ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle", <C key="w">com.quillui.widget</C>],
-          ["Screen", "QuillScreen", <C key="s">com.quillui.screen</C>],
+          ["Screen", "QuillScreen, QuillScreenLayout, QuillShortcut", <C key="s">com.quillui.screen</C>],
           ["Backend boundary", "QuillActionSink, QuillCommandSink", <C key="a">com.quillui.action</C>],
           ["Compatibility", "QuillApi", <C key="q">com.quillui.api</C>],
         ]}
@@ -40,7 +49,7 @@ function Overview() {
 
       <H2>Status</H2>
       <P>
-        The current release is <C>0.2.0-alpha.2</C> with binary API level <C>2</C>. The API is intentionally
+        The current release is <C>0.2.0-alpha.3</C> with binary API level <C>2</C>. The API is intentionally
         small and may evolve before <C>1.0.0</C>. See <DocLink to="reference/api">API reference</DocLink> and{" "}
         <DocLink to="reference/compatibility">Compatibility</DocLink>.
       </P>
@@ -86,7 +95,7 @@ function Installation() {
       <H2>Build the jar</H2>
       <CodeBlock lang="bash" status="none" code={`gradlew.bat build --console=plain --no-daemon`} />
       <P>
-        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.2.jar</C>. Put it in the instance&apos;s{" "}
+        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.3.jar</C>. Put it in the instance&apos;s{" "}
         <C>mods/</C> folder.
       </P>
 
@@ -100,7 +109,7 @@ function Installation() {
         title="build.gradle"
         code={`
 dependencies {
-    implementation files("libs/quill-ui-0.2.0-alpha.2.jar")
+    implementation files("libs/quill-ui-0.2.0-alpha.3.jar")
 }`}
       />
 
@@ -118,7 +127,7 @@ dependencies {
       </P>
       <CodeBlock
         code={`
-String version = QuillApi.version(); // "0.2.0-alpha.2" in a Fabric runtime
+String version = QuillApi.version(); // "0.2.0-alpha.3" in a Fabric runtime
 boolean level1 = QuillApi.supports(1);`}
       />
     </>

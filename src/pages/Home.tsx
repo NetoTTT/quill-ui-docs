@@ -124,7 +124,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "pencil",
     title: "Theme tokens",
-    body: "One immutable palette plus spacing, typography, radius and elevation tokens.",
+    body: "One immutable palette plus spacing, typography, radius, elevation and contrast checks.",
     to: "fundamentals/theme",
   },
   {
@@ -144,6 +144,18 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
     title: "Backend boundary",
     body: "Screens emit actions through QuillActionSink and never mutate game state.",
     to: "guides/backend-actions",
+  },
+  {
+    icon: "compass",
+    title: "Screen shell",
+    body: "Layout-driven headers, keyboard shortcuts and an optional screen backdrop.",
+    to: "fundamentals/screen",
+  },
+  {
+    icon: "file",
+    title: "Drawing helpers",
+    body: "Sections, dividers, gradients and shadow-free text on a 4 px grid.",
+    to: "fundamentals/drawing",
   },
 ];
 

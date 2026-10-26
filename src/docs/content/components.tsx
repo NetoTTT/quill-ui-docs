@@ -96,12 +96,19 @@ QuillButton secondary = new QuillButton(
       <DocTable
         head={["Variant", "Appearance"]}
         rows={[
-          [<C key="p">PRIMARY</C>, "Amber border and text; the main action of a screen."],
-          [<C key="s">SECONDARY</C>, "Neutral surface with a visible border; normal editing actions."],
-          [<C key="d">DANGER</C>, "Red border and text; destructive actions."],
-          [<C key="g">GHOST</C>, "Transparent until hovered; navigation and utility actions."],
+          [<C key="p">PRIMARY</C>, "ACCENT border with ON_ACCENT text; the main action of a screen."],
+          [<C key="s">SECONDARY</C>, "BUTTON_* surface; normal editing actions."],
+          [<C key="d">DANGER</C>, "DANGER border with ON_DANGER text; destructive actions."],
+          [<C key="g">GHOST</C>, "GHOST_BG / GHOST_BORDER / GHOST_TEXT; navigation and utility actions."],
         ]}
       />
+      <H2>Theme roles</H2>
+      <P>
+        Primary text uses <C>ON_ACCENT</C>, danger text uses <C>ON_DANGER</C>, ghost controls use{" "}
+        <C>GHOST_BG</C> / <C>GHOST_BORDER</C> / <C>GHOST_TEXT</C>, and the keyboard focus outline uses{" "}
+        <C>FOCUS_RING</C>. Light themes should override these roles together with <C>PRIMARY_BG</C>,{" "}
+        <C>DANGER_BG</C> and <C>SURFACE</C>; see <DocLink to="guides/theming">Theming</DocLink>.
+      </P>
 
       <H2>Construction and methods</H2>
       <CodeBlock
@@ -134,7 +141,7 @@ QuillButton(
       <H2>Input</H2>
       <P>
         A click or Enter/Space on a focused button plays the click sound and runs the <C>Runnable</C>.
-        Disabled buttons ignore both. Focus draws a 1 px accent outline around the button.
+        Disabled buttons ignore both. Focus draws a 1 px <C>FOCUS_RING</C> outline around the button.
       </P>
       <CodeBlock
         code={`
@@ -403,7 +410,8 @@ function Tabs() {
     <>
       <P>
         <C>QuillTabBar</C> creates a row of equal-width <C>GHOST</C> buttons and keeps the selected visual in
-        sync. It is a helper that builds buttons for you; you still register them on the screen.
+        sync. It is a helper that builds buttons for you; you still register them on the screen. A custom
+        click sound is applied to every tab.
       </P>
       {PREVIEW_NOTE}
       <Example
@@ -426,6 +434,7 @@ QuillTabBar tabs = new QuillTabBar(
         this::switchTab
 );
 
+tabs.clickSound(myClickSound); // applies to every tab button
 tabs.addTo(this::addRenderableWidget);
 tabs.select(0);
 // The constructor also accepts an optional QuillThemeData as the last argument.`}
@@ -436,6 +445,7 @@ tabs.select(0);
       <DocTable
         head={["Method", "Effect"]}
         rows={[
+          [<C key="0">clickSound(SoundEvent)</C>, "Sets the click sound on every tab button and returns this bar."],
           [<C key="1">addTo(Consumer&lt;QuillButton&gt;)</C>, "Registers every tab button, usually with addRenderableWidget."],
           [<C key="2">select(int)</C>, "Marks a tab selected and calls the onChange consumer."],
           [<C key="3">selected()</C>, "Index of the selected tab, or -1 before the first selection."],
@@ -477,6 +487,7 @@ QuillToggle toggle = new QuillToggle(
         value -> QuillCommandSink.get().execute("example set sound " + value)
 );
 
+toggle.clickSound(myClickSound); // custom sound instead of the vanilla down sound
 addRenderableWidget(toggle);`}
         />
       </Example>
@@ -485,15 +496,16 @@ addRenderableWidget(toggle);`}
       <DocTable
         head={["Method", "Effect"]}
         rows={[
+          [<C key="0">clickSound(SoundEvent)</C>, "Uses a custom sound instead of the vanilla UI down sound; returns this toggle."],
           [<C key="1">value()</C>, "Current local value."],
           [<C key="2">setValue(boolean)</C>, "Updates the visual state without calling the consumer."],
           [<C key="3">setActive(boolean)</C>, "Inherited. Disables input and uses the disabled palette."],
         ]}
       />
       <P>
-        Clicking the control or pressing Enter/Space while focused flips the value, plays the down sound and
-        calls the consumer with the new value. The caller is responsible for applying the change through an
-        action sink or payload.
+        Clicking the control or pressing Enter/Space while focused flips the value, plays the click sound
+        (custom if set, otherwise the vanilla down sound) and calls the consumer with the new value. The
+        caller is responsible for applying the change through an action sink or payload.
       </P>
     </>
   );

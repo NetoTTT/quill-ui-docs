@@ -160,18 +160,39 @@ import com.quillui.theme.QuillThemeData;
 import com.quillui.theme.QuillThemeData.ColorRole;
 
 QuillThemeData light = QuillThemeData.builder()
-        .set(ColorRole.PANEL_BG,            QuillColors.fromHex("#F5FAFF"))
-        .set(ColorRole.PANEL_BORDER,        QuillColors.fromHex("#BBD9EE"))
-        .set(ColorRole.HEADER_BG,           QuillColors.fromHex("#EAF6FF"))
-        .set(ColorRole.TITLE,               QuillColors.fromHex("#253746"))
-        .set(ColorRole.TEXT,                QuillColors.fromHex("#253746"))
-        .set(ColorRole.TEXT_SOFT,           QuillColors.fromHex("#4B657A"))
-        .set(ColorRole.ACCENT,              QuillColors.fromHex("#23699A"))
-        .set(ColorRole.ACCENT_HOVER,        QuillColors.fromHex("#3B95D0"))
-        .set(ColorRole.BUTTON_BG,           QuillColors.fromHex("#EAF6FF"))
-        .set(ColorRole.BUTTON_HOVER,        QuillColors.fromHex("#D6ECFA"))
-        .set(ColorRole.BUTTON_BORDER,       QuillColors.fromHex("#8CC8F0"))
+        .set(ColorRole.SCREEN_BG,            0x66000000) // optional dim backdrop
+        .set(ColorRole.PANEL_BG,             QuillColors.fromHex("#F5FAFF"))
+        .set(ColorRole.PANEL_BORDER,         QuillColors.fromHex("#BBD9EE"))
+        .set(ColorRole.HEADER_BG,            QuillColors.fromHex("#EAF6FF"))
+        .set(ColorRole.DIVIDER,              QuillColors.fromHex("#BBD9EE"))
+        .set(ColorRole.TITLE,                QuillColors.fromHex("#253746"))
+        .set(ColorRole.TEXT,                 QuillColors.fromHex("#253746"))
+        .set(ColorRole.TEXT_SOFT,            QuillColors.fromHex("#4B657A"))
+        .set(ColorRole.MUTED,                QuillColors.fromHex("#64788A"))
+        .set(ColorRole.MUTED_DARK,           QuillColors.fromHex("#7A8C9C"))
+        .set(ColorRole.ACCENT,               QuillColors.fromHex("#23699A"))
+        .set(ColorRole.ACCENT_HOVER,         QuillColors.fromHex("#3B95D0"))
+        .set(ColorRole.PRIMARY_BG,           QuillColors.fromHex("#23699A"))
+        .set(ColorRole.PRIMARY_BG_HOVER,     QuillColors.fromHex("#3B95D0"))
+        .set(ColorRole.ON_ACCENT,            QuillColors.fromHex("#FFFFFF"))
+        .set(ColorRole.DANGER_BG,            QuillColors.fromHex("#FDECEC"))
+        .set(ColorRole.ON_DANGER,            QuillColors.fromHex("#9C3F3F"))
+        .set(ColorRole.GHOST_BG,             0x00000000)
+        .set(ColorRole.GHOST_BORDER,         0x00000000)
+        .set(ColorRole.GHOST_TEXT,           QuillColors.fromHex("#4B657A"))
+        .set(ColorRole.FOCUS_RING,           QuillColors.fromHex("#23699A"))
+        .set(ColorRole.BUTTON_BG,            QuillColors.fromHex("#EAF6FF"))
+        .set(ColorRole.BUTTON_HOVER,         QuillColors.fromHex("#D6ECFA"))
+        .set(ColorRole.BUTTON_BORDER,        QuillColors.fromHex("#8CC8F0"))
+        .set(ColorRole.BUTTON_DISABLED,      QuillColors.fromHex("#EAF6FF"))
+        .set(ColorRole.BUTTON_DISABLED_BORDER, QuillColors.fromHex("#C5E5FA"))
         .set(ColorRole.BUTTON_DISABLED_TEXT, QuillColors.fromHex("#8FA3B4"))
+        .set(ColorRole.SURFACE,              0xF0FFFFFF)
+        .set(ColorRole.SURFACE_ALT,          0x66EAF6FF)
+        .set(ColorRole.SURFACE_BORDER,       QuillColors.fromHex("#BBD9EE"))
+        .set(ColorRole.SURFACE_HEADER,       QuillColors.fromHex("#EAF6FF"))
+        .set(ColorRole.CHIP_BG,              QuillColors.fromHex("#EAF6FF"))
+        .set(ColorRole.CHIP_BORDER,          QuillColors.fromHex("#8CC8F0"))
         .build();`}
       />
 
@@ -205,6 +226,31 @@ QuillToggle toggle = new QuillToggle(
 );`}
       />
 
+      <H2>Contrast checks</H2>
+      <P>
+        Ask the palette for warnings after building it. The built-in checks cover the text/surface pairs
+        used by Quill widgets, including the new semantic roles.
+      </P>
+      <CodeBlock
+        code={`
+for (String warning : light.contrastWarnings()) {
+    LOGGER.warn("Quill theme: {}", warning);
+}`}
+      />
+      <P>Use <C>QuillContrast</C> directly for custom pairs:</P>
+      <CodeBlock
+        code={`
+boolean readable = QuillContrast.meetsText(
+        light.color(ColorRole.TEXT),
+        light.color(ColorRole.SURFACE)
+);
+
+String label = QuillContrast.describe(
+        light.color(ColorRole.TEXT),
+        light.color(ColorRole.PANEL_BG)
+); // e.g. "12.34:1"`}
+      />
+
       <H2>The screen shell</H2>
       <P>
         <C>QuillScreen</C> has a constructor overload that takes the same palette. Pass it and the panel,
@@ -226,7 +272,15 @@ public ProfileScreen() {
           Keep <C>ACCENT</C> and <C>ACCENT_HOVER</C> close enough that hover is visible but not jarring.
         </li>
         <li>
-          Check contrast for <C>TEXT</C>, <C>TITLE</C> and <C>BUTTON_DISABLED_TEXT</C> on every surface.
+          Set <C>ON_ACCENT</C> together with <C>PRIMARY_BG</C>, and <C>ON_DANGER</C> together with{" "}
+          <C>DANGER_BG</C>. Those pairs carry button text.
+        </li>
+        <li>
+          <C>GHOST_TEXT</C> must stay readable on <C>PANEL_BG</C>, and <C>FOCUS_RING</C> must be visible on
+          every surface.
+        </li>
+        <li>
+          <C>SCREEN_BG</C> is transparent by default; a translucent value dims the world behind the panel.
         </li>
         <li>
           <C>DANGER</C>, <C>SUCCESS</C> and <C>INFO</C> are semantic; do not reuse them as decoration.

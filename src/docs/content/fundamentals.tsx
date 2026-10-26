@@ -114,8 +114,20 @@ QuillButton button = new QuillButton(
       <CodeBlock
         code={`
 QuillThemeData light = QuillThemeData.builder()
+        .set(QuillThemeData.ColorRole.SCREEN_BG, 0x66000000) // optional dim backdrop
         .set(QuillThemeData.ColorRole.PANEL_BG, 0xF0FFFFFF)
         .set(QuillThemeData.ColorRole.TEXT, 0xFF253746)
+        .set(QuillThemeData.ColorRole.SURFACE, 0xF0FFFFFF)
+        .set(QuillThemeData.ColorRole.SURFACE_ALT, 0x66EAF6FF)
+        .set(QuillThemeData.ColorRole.SURFACE_BORDER, 0xFFBBD9EE)
+        .set(QuillThemeData.ColorRole.SURFACE_HEADER, 0xFFEAF6FF)
+        .set(QuillThemeData.ColorRole.PRIMARY_BG, 0xFF23699A)
+        .set(QuillThemeData.ColorRole.PRIMARY_BG_HOVER, 0xFF3B95D0)
+        .set(QuillThemeData.ColorRole.ON_ACCENT, 0xFFFFFFFF)
+        .set(QuillThemeData.ColorRole.DANGER_BG, 0xFFFDECEC)
+        .set(QuillThemeData.ColorRole.ON_DANGER, 0xFF9C3F3F)
+        .set(QuillThemeData.ColorRole.GHOST_TEXT, 0xFF4B657A)
+        .set(QuillThemeData.ColorRole.FOCUS_RING, 0xFF23699A)
         .build();`}
       />
       <Callout kind="tip">
@@ -187,6 +199,44 @@ int accent = QuillColors.rgb(224, 169, 59);       // opaque amber
 int soft   = QuillColors.withAlpha(accent, 0.5F); // half opacity
 int parsed = QuillColors.fromHex("#8CC8F0");      // #RRGGBB -> opaque
 String hex = QuillColors.toHex(accent);           // "#FFE0A93B"`}
+      />
+
+      <H2>Contrast</H2>
+      <P>
+        <C>QuillContrast</C> measures WCAG-style contrast for opaque colours. Alpha is ignored, so pass
+        the colours widgets actually draw on.
+      </P>
+      <DocTable
+        head={["Method", "Meaning"]}
+        rows={[
+          [<C key="1">textRatio(fg, bg)</C>, "Contrast ratio for normal text (1.0 to 21.0)."],
+          [<C key="2">uiRatio(fg, bg)</C>, "Same ratio, intended for borders, focus rings and large UI elements."],
+          [<C key="3">meetsText(fg, bg)</C>, "True when the ratio is at least 4.5:1."],
+          [<C key="4">meetsUi(fg, bg)</C>, "True when the ratio is at least 3.0:1."],
+          [<C key="5">readableText(bg)</C>, "Returns #111827 or #FFFFFF, whichever reads better on the background."],
+          [<C key="6">describe(fg, bg)</C>, "A label such as \"7.42:1\"."],
+        ]}
+      />
+      <P>
+        <C>QuillThemeData.contrastWarnings()</C> checks the pairs the built-in widgets rely on:{" "}
+        <C>TEXT</C> on <C>PANEL_BG</C> and <C>SURFACE</C>, <C>ON_ACCENT</C> on <C>PRIMARY_BG</C>,{" "}
+        <C>ON_DANGER</C> on <C>DANGER_BG</C>, and <C>GHOST_TEXT</C> on <C>PANEL_BG</C>.
+      </P>
+      <CodeBlock
+        code={`
+for (String warning : theme.contrastWarnings()) {
+    LOGGER.warn("Quill theme: {}", warning);
+}
+
+boolean readable = QuillContrast.meetsText(
+        theme.color(QuillThemeData.ColorRole.TEXT),
+        theme.color(QuillThemeData.ColorRole.PANEL_BG)
+);
+
+String label = QuillContrast.describe(
+        theme.color(QuillThemeData.ColorRole.ON_ACCENT),
+        theme.color(QuillThemeData.ColorRole.PRIMARY_BG)
+); // "7.42:1"`}
       />
     </>
   );
@@ -267,8 +317,8 @@ function Screen() {
   return (
     <>
       <P>
-        <C>QuillScreen</C> is the host screen. It draws a centered panel, a 48 px header, an optional footer
-        and a themed close button, then lets your content do the rest.
+        <C>QuillScreen</C> is the host screen. It draws a centered panel, a layout-driven header, an optional
+        footer and a themed close button, then lets your content do the rest.
       </P>
 
       <H2>Structure</H2>
@@ -277,25 +327,89 @@ function Screen() {
         rows={[
           [<C key="a">QuillScreen(title, width, height)</C>, "Sets the window title and the fixed panel size; uses QuillThemeData.DEFAULT."],
           [<C key="h">QuillScreen(title, width, height, theme)</C>, "Same, with a custom QuillThemeData for the whole shell."],
+          [<C key="j">QuillScreen(title, width, height, theme, layout)</C>, "Full constructor: custom theme and a QuillScreenLayout."],
           [<C key="b">buildContent()</C>, "Abstract. Called from init(); register widgets here."],
           [<C key="c">subtitle()</C>, "Optional second header line."],
           [<C key="d">footer()</C>, "Optional centered footer; a divider is drawn automatically when non-blank."],
           [<C key="e">panelX / panelY</C>, "Protected content origin, recalculated on resize."],
           [<C key="f">panelWidth() / panelHeight()</C>, "Panel dimensions."],
+          [<C key="i">layout() / headerHeight()</C>, "Override layout() to move the header, title, subtitle or close button."],
+          [<C key="k">registerShortcut(...)</C>, "Registers a keyboard shortcut; see below."],
           [<C key="g">closeButton(action)</C>, "Builds the header close button; you register it."],
         ]}
       />
       <P>
-        The header uses a 3 px accent bar, the title at <C>+22,+14</C> and the subtitle at <C>+22,+29</C>.
-        The close button is 20×20 at the top right and carries a tooltip from{" "}
-        <C>quillui.close</C> / <C>quillui.close.tip</C>. The panel, header, divider and close button all read
-        the theme passed to the constructor.
+        The default layout uses a 48 px header, the title at <C>+22,+14</C>, the subtitle at{" "}
+        <C>+22,+29</C> and a 20×20 close button inset 10 px from the right and 8 px from the top. A 3 px
+        accent bar is drawn to the left of the title. The screen fills <C>SCREEN_BG</C> first when that role
+        is not fully transparent, then draws the panel. Every colour and measurement comes from the theme
+        and layout passed to the constructor.
       </P>
+
+      <H2>Custom layout</H2>
+      <P>
+        <C>QuillScreenLayout</C> is a record of relative measurements. Override <C>layout()</C>, or pass a
+        layout to the full constructor, to change it without reimplementing the screen.
+      </P>
+      <DocTable
+        head={["Field", "Default"]}
+        rows={[
+          [<C key="1">headerHeight</C>, "48"],
+          [<C key="2">titleInsetX</C>, "22"],
+          [<C key="3">titleInsetY</C>, "14"],
+          [<C key="4">subtitleInsetY</C>, "29"],
+          [<C key="5">closeInsetRight</C>, "10"],
+          [<C key="6">closeInsetTop</C>, "8"],
+          [<C key="7">closeSize</C>, "20"],
+        ]}
+      />
+      <CodeBlock
+        code={`
+private static final QuillScreenLayout COMPACT =
+        new QuillScreenLayout(36, 16, 10, 24, 8, 6, 18);
+
+@Override
+protected QuillScreenLayout layout() {
+    return COMPACT;
+}`}
+      />
+
+      <H2>Keyboard shortcuts</H2>
+      <P>
+        Register shortcuts from the screen. A shortcut fires when the key matches and either{" "}
+        <C>allowWhenFocused</C> is true or no child widget currently has focus.
+      </P>
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">QuillShortcut.of(key, action)</C>, "Shortcut that only fires when no child widget has focus."],
+          [<C key="2">QuillShortcut.global(key, action)</C>, "Shortcut that also fires while a child widget has focus."],
+          [<C key="3">registerShortcut(int, Runnable)</C>, "Registers a non-global shortcut."],
+          [<C key="4">registerShortcut(int, Runnable, boolean)</C>, "Registers a shortcut with an explicit allowWhenFocused flag."],
+          [<C key="5">registerShortcut(QuillShortcut)</C>, "Registers a pre-built shortcut record."],
+        ]}
+      />
+      <CodeBlock
+        code={`
+import com.mojang.blaze3d.platform.InputConstants;
+
+registerShortcut(InputConstants.KEY_R, this::reload);
+
+registerShortcut(
+        InputConstants.KEY_F1,
+        this::toggleHelp,
+        true // also fires while a child widget has focus
+);
+
+// Equivalent to the call above:
+registerShortcut(QuillShortcut.global(InputConstants.KEY_F1, this::toggleHelp));`}
+      />
 
       <H2>A complete screen</H2>
       <CodeBlock
         title="SettingsScreen.java"
         code={`
+import com.mojang.blaze3d.platform.InputConstants;
 import com.quillui.action.QuillCommandSink;
 import com.quillui.layout.QuillColumn;
 import com.quillui.layout.QuillRect;
@@ -333,6 +447,8 @@ public final class SettingsScreen extends QuillScreen {
         ));
 
         addRenderableWidget(closeButton(this::onClose));
+        registerShortcut(InputConstants.KEY_R, () ->
+                QuillCommandSink.get().execute("example reload"));
     }
 
     @Override
@@ -370,6 +486,9 @@ function Drawing() {
         rows={[
           [<C key="p">panel(graphics, x, y, w, h[, theme])</C>, "Drop shadow at +4 px, panel fill and a 1 px border."],
           [<C key="b">border(graphics, x, y, w, h, color)</C>, "A 1 px rectangle outline in an explicit colour."],
+          [<C key="x">text(graphics, font, text, x, y, color)</C>, "Text without the drop shadow; the default for Quill widgets."],
+          [<C key="c">centeredText(graphics, font, text, centerX, y, color)</C>, "Horizontally centered, shadow-free text."],
+          [<C key="g">gradient(graphics, x, y, w, h, gradient)</C>, "Two-colour vertical or horizontal gradient."],
           [<C key="d">divider(graphics, x, y, w[, theme])</C>, "A 1 px horizontal line using DIVIDER."],
           [<C key="h">header(graphics, x, y, w, h[, theme])</C>, "Header band using HEADER_BG plus a bottom divider."],
           [<C key="t">tabStrip(graphics, x, y, w, h[, theme])</C>, "Chip surface with a CHIP_BORDER outline."],
@@ -379,8 +498,25 @@ function Drawing() {
       />
       <P>
         Every overload without a theme uses <C>QuillThemeData.DEFAULT</C>. The screen shell passes its own
-        theme, which is why a custom <C>QuillThemeData</C> applies to the panel and header.
+        theme, which is why a custom <C>QuillThemeData</C> applies to the panel and header. The text helpers
+        deliberately disable Minecraft&apos;s drop shadow so custom palettes can meet contrast targets.
       </P>
+
+      <H2>Gradients</H2>
+      <P>
+        <C>QuillGradient</C> is a record of <C>startColor</C>, <C>endColor</C> and a{" "}
+        <C>Direction</C> (<C>VERTICAL</C> or <C>HORIZONTAL</C>). Vertical gradients use Minecraft&apos;s
+        fill gradient; horizontal gradients interpolate per column, including alpha.
+      </P>
+      <CodeBlock
+        code={`
+QuillGradient fade = QuillGradient.vertical(
+        QuillColors.fromHex("#0E1217"),
+        QuillColors.fromHex("#2B3440")
+);
+
+QuillRender.gradient(graphics, x, y, width, 64, fade);`}
+      />
 
       <H2>Drawing a section</H2>
       <CodeBlock
@@ -437,7 +573,7 @@ export const fundamentals: DocPage[] = [
   {
     slug: "drawing",
     title: "Drawing Helpers",
-    description: "QuillRender primitives for panels, sections and dividers.",
+    description: "QuillRender primitives for panels, text, sections and gradients.",
     component: Drawing,
   },
 ];

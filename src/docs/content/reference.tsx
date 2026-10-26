@@ -18,11 +18,11 @@ function Api() {
         head={["Package", "Public classes"]}
         rows={[
           [<C key="1">com.quillui.api</C>, "QuillApi"],
-          [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillTheme, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
+          [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
           [<C key="3">com.quillui.layout</C>, "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid"],
-          [<C key="4">com.quillui.render</C>, "QuillRender, QuillTooltips"],
+          [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips"],
           [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle"],
-          [<C key="6">com.quillui.screen</C>, "QuillScreen"],
+          [<C key="6">com.quillui.screen</C>, "QuillScreen, QuillScreenLayout, QuillShortcut"],
           [<C key="7">com.quillui.action</C>, "QuillActionSink, QuillCommandSink"],
         ]}
       />
@@ -56,8 +56,9 @@ public static boolean supports(int requiredLevel);`}
       </UL>
       <Callout kind="note">
         <P>
-          The current release is <C>0.2.0-alpha.2</C> with API level <C>2</C>. The package reorganisation
-          and <C>QuillThemeData</C> landed together and are covered by the compatibility workflow.
+          The current release is <C>0.2.0-alpha.3</C> with API level <C>2</C>. The package reorganisation
+          and <C>QuillThemeData</C> landed together; screen layouts, shortcuts, gradients, contrast helpers
+          and configurable click sounds are additive and keep the level at <C>2</C>.
         </P>
       </Callout>
 
@@ -148,6 +149,7 @@ function Colors() {
       <DocTable
         head={["Role", "Default", "Use"]}
         rows={[
+          [<C key="0">SCREEN_BG</C>, "#00000000", "Optional full-screen backdrop; transparent by default."],
           [<C key="1">PANEL_BG</C>, "#F00E1217", "Screen panel background."],
           [<C key="2">PANEL_BORDER</C>, "#FF2B3440", "Screen panel border."],
           [<C key="3">PANEL_SHADOW</C>, "#66000000", "Panel drop shadow."],
@@ -158,10 +160,16 @@ function Colors() {
           [<C key="8">TEXT_SOFT</C>, "#FFA9B5C1", "Subtitles and card headings."],
           [<C key="9">MUTED</C>, "#FF7F8B99", "Hints and secondary labels."],
           [<C key="10">MUTED_DARK</C>, "#FF5F6B78", "Footer text."],
-          [<C key="11">ACCENT</C>, "#FFE0A93B", "Brand accent, focus and selection."],
+          [<C key="11">ACCENT</C>, "#FFE0A93B", "Brand accent and selection."],
           [<C key="12">ACCENT_HOVER</C>, "#FFF3C55E", "Accent on hover."],
           [<C key="13">PRIMARY_BG</C>, "#FF241C11", "Primary button body."],
           [<C key="14">PRIMARY_BG_HOVER</C>, "#FF2F2517", "Primary button body on hover."],
+          [<C key="13b">ON_ACCENT</C>, "#FFE0A93B", "Text and icons on primary/accent surfaces."],
+          [<C key="13c">ON_DANGER</C>, "#FFE06A6A", "Text and icons on danger surfaces."],
+          [<C key="13d">GHOST_BG</C>, "#00000000", "Ghost button background when idle."],
+          [<C key="13e">GHOST_BORDER</C>, "#00000000", "Ghost button border when idle."],
+          [<C key="13f">GHOST_TEXT</C>, "#FF7F8B99", "Ghost button text when idle."],
+          [<C key="13g">FOCUS_RING</C>, "#FFE0A93B", "Keyboard focus outline."],
           [<C key="15">DANGER</C>, "#FFE06A6A", "Destructive actions and errors."],
           [<C key="16">DANGER_BG</C>, "#FF352024", "Danger surface."],
           [<C key="17">SUCCESS</C>, "#FF65D39A", "Success feedback."],
@@ -223,6 +231,39 @@ QuillColors.toRgbHex(color);          // "#E0A93B"`}
         <C>rgb</C>, <C>argb</C> and <C>withAlpha</C> validate or clamp their components instead of producing
         silently broken colours.
       </P>
+
+      <H2>Contrast</H2>
+      <P>
+        <C>QuillContrast</C> measures WCAG-style contrast for opaque colours; alpha is ignored. Use the text
+        methods for normal text and the UI methods for borders, focus rings and large UI elements.
+      </P>
+      <DocTable
+        head={["Method", "Result"]}
+        rows={[
+          [<C key="1">textRatio(fg, bg)</C>, "Contrast ratio from 1.0 to 21.0."],
+          [<C key="2">uiRatio(fg, bg)</C>, "The same ratio, for non-text UI."],
+          [<C key="3">meetsText(fg, bg)</C>, "True at 4.5:1 or higher."],
+          [<C key="4">meetsUi(fg, bg)</C>, "True at 3.0:1 or higher."],
+          [<C key="5">readableText(bg)</C>, "#111827 or #FFFFFF, whichever reads better."],
+          [<C key="6">describe(fg, bg)</C>, "A label such as \"7.42:1\"."],
+        ]}
+      />
+      <P>
+        <C>QuillThemeData.contrastWarnings()</C> checks <C>TEXT</C> on <C>PANEL_BG</C> and{" "}
+        <C>SURFACE</C>, <C>ON_ACCENT</C> on <C>PRIMARY_BG</C>, <C>ON_DANGER</C> on{" "}
+        <C>DANGER_BG</C>, and <C>GHOST_TEXT</C> on <C>PANEL_BG</C>. It returns an unmodifiable list of
+        messages.
+      </P>
+      <CodeBlock
+        code={`
+QuillContrast.textRatio(text, panel);   // 7.42
+QuillContrast.meetsText(text, panel);   // true
+QuillContrast.meetsUi(border, panel);   // true
+QuillContrast.readableText(panel);      // 0xFF111827 or 0xFFFFFFFF
+QuillContrast.describe(text, panel);    // "7.42:1"
+
+theme.contrastWarnings().forEach(LOGGER::warn);`}
+      />
     </>
   );
 }
