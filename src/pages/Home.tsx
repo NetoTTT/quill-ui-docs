@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { SITE, docsRepoLinkTitle, repoLinkTitle } from "@/docs/site";
 import { href } from "@/lib/router";
-import { Logo, LogoMark } from "@/components/Logo";
+import { Logo } from "@/components/Logo";
 import { Icon, type IconName } from "@/components/Icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CodeBlock } from "@/components/prose";
 import { McButton, McCard, McList, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
+import quGlow from "@/assets/quill-ui-qu-glow.png";
 
 const NAV = [
   { label: "Docs", to: "introduction/overview" },
@@ -200,8 +201,8 @@ export function Home({ onSearch }: { onSearch: () => void }) {
       <main>
         {/* Hero */}
         <section className="hero-bg relative overflow-hidden border-b border-line">
-          <div className="hero-mark pointer-events-none absolute -top-10 -right-16 h-[26rem] w-[26rem] rotate-6 opacity-15">
-            <LogoMark size={416} />
+          <div className="hero-glow pointer-events-none absolute top-1/2 left-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 sm:h-[48rem] sm:w-[48rem]">
+            <img src={quGlow} alt="" aria-hidden="true" className="h-full w-full object-contain blur-[8px]" />
           </div>
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:py-24">
             <div>

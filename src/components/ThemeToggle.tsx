@@ -1,6 +1,8 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { Icon } from "./Icons";
 import { cn } from "@/utils/cn";
+import iconLight from "@/assets/quill-ui-icon.png";
+import iconDark from "@/assets/quill-ui-icon-dark.png";
 
 type Theme = "light" | "dark";
 
@@ -32,6 +34,8 @@ function applyTheme(theme: Theme) {
   document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
     meta.content = theme === "dark" ? "#0F1620" : "#EAF6FF";
   });
+  const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+  if (favicon) favicon.href = theme === "dark" ? iconDark : iconLight;
 }
 
 let currentTheme: Theme = initialTheme();

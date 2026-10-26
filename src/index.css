@@ -162,7 +162,17 @@
   background-image: radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 18px 18px;
 }
-.dark .hero-mark { opacity: 0.05; }
+.hero-glow { opacity: 0.12; }
+.dark .hero-glow { opacity: 0.16; mix-blend-mode: screen; }
+@media (max-width: 640px) {
+  .hero-glow { opacity: 0.1; }
+  .dark .hero-glow { opacity: 0.14; }
+}
+
+/* ---------- Brand marks ---------- */
+.logo-dark { display: none; }
+.dark .logo-light { display: none; }
+.dark .logo-dark { display: block; }
 
 /* ---------- Code tokens ---------- */
 .tok-keyword { color: #8cc8f0; }
