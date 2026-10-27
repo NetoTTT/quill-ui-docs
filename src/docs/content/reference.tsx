@@ -23,6 +23,7 @@ function Api() {
           [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips"],
           [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle"],
           [<C key="6">com.quillui.map</C>, "QuillMap (Layer, InteractionMode, MouseAction, MouseBindings), QuillMapZone, QuillMapMarker"],
+          [<C key="9">com.quillui.hud</C>, "QuillTargetIndicator (IconRenderer), QuillTargetIndicatorHud"],
           [<C key="7">com.quillui.screen</C>, "QuillScreen, QuillScreenLayout, QuillShortcut"],
           [<C key="8">com.quillui.action</C>, "QuillActionSink, QuillCommandSink"],
         ]}
@@ -57,10 +58,10 @@ public static boolean supports(int requiredLevel);`}
       </UL>
       <Callout kind="note">
         <P>
-          The current release is <C>0.2.0-alpha.4</C> with API level <C>2</C>. The package reorganisation
+          The current release is <C>0.2.0-alpha.5</C> with API level <C>2</C>. The package reorganisation
           and <C>QuillThemeData</C> landed together; screen layouts, shortcuts, gradients, contrast helpers,
-          configurable click sounds and the <C>com.quillui.map</C> package are additive and keep the level at{" "}
-          <C>2</C>.
+          configurable click sounds and the <C>com.quillui.map</C> / <C>com.quillui.hud</C> packages are
+          additive and keep the level at <C>2</C>.
         </P>
       </Callout>
 

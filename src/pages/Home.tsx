@@ -138,7 +138,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, cards, panels, scroll lists, tabs, toggles and maps that render themselves.",
+    body: "Themed buttons, cards, panels, scroll lists, tabs, toggles, maps and HUD indicators.",
     to: "components/overview",
   },
   {
@@ -154,10 +154,10 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
     to: "fundamentals/screen",
   },
   {
-    icon: "file",
-    title: "Drawing helpers",
-    body: "Sections, dividers, gradients and shadow-free text on a 4 px grid.",
-    to: "fundamentals/drawing",
+    icon: "target",
+    title: "HUD overlays",
+    body: "Off-screen target rings with a direct Fabric HudElementRegistry adapter.",
+    to: "hud/target-indicator",
   },
 ];
 
@@ -215,7 +215,8 @@ export function Home({ onSearch }: { onSearch: () => void }) {
               </h1>
               <p className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-muted">
                 Quill UI gives Fabric mods a shared visual language: theme tokens, layout primitives,
-                panels, cards, tabs, buttons, scroll lists, maps and a clean backend action boundary.
+                panels, cards, tabs, buttons, scroll lists, maps, HUD target indicators and a clean
+                backend action boundary.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-on-primary shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-primary-hover">

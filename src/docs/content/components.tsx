@@ -30,6 +30,7 @@ function Overview() {
           ["Tab bar", <C key="t">QuillTabBar</C>, "Helper", <DocLink key="tl" to="components/tabs">Tabs</DocLink>],
           ["Toggle", <C key="g">QuillToggle</C>, "Widget", <DocLink key="gl" to="components/toggle">Toggles</DocLink>],
           ["Map", <C key="m">QuillMap</C>, "Widget", <DocLink key="ml" to="components/map">Map</DocLink>],
+          ["Target indicator", <C key="h">QuillTargetIndicator</C>, "HUD", <DocLink key="hl" to="hud/target-indicator">Target Indicator</DocLink>],
           ["Tooltip", <C key="p">QuillTooltips</C>, "Helper", <DocLink key="pl" to="components/tooltips">Tooltips</DocLink>],
         ]}
       />

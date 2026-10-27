@@ -1,6 +1,7 @@
 import { introduction } from "./content/introduction";
 import { fundamentals } from "./content/fundamentals";
 import { components } from "./content/components";
+import { hud } from "./content/hud";
 import { guides } from "./content/guides";
 import { reference } from "./content/reference";
 import { contributing } from "./content/contributing";
@@ -10,6 +11,7 @@ export const SECTIONS: DocSection[] = [
   { id: "introduction", title: "Introduction", icon: "book", pages: introduction },
   { id: "fundamentals", title: "Fundamentals", icon: "layers", pages: fundamentals },
   { id: "components", title: "Components", icon: "box", pages: components },
+  { id: "hud", title: "HUD", icon: "target", pages: hud },
   { id: "guides", title: "Guides", icon: "compass", pages: guides },
   { id: "reference", title: "Reference", icon: "file", pages: reference },
   { id: "contributing", title: "Contributing", icon: "branch", pages: contributing },

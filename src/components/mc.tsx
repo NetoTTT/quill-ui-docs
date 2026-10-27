@@ -110,6 +110,22 @@ export function McMap({ className = "" }: { className?: string }) {
   );
 }
 
+/** Illustrative off-screen target ring for the HUD. */
+export function McTargetIndicator({ className = "" }: { className?: string }) {
+  return (
+    <div className={cn("mc-target", className)} role="img" aria-label="Illustrative target indicator">
+      <div className="mc-target-grid" />
+      <div className="mc-target-cross" />
+      <div className="mc-target-ring" />
+      <div className="mc-target-badge">
+        <span className="mc-target-icon" />
+        <span className="mc-target-chevron" />
+        <span className="mc-target-distance">42 m</span>
+      </div>
+    </div>
+  );
+}
+
 export function McTooltip({ lines, className = "" }: { lines: string[]; className?: string }) {
   return (
     <div className={cn("mc mc-tooltip", className)}>
