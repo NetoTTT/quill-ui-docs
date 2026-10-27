@@ -420,16 +420,17 @@ map.setUndergroundScanDepth(48);  // clamp 4..256, default 48`}
       <P>
         Map chrome now follows the theme: <C>MAP_BG</C> fills the background and empty tiles,{" "}
         <C>MAP_GRID</C> draws the chunk grid and <C>MAP_UNKNOWN</C> colours columns with no map colour.
-        Markers use <C>TITLE</C>; selection uses <C>SUCCESS</C>/<C>DANGER</C>; the HUD and labels use{" "}
-        <C>PANEL_BG</C>, <C>TEXT_SOFT</C> and <C>ACCENT</C>. Zones and markers still take explicit ARGB
-        colours.
+        Marker outlines and labels use <C>TITLE</C>; selection uses <C>SUCCESS</C>/<C>DANGER</C>; the HUD
+        uses <C>PANEL_BG</C>/<C>TEXT_SOFT</C>; the centre marker uses <C>ACCENT</C>/<C>TITLE</C>. Use{" "}
+        <C>ColorRole</C> plus <C>QuillColors</C> helpers for themed overlays; raw ARGB remains available
+        for custom data.
       </P>
       <CodeBlock
         code={`
 QuillThemeData mapTheme = QuillThemeData.DEFAULT
-        .with(QuillThemeData.ColorRole.MAP_BG, 0xFF09121A)
-        .with(QuillThemeData.ColorRole.MAP_GRID, 0x551E2936)
-        .with(QuillThemeData.ColorRole.MAP_UNKNOWN, 0xFF101820);`}
+        .with(QuillThemeData.ColorRole.MAP_BG, QuillColors.fromHex("#09121A"))
+        .with(QuillThemeData.ColorRole.MAP_GRID, QuillColors.fromHex("#551E2936"))
+        .with(QuillThemeData.ColorRole.MAP_UNKNOWN, QuillColors.fromHex("#101820"));`}
       />
 
       <H2>Interaction</H2>
@@ -488,11 +489,15 @@ map.setRadiusLimitVisible(true);   // dashed MAX_RADIUS outline`}
 map.setSelectionListener(m -> updateHud(m)); // every change
 
 // Called once when a drag finishes; use it to commit a claim/build/query.
-map.setSelectionCommitListener(m -> QuillCommandSink.get().execute(
-        "example claim "
-                + m.from().getX() + " " + m.from().getZ() + " "
-                + m.selectionWidth() + " " + m.selectionDepth()
-));`}
+map.setSelectionCommitListener(m -> {
+    if (!m.hasSelection()) return;
+    int minX = Math.min(m.from().getX(), m.to().getX());
+    int minZ = Math.min(m.from().getZ(), m.to().getZ());
+    QuillCommandSink.get().execute(
+            "example claim " + minX + " " + minZ + " "
+                    + m.selectionWidth() + " " + m.selectionDepth()
+    );
+});`}
       />
       <Callout kind="warning">
         <P>
@@ -511,22 +516,24 @@ map.setSelectionCommitListener(m -> QuillCommandSink.get().execute(
       />
       <P>
         Zones are rectangular world overlays with a fill and either a solid or dashed border. Markers are
-        9×9 points with a white outline and an optional label badge. Colours are packed ARGB integers.
+        9x9 points with a themed outline and an optional label badge. Use theme roles for the colours; the
+        constructors still accept packed ARGB for custom data.
       </P>
       <CodeBlock
         code={`
+int success = QuillThemeData.DEFAULT.color(QuillThemeData.ColorRole.SUCCESS);
 map.setZones(List.of(new QuillMapZone(
         new BlockPos(-16, 64, -16),
         new BlockPos(32, 64, 32),
-        0x3322CC88,
-        0xFF22CC88,
+        QuillColors.withAlpha(success, 0.2F),
+        success,
         true
 )));
 
 map.addMarker(new QuillMapMarker(
         new BlockPos(0, 64, 0),
         Component.literal("Spawn"),
-        0xFFE0A93B
+        QuillThemeData.DEFAULT.color(QuillThemeData.ColorRole.ACCENT)
 ));`}
       />
       <P>
@@ -546,7 +553,7 @@ map.setEntityProvider(
         entity -> new QuillMapMarker(
                 entity.blockPosition(),
                 entity.getName(),
-                0xFF7FB4F5
+                QuillThemeData.DEFAULT.color(QuillThemeData.ColorRole.INFO)
         )
 );
 
@@ -640,7 +647,9 @@ void drawRow(
         int rowX, int rowY, int rowWidth, int rowHeight,
         int mouseX, int mouseY, boolean hovered
 ) {
-    int color = hovered ? 0xFFFFFFFF : 0xFFC6D0DA;
+    int color = QuillThemeData.DEFAULT.color(hovered
+            ? QuillThemeData.ColorRole.TITLE
+            : QuillThemeData.ColorRole.TEXT);
     graphics.text(font, entry.name(), rowX + 4, rowY + 6, color);
 }
 

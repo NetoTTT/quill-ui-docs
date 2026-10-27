@@ -162,6 +162,7 @@ import com.quillui.map.QuillMapMarker;
 import com.quillui.map.QuillMapZone;
 import com.quillui.screen.QuillScreen;
 import com.quillui.theme.QuillSpacing;
+import com.quillui.theme.QuillColors;
 import com.quillui.theme.QuillThemeData;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -188,18 +189,19 @@ public final class MapScreen extends QuillScreen {
 
         map = new QuillMap(x, panelY + 60, width, 220, center, 64, 32, THEME);
 
+        int success = THEME.color(QuillThemeData.ColorRole.SUCCESS);
         map.setZones(List.of(new QuillMapZone(
                 new BlockPos(-16, 64, -16),
                 new BlockPos(32, 64, 32),
-                0x3322CC88,
-                0xFF22CC88,
+                QuillColors.withAlpha(success, 0.2F),
+                success,
                 true
         )));
 
         map.setMarkers(List.of(new QuillMapMarker(
                 center,
                 Component.literal("You"),
-                0xFFE0A93B
+                THEME.color(QuillThemeData.ColorRole.ACCENT)
         )));
 
         map.setEntityProvider(
@@ -207,16 +209,22 @@ public final class MapScreen extends QuillScreen {
                 entity -> new QuillMapMarker(
                         entity.blockPosition(),
                         entity.getName(),
-                        0xFF7FB4F5
+                        THEME.color(QuillThemeData.ColorRole.INFO)
                 )
         );
         map.setEntityYRange(8, 8);
 
-        map.setSelectionCommitListener(m -> QuillCommandSink.get().execute(
-                "example claim "
-                        + m.from().getX() + " " + m.from().getZ() + " "
-                        + m.selectionWidth() + " " + m.selectionDepth()
-        ));
+        map.setSelectionCommitListener(m -> {
+            if (!m.hasSelection()) {
+                return;
+            }
+            int minX = Math.min(m.from().getX(), m.to().getX());
+            int minZ = Math.min(m.from().getZ(), m.to().getZ());
+            QuillCommandSink.get().execute(
+                    "example claim " + minX + " " + minZ + " "
+                            + m.selectionWidth() + " " + m.selectionDepth()
+            );
+        });
 
         addRenderableWidget(map);
         addRenderableWidget(closeButton(this::onClose));
@@ -247,7 +255,7 @@ public final class MapScreen extends QuillScreen {
           <strong>Zones</strong> are world rectangles; the dashed flag controls the border style.
         </li>
         <li>
-          <strong>Markers</strong> are static points with a label and ARGB colour.
+          <strong>Markers</strong> are static points with a label and a themed or custom colour.
         </li>
         <li>
           <strong>Entity providers</strong> are evaluated each render, so moving entities update without
@@ -299,7 +307,7 @@ import com.quillui.theme.QuillThemeData;
 import com.quillui.theme.QuillThemeData.ColorRole;
 
 QuillThemeData light = QuillThemeData.builder()
-        .set(ColorRole.SCREEN_BG,            0x66000000) // optional dim backdrop
+        .set(ColorRole.SCREEN_BG,            QuillColors.fromHex("#66000000")) // optional dim backdrop
         .set(ColorRole.PANEL_BG,             QuillColors.fromHex("#F5FAFF"))
         .set(ColorRole.PANEL_BORDER,         QuillColors.fromHex("#BBD9EE"))
         .set(ColorRole.HEADER_BG,            QuillColors.fromHex("#EAF6FF"))
@@ -316,8 +324,8 @@ QuillThemeData light = QuillThemeData.builder()
         .set(ColorRole.ON_ACCENT,            QuillColors.fromHex("#FFFFFF"))
         .set(ColorRole.DANGER_BG,            QuillColors.fromHex("#FDECEC"))
         .set(ColorRole.ON_DANGER,            QuillColors.fromHex("#9C3F3F"))
-        .set(ColorRole.GHOST_BG,             0x00000000)
-        .set(ColorRole.GHOST_BORDER,         0x00000000)
+        .set(ColorRole.GHOST_BG,             QuillColors.fromHex("#00000000"))
+        .set(ColorRole.GHOST_BORDER,         QuillColors.fromHex("#00000000"))
         .set(ColorRole.GHOST_TEXT,           QuillColors.fromHex("#4B657A"))
         .set(ColorRole.FOCUS_RING,           QuillColors.fromHex("#23699A"))
         .set(ColorRole.BUTTON_BG,            QuillColors.fromHex("#EAF6FF"))
@@ -326,8 +334,8 @@ QuillThemeData light = QuillThemeData.builder()
         .set(ColorRole.BUTTON_DISABLED,      QuillColors.fromHex("#EAF6FF"))
         .set(ColorRole.BUTTON_DISABLED_BORDER, QuillColors.fromHex("#C5E5FA"))
         .set(ColorRole.BUTTON_DISABLED_TEXT, QuillColors.fromHex("#8FA3B4"))
-        .set(ColorRole.SURFACE,              0xF0FFFFFF)
-        .set(ColorRole.SURFACE_ALT,          0x66EAF6FF)
+        .set(ColorRole.SURFACE,              QuillColors.fromHex("#F0FFFFFF"))
+        .set(ColorRole.SURFACE_ALT,          QuillColors.fromHex("#66EAF6FF"))
         .set(ColorRole.SURFACE_BORDER,       QuillColors.fromHex("#BBD9EE"))
         .set(ColorRole.SURFACE_HEADER,       QuillColors.fromHex("#EAF6FF"))
         .set(ColorRole.CHIP_BG,              QuillColors.fromHex("#EAF6FF"))

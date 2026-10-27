@@ -104,11 +104,7 @@ QuillTargetIndicator indicator =
 
 indicator.setColor(QuillThemeData.ColorRole.SUCCESS);
 indicator.setColor(theme, QuillThemeData.ColorRole.INFO);
-indicator.setBackgroundColor(QuillThemeData.ColorRole.SURFACE_HEADER);
-
-// Low-level ARGB overrides: one-off custom colours, not the default path.
-indicator.setColor(0xFF48D7A0);
-indicator.setBackgroundColor(0xCC101820);`}
+indicator.setBackgroundColor(QuillThemeData.ColorRole.SURFACE_HEADER);`}
       />
       <DocTable
         head={["Constructor", "Result"]}

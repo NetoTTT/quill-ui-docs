@@ -114,20 +114,20 @@ QuillButton button = new QuillButton(
       <CodeBlock
         code={`
 QuillThemeData light = QuillThemeData.builder()
-        .set(QuillThemeData.ColorRole.SCREEN_BG, 0x66000000) // optional dim backdrop
-        .set(QuillThemeData.ColorRole.PANEL_BG, 0xF0FFFFFF)
-        .set(QuillThemeData.ColorRole.TEXT, 0xFF253746)
-        .set(QuillThemeData.ColorRole.SURFACE, 0xF0FFFFFF)
-        .set(QuillThemeData.ColorRole.SURFACE_ALT, 0x66EAF6FF)
-        .set(QuillThemeData.ColorRole.SURFACE_BORDER, 0xFFBBD9EE)
-        .set(QuillThemeData.ColorRole.SURFACE_HEADER, 0xFFEAF6FF)
-        .set(QuillThemeData.ColorRole.PRIMARY_BG, 0xFF23699A)
-        .set(QuillThemeData.ColorRole.PRIMARY_BG_HOVER, 0xFF3B95D0)
-        .set(QuillThemeData.ColorRole.ON_ACCENT, 0xFFFFFFFF)
-        .set(QuillThemeData.ColorRole.DANGER_BG, 0xFFFDECEC)
-        .set(QuillThemeData.ColorRole.ON_DANGER, 0xFF9C3F3F)
-        .set(QuillThemeData.ColorRole.GHOST_TEXT, 0xFF4B657A)
-        .set(QuillThemeData.ColorRole.FOCUS_RING, 0xFF23699A)
+        .set(QuillThemeData.ColorRole.SCREEN_BG, QuillColors.fromHex("#66000000")) // optional dim backdrop
+        .set(QuillThemeData.ColorRole.PANEL_BG, QuillColors.fromHex("#F0FFFFFF"))
+        .set(QuillThemeData.ColorRole.TEXT, QuillColors.fromHex("#253746"))
+        .set(QuillThemeData.ColorRole.SURFACE, QuillColors.fromHex("#F0FFFFFF"))
+        .set(QuillThemeData.ColorRole.SURFACE_ALT, QuillColors.fromHex("#66EAF6FF"))
+        .set(QuillThemeData.ColorRole.SURFACE_BORDER, QuillColors.fromHex("#BBD9EE"))
+        .set(QuillThemeData.ColorRole.SURFACE_HEADER, QuillColors.fromHex("#EAF6FF"))
+        .set(QuillThemeData.ColorRole.PRIMARY_BG, QuillColors.fromHex("#23699A"))
+        .set(QuillThemeData.ColorRole.PRIMARY_BG_HOVER, QuillColors.fromHex("#3B95D0"))
+        .set(QuillThemeData.ColorRole.ON_ACCENT, QuillColors.fromHex("#FFFFFF"))
+        .set(QuillThemeData.ColorRole.DANGER_BG, QuillColors.fromHex("#FDECEC"))
+        .set(QuillThemeData.ColorRole.ON_DANGER, QuillColors.fromHex("#9C3F3F"))
+        .set(QuillThemeData.ColorRole.GHOST_TEXT, QuillColors.fromHex("#4B657A"))
+        .set(QuillThemeData.ColorRole.FOCUS_RING, QuillColors.fromHex("#23699A"))
         .build();`}
       />
       <Callout kind="tip">
@@ -525,8 +525,8 @@ function Drawing() {
       <CodeBlock
         code={`
 QuillGradient fade = QuillGradient.vertical(
-        QuillColors.fromHex("#0E1217"),
-        QuillColors.fromHex("#2B3440")
+        QuillThemeData.DEFAULT.color(QuillThemeData.ColorRole.PANEL_BG),
+        QuillThemeData.DEFAULT.color(QuillThemeData.ColorRole.SURFACE_BORDER)
 );
 
 int middle = fade.colorAt(0.5F);

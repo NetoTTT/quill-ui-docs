@@ -116,8 +116,8 @@ volume.step(0.05F); // snap to 5% increments`}
       />
       <P>
         The slider follows left-button drags and clicks on the track. Left/Right arrows change the value
-        by <C>step</C>, or 0.05 when no step is set. The label is drawn above the track. There is no
-        animation, sound or server state.
+        by <C>step</C>, or 0.05 when no step is set. The label is drawn above the track while the widget
+        is active. There is no animation, sound or server state.
       </P>
     </>
   );
