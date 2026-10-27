@@ -92,6 +92,24 @@ export function McList({ items, className = "" }: { items: string[]; className?:
   );
 }
 
+/** Illustrative top-down map with a selection, a zone, markers and the HUD. */
+export function McMap({ className = "" }: { className?: string }) {
+  return (
+    <div className={cn("mc-map", className)} role="img" aria-label="Illustrative Quill map preview">
+      <div className="mc-map-terrain" />
+      <div className="mc-map-grid" />
+      <div className="mc-map-zone" />
+      <div className="mc-map-selection" />
+      <span className="mc-map-marker mc-map-marker-a" data-label="Spawn" />
+      <span className="mc-map-marker mc-map-marker-b" data-label="Base" />
+      <span className="mc-map-center" />
+      <span className="mc-map-chip mc-map-layer">Surface</span>
+      <span className="mc-map-chip mc-map-zoom">2x</span>
+      <span className="mc-map-chip mc-map-hud">12x8 (96 bl)</span>
+    </div>
+  );
+}
+
 export function McTooltip({ lines, className = "" }: { lines: string[]; className?: string }) {
   return (
     <div className={cn("mc mc-tooltip", className)}>

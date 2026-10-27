@@ -405,6 +405,13 @@ registerShortcut(
 registerShortcut(QuillShortcut.global(InputConstants.KEY_F1, this::toggleHelp));`}
       />
 
+      <H2>Mouse forwarding</H2>
+      <P>
+        <C>QuillScreen</C> forwards non-left drag and release events to the focused widget, or to the child
+        under the cursor when nothing is focused. Widgets such as <C>QuillMap</C> use this for right- or
+        middle-drag panning; left-button routing stays vanilla.
+      </P>
+
       <H2>A complete screen</H2>
       <CodeBlock
         title="SettingsScreen.java"

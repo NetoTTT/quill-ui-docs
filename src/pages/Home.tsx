@@ -5,7 +5,7 @@ import { Logo } from "@/components/Logo";
 import { Icon, type IconName } from "@/components/Icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CodeBlock } from "@/components/prose";
-import { McButton, McCard, McList, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
+import { McButton, McCard, McList, McMap, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
 import quGlow from "@/assets/quill-ui-qu-glow.png";
 
 const NAV = [
@@ -98,21 +98,21 @@ const COMPONENTS: { name: string; desc: string; to: string; preview: React.React
     preview: <McList className="w-40" items={["General", "Controls", "Audio"]} />,
   },
   {
-    name: "Tabs",
-    desc: "Equal-width tab buttons that keep the selected visual in sync.",
+    name: "Tabs & toggles",
+    desc: "Equal-width tabs and compact on/off switches with keyboard support.",
     to: "components/tabs",
-    preview: <McTabs className="w-44" items={["General", "Advanced"]} active={0} />,
-  },
-  {
-    name: "Toggles",
-    desc: "Compact on/off switches with keyboard support.",
-    to: "components/toggle",
     preview: (
       <div className="w-44 space-y-2">
+        <McTabs items={["General", "Advanced"]} active={0} />
         <McToggle label="Sound" on />
-        <McToggle label="Motion" />
       </div>
     ),
+  },
+  {
+    name: "Map",
+    desc: "Interactive surface/underground map with selections, zones and markers.",
+    to: "components/map",
+    preview: <McMap className="h-24 w-44" />,
   },
   {
     name: "Tooltips",
@@ -138,7 +138,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, cards, panels, scroll lists, tabs and toggles that render themselves.",
+    body: "Themed buttons, cards, panels, scroll lists, tabs, toggles and maps that render themselves.",
     to: "components/overview",
   },
   {
@@ -215,7 +215,7 @@ export function Home({ onSearch }: { onSearch: () => void }) {
               </h1>
               <p className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-muted">
                 Quill UI gives Fabric mods a shared visual language: theme tokens, layout primitives,
-                panels, cards, tabs, buttons, scroll lists and a clean backend action boundary.
+                panels, cards, tabs, buttons, scroll lists, maps and a clean backend action boundary.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-on-primary shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-primary-hover">

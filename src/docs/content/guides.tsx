@@ -1,5 +1,5 @@
 import { C, Callout, CodeBlock, DocLink, Example, H2, H3, OL, P, UL } from "@/components/prose";
-import { McCard, McButton, McToggle } from "@/components/mc";
+import { McCard, McButton, McMap, McToggle } from "@/components/mc";
 import type { DocPage } from "../types";
 
 function FirstInterface() {
@@ -138,6 +138,145 @@ public final class ProfileScreen extends QuillScreen {
         <P>
           <C>QuillPanel</C> packages this card + column + row pattern into one helper. See{" "}
           <DocLink to="components/panels">Panels</DocLink> for the shorter version.
+        </P>
+      </Callout>
+    </>
+  );
+}
+
+function MapIntegration() {
+  return (
+    <>
+      <P>
+        <C>QuillMap</C> is a widget, so a map screen is just a normal <C>QuillScreen</C> with a map
+        registered in <C>buildContent()</C>. This guide wires zones, markers, an entity provider and a
+        selection commit.
+      </P>
+      <Example preview={<McMap className="w-full max-w-md" />}>
+        <CodeBlock
+          title="MapScreen.java"
+          code={`
+import com.quillui.action.QuillCommandSink;
+import com.quillui.map.QuillMap;
+import com.quillui.map.QuillMapMarker;
+import com.quillui.map.QuillMapZone;
+import com.quillui.screen.QuillScreen;
+import com.quillui.theme.QuillSpacing;
+import com.quillui.theme.QuillThemeData;
+import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+public final class MapScreen extends QuillScreen {
+    private static final QuillThemeData THEME = QuillThemeData.DEFAULT;
+    private QuillMap map;
+
+    public MapScreen() {
+        super(Component.literal("Map"), 420, 320, THEME);
+    }
+
+    @Override
+    protected void buildContent() {
+        int x = panelX + QuillSpacing.SPACE_4;
+        int width = panelWidth() - QuillSpacing.SPACE_4 * 2;
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        BlockPos center = player != null ? player.blockPosition() : BlockPos.ZERO;
+
+        map = new QuillMap(x, panelY + 60, width, 220, center, 64, 32, THEME);
+
+        map.setZones(List.of(new QuillMapZone(
+                new BlockPos(-16, 64, -16),
+                new BlockPos(32, 64, 32),
+                0x3322CC88,
+                0xFF22CC88,
+                true
+        )));
+
+        map.setMarkers(List.of(new QuillMapMarker(
+                center,
+                Component.literal("You"),
+                0xFFE0A93B
+        )));
+
+        map.setEntityProvider(
+                entity -> entity instanceof Player && entity != player,
+                entity -> new QuillMapMarker(
+                        entity.blockPosition(),
+                        entity.getName(),
+                        0xFF7FB4F5
+                )
+        );
+        map.setEntityYRange(8, 8);
+
+        map.setSelectionCommitListener(m -> QuillCommandSink.get().execute(
+                "example claim "
+                        + m.from().getX() + " " + m.from().getZ() + " "
+                        + m.selectionWidth() + " " + m.selectionDepth()
+        ));
+
+        addRenderableWidget(map);
+        addRenderableWidget(closeButton(this::onClose));
+    }
+
+    @Override
+    public void removed() {
+        if (map != null) {
+            map.close();
+        }
+        super.removed();
+    }
+
+    @Override
+    protected Component subtitle() {
+        return Component.literal("Right or middle drag to pan. Scroll to zoom.");
+    }
+}`}
+        />
+      </Example>
+
+      <H2>How the pieces fit</H2>
+      <OL>
+        <li>
+          <strong>The map</strong> is centered on the player and registered like any other widget.
+        </li>
+        <li>
+          <strong>Zones</strong> are world rectangles; the dashed flag controls the border style.
+        </li>
+        <li>
+          <strong>Markers</strong> are static points with a label and ARGB colour.
+        </li>
+        <li>
+          <strong>Entity providers</strong> are evaluated each render, so moving entities update without
+          rebuilding the map. The Y range is relative to the local player.
+        </li>
+        <li>
+          <strong>The commit listener</strong> runs once when a selection drag ends. It is the right place
+          to send a command or payload.
+        </li>
+      </OL>
+
+      <H2>Interaction defaults</H2>
+      <P>
+        <C>MouseBindings.DEFAULT</C> selects with the left button and pans with the right and middle
+        buttons. The wheel zooms from 1× to 4×. Non-left drags reach the map because <C>QuillScreen</C>{" "}
+        forwards them to the focused widget. See <DocLink to="components/map">Map</DocLink> for the full
+        interaction and lifecycle reference.
+      </P>
+
+      <H2>Keep state server-authoritative</H2>
+      <P>
+        The map reads the client level and never writes gameplay state. Send the selection or marker
+        action through an <C>QuillActionSink</C> (or a typed C2S payload), validate it on the server, and
+        return an updated snapshot. Do not treat a client selection as a completed claim.
+      </P>
+      <Callout kind="note">
+        <P>
+          Close the map in <C>removed()</C>. It owns a dynamic texture; without <C>close()</C> the texture
+          stays registered after the screen is gone.
         </P>
       </Callout>
     </>
@@ -402,6 +541,12 @@ export const guides: DocPage[] = [
     title: "Creating Your First Interface",
     description: "A complete settings screen built from real Quill UI classes.",
     component: FirstInterface,
+  },
+  {
+    slug: "map-integration",
+    title: "Map Integration",
+    description: "Add zones, markers, entity providers and selection commits to a map screen.",
+    component: MapIntegration,
   },
   {
     slug: "theming",

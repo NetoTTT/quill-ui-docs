@@ -1,5 +1,5 @@
 import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, P, UL } from "@/components/prose";
-import { McButton, McCard, McList, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
+import { McButton, McCard, McList, McMap, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
 import type { DocPage } from "../types";
 
 const PREVIEW_NOTE = (
@@ -29,6 +29,7 @@ function Overview() {
           ["Scroll list", <C key="s">QuillScrollList&lt;T&gt;</C>, "Widget", <DocLink key="sl" to="components/scroll-list">Scroll lists</DocLink>],
           ["Tab bar", <C key="t">QuillTabBar</C>, "Helper", <DocLink key="tl" to="components/tabs">Tabs</DocLink>],
           ["Toggle", <C key="g">QuillToggle</C>, "Widget", <DocLink key="gl" to="components/toggle">Toggles</DocLink>],
+          ["Map", <C key="m">QuillMap</C>, "Widget", <DocLink key="ml" to="components/map">Map</DocLink>],
           ["Tooltip", <C key="p">QuillTooltips</C>, "Helper", <DocLink key="pl" to="components/tooltips">Tooltips</DocLink>],
         ]}
       />
@@ -333,6 +334,236 @@ QuillPanel(x, y, width, height, title, theme, gap)`}
   );
 }
 
+function MapPage() {
+  return (
+    <>
+      <P>
+        <C>QuillMap</C> is an interactive top-down world map. It renders terrain into a cached dynamic
+        texture and layers a selection rectangle, zones, markers and optional entity markers on top. It is
+        client-only and has no gameplay dependency.
+      </P>
+      {PREVIEW_NOTE}
+      <Example preview={<McMap className="w-full max-w-md" />}>
+        <CodeBlock
+          code={`
+QuillMap map = new QuillMap(
+        x, y, width, height,
+        player.blockPosition(),     // center
+        64,                         // max radius
+        32,                         // max selection size
+        QuillThemeData.DEFAULT      // theme is required
+);
+
+addRenderableWidget(map);`}
+        />
+      </Example>
+
+      <H2>Construction</H2>
+      <P>
+        Two constructors are available. The shorter one uses a maximum selection size of 32. The map
+        requires a <C>QuillThemeData</C>; there is no default-theme overload.
+      </P>
+      <CodeBlock
+        code={`
+QuillMap(x, y, width, height, center, maxRadius, theme)
+QuillMap(x, y, width, height, center, maxRadius, maxSelectionSize, theme)`}
+      />
+      <UL>
+        <li>
+          <C>center</C> is the initial world position. <C>null</C> is ignored by <C>setCenter</C>; pass a
+          real <C>BlockPos</C> at construction.
+        </li>
+        <li>
+          <C>maxRadius</C> is clamped to 1–128 and sets the dashed radius overlay and the initial
+          pixels-per-block. It does not clamp panning.
+        </li>
+        <li>
+          <C>maxSelectionSize</C> is clamped to 1–64 and controls <C>selectionFitsLimit()</C>.
+        </li>
+      </UL>
+
+      <H2>Layers</H2>
+      <P>
+        <C>Layer.AUTO</C> is the default: the map switches to underground when the player has no sky light
+        or is more than two blocks below the surface. <C>SURFACE</C> and <C>UNDERGROUND</C> force a layer.
+      </P>
+      <CodeBlock
+        code={`
+map.setLayer(QuillMap.Layer.AUTO);
+map.setLayer(QuillMap.Layer.SURFACE);
+map.setLayer(QuillMap.Layer.UNDERGROUND);
+
+map.setLayer(map.layer().next()); // cycle AUTO -> SURFACE -> UNDERGROUND
+map.setUndergroundScanDepth(48);  // clamp 4..256, default 48`}
+      />
+      <P>
+        Underground rendering scans down from the player&apos;s Y level (or the map center when there is
+        no player) to find a floor. Lower scan depths reduce cost. The HUD label is available from{" "}
+        <C>map.layerLabel()</C> and uses the <C>quillui.map.layer.*</C> translation keys.
+      </P>
+
+      <H2>Interaction</H2>
+      <P>
+        Mouse actions are configured per button with <C>MouseBindings</C>. The default is select with the
+        left button and pan with the right and middle buttons.
+      </P>
+      <CodeBlock
+        code={`
+map.setMouseBindings(new QuillMap.MouseBindings(
+        QuillMap.MouseAction.SELECT, // left
+        QuillMap.MouseAction.PAN,    // right
+        QuillMap.MouseAction.PAN     // middle
+));
+// MouseBindings.DEFAULT is the same mapping.
+
+map.setReadOnly(true);             // pan still works; selection is disabled
+map.setRadiusLimitVisible(true);   // dashed MAX_RADIUS outline`}
+      />
+      <P>
+        The mouse wheel changes the zoom between 1× and 4× (pixels per block).{" "}
+        <C>setMouseBindings(...)</C> is authoritative: it also derives{" "}
+        <C>interactionMode()</C> from the left action. <C>setInteractionMode(...)</C> updates that reported
+        mode but does not remap the buttons.
+      </P>
+      <Callout kind="note">
+        <P>
+          Non-left drag and release events are forwarded by <C>QuillScreen</C> to the focused widget (or
+          the child under the cursor). That is what allows the map to pan with right or middle drag while
+          left clicks keep their normal routing.
+        </P>
+      </Callout>
+
+      <H2>Selection</H2>
+      <P>
+        Selection coordinates are world columns. Width and depth are inclusive, so a 1×1 selection reports
+        width 1 and depth 1.
+      </P>
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">from() / to()</C>, "Selection corners, or null when there is no selection."],
+          [<C key="2">hasSelection()</C>, "True when both corners are set."],
+          [<C key="3">selectionWidth() / selectionDepth()</C>, "Inclusive block spans."],
+          [<C key="4">selectionArea()</C>, "Width × depth."],
+          [<C key="5">selectionFitsLimit()</C>, "True when both spans fit maxSelectionSize."],
+          [<C key="6">setSelection(from, to) / clearSelection()</C>, "Programmatic selection; notifies the selection listener."],
+        ]}
+      />
+      <CodeBlock
+        code={`
+map.setSelectionListener(m -> updateHud(m)); // every change
+
+// Called once when a drag finishes; use it to commit a claim/build/query.
+map.setSelectionCommitListener(m -> QuillCommandSink.get().execute(
+        "example claim "
+                + m.from().getX() + " " + m.from().getZ() + " "
+                + m.selectionWidth() + " " + m.selectionDepth()
+));`}
+      />
+      <Callout kind="warning">
+        <P>
+          <C>setSelection(...)</C> does not fire the commit listener. Only a mouse drag release (or{" "}
+          <C>onRelease</C>) does. If a programmatic selection should commit, call your action directly.
+        </P>
+      </Callout>
+
+      <H2>Zones and markers</H2>
+      <DocTable
+        head={["Type", "Fields"]}
+        rows={[
+          [<C key="1">QuillMapZone</C>, "from, to (BlockPos), fillColor, borderColor, dashed"],
+          [<C key="2">QuillMapMarker</C>, "position (BlockPos), label (Component), color"],
+        ]}
+      />
+      <P>
+        Zones are rectangular world overlays with a fill and either a solid or dashed border. Markers are
+        9×9 points with a white outline and an optional label badge. Colours are packed ARGB integers.
+      </P>
+      <CodeBlock
+        code={`
+map.setZones(List.of(new QuillMapZone(
+        new BlockPos(-16, 64, -16),
+        new BlockPos(32, 64, 32),
+        0x3322CC88,
+        0xFF22CC88,
+        true
+)));
+
+map.addMarker(new QuillMapMarker(
+        new BlockPos(0, 64, 0),
+        Component.literal("Spawn"),
+        0xFFE0A93B
+));`}
+      />
+      <P>
+        <C>setZones</C> replaces the list and <C>addZone</C> appends; <C>zones()</C> returns an immutable
+        copy. Markers follow the same pattern.
+      </P>
+
+      <H2>Entity providers</H2>
+      <P>
+        A provider turns client entities into markers. The filter and marker factory run for each render
+        against <C>level.entitiesForRendering()</C>.
+      </P>
+      <CodeBlock
+        code={`
+map.setEntityProvider(
+        entity -> entity instanceof Player,
+        entity -> new QuillMapMarker(
+                entity.blockPosition(),
+                entity.getName(),
+                0xFF7FB4F5
+        )
+);
+
+map.setEntityYRange(8, 8); // 8 below / 8 above the player, inclusive
+map.setEntityYRangeEnabled(false);
+map.clearEntityYRange();`}
+      />
+      <UL>
+        <li>The Y range is relative to the local player and disabled by default.</li>
+        <li>Values are clamped to 0–256. Call <C>setEntityYRange</C> to enable it.</li>
+        <li>Use <C>clearEntityProvider()</C> to remove entity markers entirely.</li>
+      </UL>
+
+      <H2>Coordinates</H2>
+      <CodeBlock
+        code={`
+int screenX = map.blockToScreenX(pos.getX());
+int screenZ = map.blockToScreenZ(pos.getZ());
+
+int blockX = map.screenToBlockX(mouseX);
+int blockZ = map.screenToBlockZ(mouseY);
+BlockPos underCursor = map.blockAt(mouseX, mouseY); // uses the map center Y`}
+      />
+
+      <H2>Lifecycle and performance</H2>
+      <P>
+        <C>QuillMap</C> owns a dynamic texture and implements <C>AutoCloseable</C>. Close it when the
+        screen is removed so the texture is released.
+      </P>
+      <CodeBlock
+        code={`
+@Override
+public void removed() {
+    map.close();
+    super.removed();
+}`}
+      />
+      <UL>
+        <li>Terrain is cached per dimension, chunk, layer and zoom; surface tiles refresh roughly every 100 ticks and underground tiles roughly every 400.</li>
+        <li>Full-resolution tiles are generated progressively under a small per-frame budget. Underground is the most expensive layer.</li>
+        <li>
+          <C>lastUpdateNanos()</C> exposes the last texture update duration for profiling.
+        </li>
+        <li>
+          <C>setCenter(...)</C>, <C>panBy(dx, dz)</C> and <C>resize(width, height)</C> mark the map dirty.
+        </li>
+      </UL>
+    </>
+  );
+}
+
 function ScrollList() {
   return (
     <>
@@ -596,6 +827,12 @@ export const components: DocPage[] = [
     title: "Toggles",
     description: "Compact on/off switches.",
     component: Toggle,
+  },
+  {
+    slug: "map",
+    title: "Map",
+    description: "Interactive surface/underground world map with selection and overlays.",
+    component: MapPage,
   },
   {
     slug: "tooltips",

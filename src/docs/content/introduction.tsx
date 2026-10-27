@@ -15,12 +15,11 @@ function Overview() {
         state itself.
       </P>
 
-      <Callout kind="tip" title="New in 0.2.0-alpha.3">
+      <Callout kind="tip" title="New in 0.2.0-alpha.4">
         <P>
-          Layout-driven screen headers, keyboard shortcuts, two-colour gradients, contrast helpers and
-          click sounds on toggles and tabs. See <DocLink to="fundamentals/screen">Screens</DocLink>,{" "}
-          <DocLink to="fundamentals/drawing">Drawing Helpers</DocLink> and{" "}
-          <DocLink to="reference/colors">Theme Reference</DocLink>.
+          <C>QuillMap</C> is an interactive surface/underground world map with selection, zones, markers
+          and generic entity providers. See <DocLink to="components/map">Map</DocLink> and{" "}
+          <DocLink to="guides/map-integration">Map integration</DocLink>.
         </P>
       </Callout>
 
@@ -33,6 +32,7 @@ function Overview() {
           ["Layout", "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid", <C key="l">com.quillui.layout</C>],
           ["Drawing", "QuillRender, QuillGradient, QuillTooltips", <C key="r">com.quillui.render</C>],
           ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle", <C key="w">com.quillui.widget</C>],
+          ["Map", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
           ["Screen", "QuillScreen, QuillScreenLayout, QuillShortcut", <C key="s">com.quillui.screen</C>],
           ["Backend boundary", "QuillActionSink, QuillCommandSink", <C key="a">com.quillui.action</C>],
           ["Compatibility", "QuillApi", <C key="q">com.quillui.api</C>],
@@ -49,7 +49,7 @@ function Overview() {
 
       <H2>Status</H2>
       <P>
-        The current release is <C>0.2.0-alpha.3</C> with binary API level <C>2</C>. The API is intentionally
+        The current release is <C>0.2.0-alpha.4</C> with binary API level <C>2</C>. The API is intentionally
         small and may evolve before <C>1.0.0</C>. See <DocLink to="reference/api">API reference</DocLink> and{" "}
         <DocLink to="reference/compatibility">Compatibility</DocLink>.
       </P>
@@ -95,7 +95,7 @@ function Installation() {
       <H2>Build the jar</H2>
       <CodeBlock lang="bash" status="none" code={`gradlew.bat build --console=plain --no-daemon`} />
       <P>
-        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.3.jar</C>. Put it in the instance&apos;s{" "}
+        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.4.jar</C>. Put it in the instance&apos;s{" "}
         <C>mods/</C> folder.
       </P>
 
@@ -109,7 +109,7 @@ function Installation() {
         title="build.gradle"
         code={`
 dependencies {
-    implementation files("libs/quill-ui-0.2.0-alpha.3.jar")
+    implementation files("libs/quill-ui-0.2.0-alpha.4.jar")
 }`}
       />
 
@@ -127,7 +127,7 @@ dependencies {
       </P>
       <CodeBlock
         code={`
-String version = QuillApi.version(); // "0.2.0-alpha.3" in a Fabric runtime
+String version = QuillApi.version(); // "0.2.0-alpha.4" in a Fabric runtime
 boolean level1 = QuillApi.supports(1);`}
       />
     </>
