@@ -119,7 +119,11 @@ export function McTargetIndicator({ className = "" }: { className?: string }) {
       <div className="mc-target-ring" />
       <div className="mc-target-badge">
         <span className="mc-target-icon" />
-        <span className="mc-target-chevron" />
+        <span className="mc-target-chevron" aria-hidden="true">
+          <svg viewBox="0 0 12 12">
+            <path d="M2 1.5 10.5 6 2 10.5 4.5 6Z" fill="#e0a93b" />
+          </svg>
+        </span>
         <span className="mc-target-distance">42 m</span>
       </div>
     </div>
