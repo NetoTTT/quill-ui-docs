@@ -415,6 +415,56 @@ registerShortcut(QuillShortcut.global(InputConstants.KEY_F1, this::toggleHelp));
         clears the current focus, which also lets a text field lose focus when you click outside it.
       </P>
 
+      <H2>Overlays and toasts</H2>
+      <P>
+        Menus, confirmation dialogs and notifications are screen-level overlays rather than child
+        widgets. <C>QuillScreen</C> renders them after the footer, routes input from newest to oldest
+        and prunes them once they close.
+      </P>
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">openOverlay(QuillOverlay)</C>, "Pushes an overlay and clears widget focus."],
+          [<C key="2">closeOverlay(QuillOverlay)</C>, "Calls close() and removes it."],
+          [<C key="3">closeOverlays()</C>, "Closes and removes every overlay, including pending modals."],
+          [<C key="4">showToast(Component)</C>, "Shows a 3.0 s toast and returns it."],
+          [<C key="5">showToast(Component, float)</C>, "Shows a toast with a custom lifetime in seconds."],
+        ]}
+      />
+      <CodeBlock
+        code={`
+addRenderableWidget(new QuillButton(
+        x, y, 96, 20,
+        Component.translatable("mymod.delete"),
+        QuillButton.Variant.DANGER,
+        () -> openOverlay(new QuillModal(
+                Component.translatable("mymod.delete.title"),
+                Component.translatable("mymod.delete.body"),
+                Component.translatable("gui.ok"),
+                Component.translatable("gui.cancel"),
+                this::deleteSelected,
+                () -> { },
+                theme
+        ))
+));
+
+// A toast never captures input.
+showToast(Component.translatable("mymod.saved"), 2.5F);`}
+      />
+      <P>
+        A consumed click or key stops the routing chain. A blocking overlay swallows the event without
+        handling it, so widgets, shortcuts and text fields below do not react. Passive overlays such as
+        toasts consume nothing and let input pass through.
+      </P>
+      <Callout kind="note">
+        <P>
+          Overlay classes and their dismissal rules are documented in{" "}
+          <DocLink to="components/overlays">Overlays</DocLink>. Use a{" "}
+          <DocLink to="components/dropdown">Dropdown</DocLink> instead of hand-building a popup for a
+          simple select.
+        </P>
+      </Callout>
+
       <H2>A complete screen</H2>
       <CodeBlock
         title="SettingsScreen.java"

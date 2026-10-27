@@ -8,12 +8,14 @@ import { CodeBlock } from "@/components/prose";
 import {
   McButton,
   McCard,
+  McDropdown,
   McInputs,
   McList,
   McMap,
   McTabs,
   McTargetIndicator,
   McTipButton,
+  McToast,
   McToggle,
   McTooltip,
 } from "@/components/mc";
@@ -109,6 +111,17 @@ const COMPONENTS: { name: string; desc: string; to: string; preview: React.React
     preview: <McInputs className="w-48" />,
   },
   {
+    name: "Dropdowns & overlays",
+    desc: "Selects, popup menus, modals and passive toasts on a screen overlay stack.",
+    to: "components/overlays",
+    preview: (
+      <div className="w-48 space-y-2">
+        <McDropdown label="Mode" value="Balanced" />
+        <McToast message="Settings saved" className="w-fit" />
+      </div>
+    ),
+  },
+  {
     name: "Scroll lists",
     desc: "Fixed-row lists with wheel scrolling, clipping and a passive scrollbar.",
     to: "components/scroll-list",
@@ -161,8 +174,14 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, cards, panels, inputs, scroll lists, tabs, toggles, maps and HUD indicators.",
+    body: "Themed buttons, cards, panels, inputs, dropdowns, scroll lists, tabs, toggles, maps and HUD indicators.",
     to: "components/overview",
+  },
+  {
+    icon: "layers",
+    title: "Screen overlays",
+    body: "Popup menus, confirmation modals and input-passive toasts on a managed overlay stack.",
+    to: "components/overlays",
   },
   {
     icon: "branch",
@@ -238,8 +257,8 @@ export function Home({ onSearch }: { onSearch: () => void }) {
               </h1>
               <p className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-muted">
                 Quill UI gives Fabric mods a shared visual language: theme tokens, layout, text, motion,
-                inputs, panels, cards, tabs, buttons, scroll lists, maps, HUD target indicators and a
-                clean backend action boundary.
+                inputs, dropdowns, overlays, panels, cards, tabs, buttons, scroll lists, maps, HUD target
+                indicators and a clean backend action boundary.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-on-primary shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-primary-hover">
@@ -325,7 +344,7 @@ public final class ExampleScreen extends QuillScreen {
                 All components <Icon name="arrow-right" size={14} />
               </a>
             </div>
-            <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
               {COMPONENTS.map((c) => (
                 <div key={c.name} className="flex flex-col bg-surface">
                   <div className="dot-grid flex min-h-36 flex-wrap items-center justify-center gap-3 border-b border-line bg-mist/50 p-5">{c.preview}</div>

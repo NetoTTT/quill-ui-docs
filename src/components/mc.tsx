@@ -148,6 +148,65 @@ export function McInputs({ className = "" }: { className?: string }) {
   );
 }
 
+export function McDropdown({
+  label,
+  value,
+  open,
+  className = "",
+}: {
+  label: string;
+  value?: string;
+  open?: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={cn("mc-dropdown-wrap", className)}>
+      <div className="mc-dropdown">
+        <span>{value ?? label}</span>
+        <span className="mc-dropdown-chevron" aria-hidden="true" />
+      </div>
+      {open && (
+        <div className="mc mc-dropdown-menu" role="listbox" aria-label={`${label} options`}>
+          {[value ?? label, "Compact", "Detailed"].map((item, i) => (
+            <div key={item} role="option" aria-selected={i === 0} className={cn("mc-dropdown-row", i === 0 && "is-selected")}>
+              {item}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function McModal({
+  title = "Discard changes?",
+  body = "This cannot be undone.",
+  className = "",
+}: {
+  title?: string;
+  body?: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("mc mc-modal", className)} role="dialog" aria-label={title}>
+      <div className="mc-modal-title">{title}</div>
+      <div className="mc-label-dim mt-2">{body}</div>
+      <div className="mt-5 flex justify-end gap-2">
+        <McButton className="min-w-0 px-3">Cancel</McButton>
+        <McButton primary className="min-w-0 px-3">Discard</McButton>
+      </div>
+    </div>
+  );
+}
+
+export function McToast({ message = "Settings saved", className = "" }: { message?: string; className?: string }) {
+  return (
+    <div className={cn("mc mc-toast", className)} role="status">
+      {message}
+    </div>
+  );
+}
+
 export function McTabs({ items, active = 0, className = "" }: { items: string[]; active?: number; className?: string }) {
   return (
     <div className={cn("mc-tabs", className)} role="tablist" aria-label="Example tabs">

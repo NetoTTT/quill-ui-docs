@@ -21,10 +21,11 @@ function Api() {
           [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
           [<C key="3">com.quillui.layout</C>, "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid"],
           [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips"],
-          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio"],
+          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
           [<C key="10">com.quillui.text</C>, "QuillText, QuillTextStyle (Align)"],
           [<C key="11">com.quillui.motion</C>, "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion"],
           [<C key="12">com.quillui.input</C>, "QuillSelectionStyle (Type, Context), QuillSelectionStyles"],
+          [<C key="14">com.quillui.overlay</C>, "QuillOverlay, QuillPopupMenu, QuillModal, QuillToast"],
           [<C key="6">com.quillui.map</C>, "QuillMap (Layer, InteractionMode, MouseAction, MouseBindings), QuillMapZone, QuillMapMarker"],
           [<C key="9">com.quillui.hud</C>, "QuillTargetIndicator (IconRenderer), QuillTargetIndicatorHud"],
           [<C key="13">com.quillui.i18n</C>, "QuillLanguage (LanguageOption)"],
@@ -62,10 +63,10 @@ public static boolean supports(int requiredLevel);`}
       </UL>
       <Callout kind="note">
         <P>
-          The current release is <C>0.2.0-alpha.5</C> with API level <C>2</C>. The package reorganisation
+          The current release is <C>0.2.0-alpha.6</C> with API level <C>2</C>. The package reorganisation
           and <C>QuillThemeData</C> landed together; screen layouts, shortcuts, gradients, contrast helpers,
-          click sounds and the map, HUD, motion, text, input and i18n packages are additive and keep the
-          level at <C>2</C>.
+          click sounds, motion, text, input, i18n, overlay and form-control additions are additive and keep
+          the level at <C>2</C>.
         </P>
       </Callout>
 

@@ -15,13 +15,13 @@ function Overview() {
         state itself.
       </P>
 
-      <Callout kind="tip" title="New in 0.2.0-alpha.5">
+      <Callout kind="tip" title="New in 0.2.0-alpha.6">
         <P>
-          Motion, text styles with gradient text, text fields, sliders, checkboxes/radios, selection
-          styles, internationalization and the HUD target indicator. See{" "}
-          <DocLink to="fundamentals/motion">Motion</DocLink>, <DocLink to="fundamentals/text">Text</DocLink>,{" "}
-          <DocLink to="components/text-field">Inputs</DocLink> and{" "}
-          <DocLink to="hud/target-indicator">HUD</DocLink>.
+          Screen overlays with <C>QuillPopupMenu</C>, <C>QuillModal</C> and <C>QuillToast</C>, plus the{" "}
+          <C>QuillDropdown</C> select control and <C>QuillRadioGroup</C> exclusivity helper. See{" "}
+          <DocLink to="components/overlays">Overlays</DocLink>,{" "}
+          <DocLink to="components/dropdown">Dropdowns</DocLink> and{" "}
+          <DocLink to="components/checkbox-radio">Checkboxes and Radios</DocLink>.
         </P>
       </Callout>
 
@@ -35,8 +35,9 @@ function Overview() {
           ["Drawing", "QuillRender, QuillGradient, QuillTooltips", <C key="r">com.quillui.render</C>],
           ["Text", "QuillText, QuillTextStyle", <C key="tx">com.quillui.text</C>],
           ["Motion", "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion", <C key="mo">com.quillui.motion</C>],
-          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio", <C key="w">com.quillui.widget</C>],
+          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
           ["Input styles", "QuillSelectionStyle, QuillSelectionStyles", <C key="in">com.quillui.input</C>],
+          ["Overlays", "QuillOverlay, QuillPopupMenu, QuillModal, QuillToast", <C key="o">com.quillui.overlay</C>],
           ["Map", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
           ["HUD", "QuillTargetIndicator, QuillTargetIndicatorHud", <C key="h">com.quillui.hud</C>],
           ["i18n", "QuillLanguage", <C key="i18n">com.quillui.i18n</C>],
@@ -56,7 +57,7 @@ function Overview() {
 
       <H2>Status</H2>
       <P>
-        The current release is <C>0.2.0-alpha.5</C> with binary API level <C>2</C>. The API is intentionally
+        The current release is <C>0.2.0-alpha.6</C> with binary API level <C>2</C>. The API is intentionally
         small and may evolve before <C>1.0.0</C>. See <DocLink to="reference/api">API reference</DocLink> and{" "}
         <DocLink to="reference/compatibility">Compatibility</DocLink>.
       </P>
@@ -102,7 +103,7 @@ function Installation() {
       <H2>Build the jar</H2>
       <CodeBlock lang="bash" status="none" code={`gradlew.bat build --console=plain --no-daemon`} />
       <P>
-        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.5.jar</C>. Put it in the instance&apos;s{" "}
+        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.6.jar</C>. Put it in the instance&apos;s{" "}
         <C>mods/</C> folder.
       </P>
 
@@ -116,7 +117,7 @@ function Installation() {
         title="build.gradle"
         code={`
 dependencies {
-    implementation files("libs/quill-ui-0.2.0-alpha.5.jar")
+    implementation files("libs/quill-ui-0.2.0-alpha.6.jar")
 }`}
       />
 
@@ -134,7 +135,7 @@ dependencies {
       </P>
       <CodeBlock
         code={`
-String version = QuillApi.version(); // "0.2.0-alpha.5" in a Fabric runtime
+String version = QuillApi.version(); // "0.2.0-alpha.6" in a Fabric runtime
 boolean level1 = QuillApi.supports(1);`}
       />
     </>

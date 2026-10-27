@@ -1,6 +1,8 @@
 import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, P, UL } from "@/components/prose";
 import { McButton, McCard, McList, McMap, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
 import { inputComponents } from "./inputs";
+import { dropdownComponents } from "./dropdown";
+import { overlayComponents } from "./overlays";
 import type { DocPage } from "../types";
 
 const PREVIEW_NOTE = (
@@ -17,7 +19,7 @@ function Overview() {
     <>
       <P>
         Quill UI ships a deliberately small widget set. Everything below is a real class in the widget,
-        HUD, render or input packages.
+        HUD, render, input or overlay packages.
       </P>
       {PREVIEW_NOTE}
       <H2>Component list</H2>
@@ -31,11 +33,15 @@ function Overview() {
           ["Slider", <C key="sl2">QuillSlider</C>, "Widget", <DocLink key="sl2l" to="components/slider">Sliders</DocLink>],
           ["Checkbox", <C key="cb">QuillCheckbox</C>, "Widget", <DocLink key="cbl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
           ["Radio", <C key="rd">QuillRadio</C>, "Widget", <DocLink key="rdl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
+          ["Radio group", <C key="rg">QuillRadioGroup</C>, "Controller", <DocLink key="rgl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
+          ["Dropdown", <C key="dd">QuillDropdown</C>, "Widget", <DocLink key="ddl" to="components/dropdown">Dropdowns</DocLink>],
           ["Selection style", <C key="ss">QuillSelectionStyle</C>, "Input style", <DocLink key="ssl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
           ["Scroll list", <C key="s">QuillScrollList&lt;T&gt;</C>, "Widget", <DocLink key="sl" to="components/scroll-list">Scroll lists</DocLink>],
           ["Tab bar", <C key="t">QuillTabBar</C>, "Helper", <DocLink key="tl" to="components/tabs">Tabs</DocLink>],
           ["Toggle", <C key="g">QuillToggle</C>, "Widget", <DocLink key="gl" to="components/toggle">Toggles</DocLink>],
           ["Map", <C key="m">QuillMap</C>, "Widget", <DocLink key="ml" to="components/map">Map</DocLink>],
+          ["Overlay", <C key="ov">QuillOverlay</C>, "Screen layer", <DocLink key="ovl" to="components/overlays">Overlays</DocLink>],
+          ["Popup / Modal / Toast", "QuillPopupMenu, QuillModal, QuillToast", "Overlay", <DocLink key="pml" to="components/overlays">Overlays</DocLink>],
           ["Target indicator", <C key="h">QuillTargetIndicator</C>, "HUD", <DocLink key="hl" to="hud/target-indicator">Target Indicator</DocLink>],
           ["Tooltip", <C key="p">QuillTooltips</C>, "Helper", <DocLink key="pl" to="components/tooltips">Tooltips</DocLink>],
         ]}
@@ -43,21 +49,27 @@ function Overview() {
 
       <H2>What is not provided</H2>
       <P>
-        There is no dropdown, menu, color picker or date/time control in the current API. A{" "}
+        There is no color picker, date/time control, tree view or table in the current API. A{" "}
         <C>QuillCard</C> is a drawing helper, not a layout container; use <C>QuillPanel</C> for a card
         with a vertical flow and a two-column action row, or <C>QuillColumn</C> / <C>QuillRow</C> for
-        custom layouts. Text fields, sliders, checkboxes and radios are available in this release.
+        custom layouts. Text fields, sliders, checkboxes, radios, radio groups, dropdowns, overlays and
+        toasts are available in this release.
       </P>
 
       <H2>Shared conventions</H2>
       <UL>
         <li>
           Most widgets accept an optional <C>QuillThemeData</C>. The input controls (
-          <C>QuillTextField</C>, <C>QuillSlider</C>, <C>QuillCheckbox</C>, <C>QuillRadio</C>) require a
-          theme argument; null falls back to <C>QuillThemeData.DEFAULT</C>.
+          <C>QuillTextField</C>, <C>QuillSlider</C>, <C>QuillCheckbox</C>, <C>QuillRadio</C>),{" "}
+          <C>QuillDropdown</C> and the overlay constructors require a theme argument; null falls back
+          to <C>QuillThemeData.DEFAULT</C>.
         </li>
         <li>Buttons, toggles, checkboxes and radios respond to Enter and Space when focused.</li>
         <li>Widgets draw their own hover, focus, selected and disabled states; no vanilla button texture is used.</li>
+        <li>
+          Menus, modals and notifications are screen overlays, not child widgets; see{" "}
+          <DocLink to="components/overlays">Overlays</DocLink>.
+        </li>
         <li>Callbacks only emit actions; the server owns state. See <DocLink to="guides/backend-actions">Backend actions</DocLink>.</li>
       </UL>
     </>
@@ -863,6 +875,7 @@ export const components: DocPage[] = [
     component: Panels,
   },
   ...inputComponents,
+  ...dropdownComponents,
   {
     slug: "scroll-list",
     title: "Scroll Lists",
@@ -887,6 +900,7 @@ export const components: DocPage[] = [
     description: "Interactive surface/underground world map with selection and overlays.",
     component: MapPage,
   },
+  ...overlayComponents,
   {
     slug: "tooltips",
     title: "Tooltips",

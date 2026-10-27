@@ -179,23 +179,77 @@ QuillRadio low = new QuillRadio(
 
       <H2>Radio</H2>
       <P>
-        Group exclusivity belongs to the caller: selecting one radio does not clear the others. Use a
-        small controller or a list of radios in your screen to keep exactly one selected.
+        A radio is an individual control. Use <C>QuillRadioGroup</C> (below) when you want the group to
+        own exclusivity and the optional/required policy, or manage selection yourself when the options
+        are not a simple list.
       </P>
       <DocTable
         head={["Member", "Effect"]}
         rows={[
           [<C key="1">QuillRadio(..., onSelect, theme)</C>, "Runnable onSelect runs only when the value becomes true."],
           [<C key="2">QuillRadio(..., onChange, theme)</C>, "Consumer&lt;Boolean&gt; receives selection and deselection."],
-          [<C key="3">deselectable(boolean)</C>, "Allows clicking a selected radio to clear it. Default false."],
-          [<C key="4">selected() / setSelected(boolean)</C>, "Reads or updates the value without calling the callback."],
-          [<C key="5">setStyle(...)</C>, "Changes only the indicator painting."],
+          [<C key="3">onChange(Consumer&lt;Boolean&gt;)</C>, "Replaces the callback; returns this radio."],
+          [<C key="4">deselectable(boolean)</C>, "Allows clicking a selected radio to clear it. Default false."],
+          [<C key="5">selected() / setSelected(boolean)</C>, "Reads or updates the value without calling the callback."],
+          [<C key="6">setStyle(...)</C>, "Changes only the indicator painting."],
         ]}
       />
       <P>
         A click or Enter/Space selects the radio. If it is already selected and not deselectable, the
         input is ignored. Radios do not play a click sound.
       </P>
+
+      <H2>Radio group</H2>
+      <P>
+        <C>QuillRadioGroup</C> is a small controller, not a widget. It enforces exclusivity, can require
+        a selection and exposes the selected option by index. Adding a radio replaces its{" "}
+        <C>onChange</C> callback with the group wiring.
+      </P>
+      <CodeBlock
+        code={`
+QuillRadio low = new QuillRadio(
+        x, y, width, 20,
+        Component.translatable("mymod.mode.low"),
+        false,
+        () -> { },
+        theme
+);
+QuillRadio high = new QuillRadio(
+        x, y + 22, width, 20,
+        Component.translatable("mymod.mode.high"),
+        false,
+        () -> { },
+        theme
+);
+
+QuillRadioGroup group = new QuillRadioGroup(false)
+        .onChange(index -> QuillCommandSink.get().execute("mymod mode " + index))
+        .add(low)
+        .add(high);
+
+group.select(0);
+group.required(true); // a selected option can no longer be cleared`}
+      />
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">new QuillRadioGroup([required])</C>, "Creates an empty group; required defaults to false."],
+          [<C key="2">add(QuillRadio)</C>, "Adds a radio once and points its callback at the group."],
+          [<C key="3">onChange(IntConsumer)</C>, "Called with the selected index; clear() reports -1."],
+          [<C key="4">required(boolean) / required()</C>, "Prevents clearing a selected radio; updates all members."],
+          [<C key="5">select(int) / select(QuillRadio)</C>, "Selects one member and clears the others."],
+          [<C key="6">selected() / selectedIndex()</C>, "Selected radio and its index, or null / -1."],
+          [<C key="7">clear()</C>, "Clears the group; returns false when required."],
+          [<C key="8">radios()</C>, "Immutable copy of the members."],
+        ]}
+      />
+      <Callout kind="note">
+        <P>
+          A required group does not auto-select an option when it is created; it only prevents clearing.
+          Non-required groups may start empty. Changing <C>required</C> updates <C>deselectable</C> on
+          every member, so a radio cannot be cleared behind the group&apos;s policy.
+        </P>
+      </Callout>
 
       <H2>Selection styles</H2>
       <P>
