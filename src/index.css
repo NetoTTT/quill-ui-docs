@@ -489,8 +489,8 @@
   width: 22px;
   height: 22px;
   transform: translate(-50%, -50%);
-  background: #cc101820;
-  border: 1px solid #48d7a0;
+  background: #cc10161e;
+  border: 1px solid #e0a93b;
 }
 .mc-target-icon {
   position: absolute;
@@ -499,7 +499,7 @@
   width: 8px;
   height: 8px;
   transform: translate(-50%, -50%) rotate(45deg);
-  background: #48d7a0;
+  background: #e0a93b;
 }
 .mc-target-chevron {
   position: absolute;
@@ -509,7 +509,7 @@
   height: 0;
   transform: translateX(-50%) rotate(45deg);
   border-right: 5px solid transparent;
-  border-bottom: 8px solid #48d7a0;
+  border-bottom: 8px solid #e0a93b;
   border-left: 5px solid transparent;
 }
 .mc-target-distance {
@@ -518,8 +518,8 @@
   left: 50%;
   transform: translateX(-50%);
   padding: 1px 4px;
-  background: #cc101820;
-  color: #48d7a0;
+  background: #cc10161e;
+  color: #e0a93b;
   white-space: nowrap;
   font: 600 10px/1.2 var(--font-mono);
 }

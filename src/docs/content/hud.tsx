@@ -12,25 +12,25 @@ function TargetIndicator() {
       </P>
       <P>
         It knows nothing about LaborCraft, claims, economy or{" "}
-        <C>WorldHighlightManager</C>. The consumer supplies the target, colour, optional icon and
+        <C>WorldHighlightManager</C>. The consumer supplies the target, optional theme/roles, icon and
         distance formatter.
       </P>
       <Example preview={<McTargetIndicator className="w-full max-w-md" />}>
         <CodeBlock
           title="TargetIndicator.java"
           code={`
-QuillTargetIndicator indicator = new QuillTargetIndicator(0xFF48D7A0)
-        .setTarget(new BlockPos(128, 64, -32))
-        .setColor(0xFF48D7A0)
-        .setIcon((graphics, x, y, size) -> graphics.item(stack, x, y))
-        .setDistanceFormatter(distance -> Component.literal(Math.round(distance) + " m"))
-        .setDistanceVisible(true)
-        .setChevronVisible(true)
-        .setMaxRange(96.0)
-        .setRing(0.30, 60.0, 180.0)
-        .setEdgeMargin(24)
-        .setBadgeSize(11)
-        .setShowWhenOnScreen(false);`}
+QuillTargetIndicator indicator =
+        new QuillTargetIndicator(theme, QuillThemeData.ColorRole.ACCENT)
+                .setTarget(new BlockPos(128, 64, -32))
+                .setIcon((graphics, x, y, size) -> graphics.item(stack, x, y))
+                .setDistanceFormatter(distance -> Component.literal(Math.round(distance) + " m"))
+                .setDistanceVisible(true)
+                .setChevronVisible(true)
+                .setMaxRange(96.0)
+                .setRing(0.30, 60.0, 180.0)
+                .setEdgeMargin(24)
+                .setBadgeSize(11)
+                .setShowWhenOnScreen(false);`}
         />
       </Example>
 
@@ -43,12 +43,14 @@ QuillTargetIndicator indicator = new QuillTargetIndicator(0xFF48D7A0)
         code={`
 import com.quillui.hud.QuillTargetIndicator;
 import com.quillui.hud.QuillTargetIndicatorHud;
+import com.quillui.theme.QuillThemeData;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.resources.Identifier;
 
 public final class TargetHudInit implements ClientModInitializer {
-    private final QuillTargetIndicator indicator = new QuillTargetIndicator(0xFF48D7A0);
+    private final QuillTargetIndicator indicator =
+            new QuillTargetIndicator(QuillThemeData.DEFAULT, QuillThemeData.ColorRole.ACCENT);
 
     @Override
     public void onInitializeClient() {
@@ -89,16 +91,58 @@ indicator.clearTarget();                         // hide the ring`}
         need to be updated every frame; it reads the current target when it renders.
       </P>
 
+      <H2>Theme roles</H2>
+      <P>
+        The default path is a <C>QuillThemeData</C> plus a <C>ColorRole</C>. The indicator resolves the
+        badge border, chevron and distance text from that role, and derives the badge/label background
+        from a background role.
+      </P>
+      <CodeBlock
+        code={`
+QuillTargetIndicator indicator =
+        new QuillTargetIndicator(theme, QuillThemeData.ColorRole.ACCENT);
+
+indicator.setColor(QuillThemeData.ColorRole.SUCCESS);
+indicator.setColor(theme, QuillThemeData.ColorRole.INFO);
+indicator.setBackgroundColor(QuillThemeData.ColorRole.SURFACE_HEADER);
+
+// Low-level ARGB overrides: one-off custom colours, not the default path.
+indicator.setColor(0xFF48D7A0);
+indicator.setBackgroundColor(0xCC101820);`}
+      />
+      <DocTable
+        head={["Constructor", "Result"]}
+        rows={[
+          [<C key="1">QuillTargetIndicator()</C>, "DEFAULT theme + ACCENT."],
+          [<C key="2">QuillTargetIndicator(theme)</C>, "Given theme + ACCENT."],
+          [<C key="3">QuillTargetIndicator(ColorRole)</C>, "DEFAULT theme + given role."],
+          [<C key="4">QuillTargetIndicator(theme, ColorRole)</C>, "Given theme + given role."],
+          [<C key="5">QuillTargetIndicator(int color)</C>, "Low-level custom ARGB override."],
+        ]}
+      />
+      <P>
+        Defaults: <C>ACCENT</C> for the accent, and <C>SURFACE_HEADER</C> with alpha <C>0xCC</C> for the
+        badge and label background (via <C>QuillColors.withAlpha</C>). A null theme falls back to{" "}
+        <C>QuillThemeData.DEFAULT</C>; a null role falls back to <C>ACCENT</C>; a null background role
+        falls back to <C>SURFACE_HEADER</C>.
+      </P>
+      <Callout kind="note">
+        <P>
+          Custom ARGB is an override, not the main path. <C>setColor(role)</C> clears the custom colour,{" "}
+          <C>setColor(theme, role)</C> sets the theme and role together, and{" "}
+          <C>setBackgroundColor(role)</C> clears the custom background. Use{" "}
+          <DocLink to="reference/colors">theme roles</DocLink> unless you need a one-off colour.
+        </P>
+      </Callout>
+
       <H2>Appearance</H2>
       <DocTable
         head={["Setter", "Effect"]}
         rows={[
-          [<C key="1">setColor(int)</C>, "Accent for the badge border, chevron and distance text (ARGB)."],
-          [<C key="2">setBackgroundColor(int)</C>, "Badge and label background. Default 0xCC101820."],
-          [<C key="3">setIcon(IconRenderer)</C>, "Draws a custom icon inside the badge; null restores the coloured square."],
-          [<C key="4">setDistanceFormatter(Function&lt;Double, Component&gt;)</C>, "Formats the distance. Default rounds to \"N m\"; null hides the label."],
-          [<C key="5">setDistanceVisible(boolean)</C>, "Shows or hides the distance label. Default true."],
-          [<C key="6">setChevronVisible(boolean)</C>, "Shows or hides the outward arrow. Default true."],
+          [<C key="1">setIcon(IconRenderer)</C>, "Draws a custom icon inside the badge; null restores the coloured square."],
+          [<C key="2">setDistanceFormatter(Function&lt;Double, Component&gt;)</C>, "Formats the distance. Default rounds to \"N m\"; null hides the label."],
+          [<C key="3">setDistanceVisible(boolean)</C>, "Shows or hides the distance label. Default true."],
+          [<C key="4">setChevronVisible(boolean)</C>, "Shows or hides the outward arrow. Default true."],
         ]}
       />
       <CodeBlock
@@ -109,13 +153,6 @@ indicator.setIcon((graphics, x, y, size) ->
 indicator.setDistanceFormatter(distance ->
         Component.translatable("mymod.distance.meters", Math.round(distance)));`}
       />
-      <Callout kind="note">
-        <P>
-          The indicator does not read <C>QuillThemeData</C>. Colours are supplied by the caller, so the
-          HUD can intentionally stay readable on top of the world. Use{" "}
-          <DocLink to="reference/colors">theme roles</DocLink> if you want it to follow the active theme.
-        </P>
-      </Callout>
 
       <H2>Geometry</H2>
       <DocTable
@@ -149,13 +186,17 @@ indicator.setDistanceFormatter(distance ->
       <DocTable
         head={["Member", "Notes"]}
         rows={[
-          [<C key="1">QuillTargetIndicator(int color)</C>, "Constructor. Colour is required; there is no no-arg constructor."],
+          [<C key="1">QuillTargetIndicator() / (theme) / (ColorRole) / (theme, ColorRole)</C>, "Theme-based constructors. Defaults: QuillThemeData.DEFAULT + ACCENT."],
+          [<C key="1b">QuillTargetIndicator(int color)</C>, "Low-level custom ARGB constructor."],
           [<C key="2">setTarget(Vec3) / setTarget(BlockPos)</C>, "Sets the highlighted position; BlockPos uses the block centre."],
           [<C key="3">clearTarget() / target()</C>, "Hides the ring / returns the current Vec3 or null."],
           [<C key="4">render(GuiGraphicsExtractor)</C>, "Draws the ring. Called by the HUD adapter."],
           [<C key="5">IconRenderer</C>, "Functional interface: render(graphics, x, y, size)."],
-          [<C key="6">new QuillTargetIndicatorHud(indicator)</C>, "Fabric HudElement adapter."],
-          [<C key="7">indicator()</C>, "Adapter accessor for the wrapped indicator."],
+          [<C key="6">setColor(ColorRole) / setColor(theme, ColorRole)</C>, "Theme-driven accent; clears any custom colour."],
+          [<C key="7">setColor(int)</C>, "Low-level ARGB override."],
+          [<C key="8">setBackgroundColor(ColorRole) / setBackgroundColor(int)</C>, "Role (default SURFACE_HEADER with 0xCC alpha) or low-level ARGB override."],
+          [<C key="9">new QuillTargetIndicatorHud(indicator)</C>, "Fabric HudElement adapter."],
+          [<C key="10">indicator()</C>, "Adapter accessor for the wrapped indicator."],
         ]}
       />
       <Callout kind="tip">
@@ -172,7 +213,7 @@ export const hud: DocPage[] = [
   {
     slug: "target-indicator",
     title: "Target Indicator",
-    description: "Generic off-screen target ring for the HUD, with a Fabric adapter.",
+    description: "Theme-aware off-screen target ring for the HUD, with a Fabric adapter.",
     component: TargetIndicator,
   },
 ];
