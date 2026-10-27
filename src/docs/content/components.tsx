@@ -1,5 +1,6 @@
 import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, P, UL } from "@/components/prose";
 import { McButton, McCard, McList, McMap, McTabs, McTipButton, McToggle, McTooltip } from "@/components/mc";
+import { inputComponents } from "./inputs";
 import type { DocPage } from "../types";
 
 const PREVIEW_NOTE = (
@@ -15,8 +16,8 @@ function Overview() {
   return (
     <>
       <P>
-        Quill UI ships a deliberately small widget set. Everything below is a real class in{" "}
-        <C>com.quillui.widget</C> or <C>com.quillui.render</C>.
+        Quill UI ships a deliberately small widget set. Everything below is a real class in the widget,
+        HUD, render or input packages.
       </P>
       {PREVIEW_NOTE}
       <H2>Component list</H2>
@@ -26,6 +27,11 @@ function Overview() {
           ["Button", <C key="b">QuillButton</C>, "Widget", <DocLink key="bl" to="components/button">Buttons</DocLink>],
           ["Card", <C key="c">QuillCard</C>, "Render helper", <DocLink key="cl" to="components/card">Cards</DocLink>],
           ["Panel", <C key="n">QuillPanel</C>, "Layout helper", <DocLink key="nl" to="components/panels">Panels</DocLink>],
+          ["Text field", <C key="tf">QuillTextField</C>, "Widget", <DocLink key="tfl" to="components/text-field">Text fields</DocLink>],
+          ["Slider", <C key="sl2">QuillSlider</C>, "Widget", <DocLink key="sl2l" to="components/slider">Sliders</DocLink>],
+          ["Checkbox", <C key="cb">QuillCheckbox</C>, "Widget", <DocLink key="cbl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
+          ["Radio", <C key="rd">QuillRadio</C>, "Widget", <DocLink key="rdl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
+          ["Selection style", <C key="ss">QuillSelectionStyle</C>, "Input style", <DocLink key="ssl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
           ["Scroll list", <C key="s">QuillScrollList&lt;T&gt;</C>, "Widget", <DocLink key="sl" to="components/scroll-list">Scroll lists</DocLink>],
           ["Tab bar", <C key="t">QuillTabBar</C>, "Helper", <DocLink key="tl" to="components/tabs">Tabs</DocLink>],
           ["Toggle", <C key="g">QuillToggle</C>, "Widget", <DocLink key="gl" to="components/toggle">Toggles</DocLink>],
@@ -37,19 +43,20 @@ function Overview() {
 
       <H2>What is not provided</H2>
       <P>
-        There is no text field, dropdown, menu or slider in the current API. A <C>QuillCard</C> is a drawing
-        helper, not a layout container; use <C>QuillPanel</C> for a card with a vertical flow and a
-        two-column action row, or <C>QuillColumn</C> / <C>QuillRow</C> for custom layouts. If you need an
-        input, use a vanilla widget themed to match or wait for a Quill UI release that adds it.
+        There is no dropdown, menu, color picker or date/time control in the current API. A{" "}
+        <C>QuillCard</C> is a drawing helper, not a layout container; use <C>QuillPanel</C> for a card
+        with a vertical flow and a two-column action row, or <C>QuillColumn</C> / <C>QuillRow</C> for
+        custom layouts. Text fields, sliders, checkboxes and radios are available in this release.
       </P>
 
       <H2>Shared conventions</H2>
       <UL>
         <li>
-          Every widget accepts an optional <C>QuillThemeData</C> in its constructor; omitting it uses{" "}
-          <C>QuillThemeData.DEFAULT</C>.
+          Most widgets accept an optional <C>QuillThemeData</C>. The input controls (
+          <C>QuillTextField</C>, <C>QuillSlider</C>, <C>QuillCheckbox</C>, <C>QuillRadio</C>) require a
+          theme argument; null falls back to <C>QuillThemeData.DEFAULT</C>.
         </li>
-        <li>Buttons and toggles respond to Enter and Space when focused.</li>
+        <li>Buttons, toggles, checkboxes and radios respond to Enter and Space when focused.</li>
         <li>Widgets draw their own hover, focus, selected and disabled states; no vanilla button texture is used.</li>
         <li>Callbacks only emit actions; the server owns state. See <DocLink to="guides/backend-actions">Backend actions</DocLink>.</li>
       </UL>
@@ -164,6 +171,12 @@ addRenderableWidget(save);`}
         <P>
           One primary action per screen. Use <C>SECONDARY</C> for Cancel and <C>GHOST</C> for the close
           button, as <C>QuillScreen</C> already does.
+        </P>
+      </Callout>
+      <Callout kind="note">
+        <P>
+          Hover transitions interpolate background, border and text over 0.12 s with <C>EASE_OUT</C>. With{" "}
+          <DocLink to="fundamentals/motion">reduced motion</DocLink> enabled, the change is instant.
         </P>
       </Callout>
     </>
@@ -403,6 +416,22 @@ map.setUndergroundScanDepth(48);  // clamp 4..256, default 48`}
         <C>map.layerLabel()</C> and uses the <C>quillui.map.layer.*</C> translation keys.
       </P>
 
+      <H2>Theme roles</H2>
+      <P>
+        Map chrome now follows the theme: <C>MAP_BG</C> fills the background and empty tiles,{" "}
+        <C>MAP_GRID</C> draws the chunk grid and <C>MAP_UNKNOWN</C> colours columns with no map colour.
+        Markers use <C>TITLE</C>; selection uses <C>SUCCESS</C>/<C>DANGER</C>; the HUD and labels use{" "}
+        <C>PANEL_BG</C>, <C>TEXT_SOFT</C> and <C>ACCENT</C>. Zones and markers still take explicit ARGB
+        colours.
+      </P>
+      <CodeBlock
+        code={`
+QuillThemeData mapTheme = QuillThemeData.DEFAULT
+        .with(QuillThemeData.ColorRole.MAP_BG, 0xFF09121A)
+        .with(QuillThemeData.ColorRole.MAP_GRID, 0x551E2936)
+        .with(QuillThemeData.ColorRole.MAP_UNKNOWN, 0xFF101820);`}
+      />
+
       <H2>Interaction</H2>
       <P>
         Mouse actions are configured per button with <C>MouseBindings</C>. The default is select with the
@@ -450,6 +479,10 @@ map.setRadiusLimitVisible(true);   // dashed MAX_RADIUS outline`}
           [<C key="6">setSelection(from, to) / clearSelection()</C>, "Programmatic selection; notifies the selection listener."],
         ]}
       />
+      <P>
+        The built-in selection HUD uses the <C>quillui.map.selection</C> key (
+        <C>%sx%s (%s blocks)</C>), so its dimensions are localizable.
+      </P>
       <CodeBlock
         code={`
 map.setSelectionListener(m -> updateHud(m)); // every change
@@ -558,7 +591,9 @@ public void removed() {
           <C>lastUpdateNanos()</C> exposes the last texture update duration for profiling.
         </li>
         <li>
-          <C>setCenter(...)</C>, <C>panBy(dx, dz)</C> and <C>resize(width, height)</C> mark the map dirty.
+          <C>setCenter(...)</C> and <C>panBy(dx, dz)</C> mark the map dirty.{" "}
+          <C>resize(width, height)</C> also recomputes pixels-per-block from <C>maxRadius</C> and marks it
+          dirty.
         </li>
       </UL>
     </>
@@ -739,6 +774,13 @@ addRenderableWidget(toggle);`}
         (custom if set, otherwise the vanilla down sound) and calls the consumer with the new value. The
         caller is responsible for applying the change through an action sink or payload.
       </P>
+      <Callout kind="note">
+        <P>
+          The knob animates over 0.14 s with <C>EASE_OUT</C>; <DocLink to="fundamentals/motion">reduced
+          motion</DocLink> makes it jump. <C>setValue</C> updates the value, and the animation starts on
+          the next render.
+        </P>
+      </Callout>
     </>
   );
 }
@@ -811,6 +853,7 @@ export const components: DocPage[] = [
     description: "Compose controls inside a card with a vertical flow and action rows.",
     component: Panels,
   },
+  ...inputComponents,
   {
     slug: "scroll-list",
     title: "Scroll Lists",

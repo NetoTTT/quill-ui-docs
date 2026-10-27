@@ -1,4 +1,4 @@
-import { C, Callout, CodeBlock, DocLink, Example, H2, H3, OL, P, UL } from "@/components/prose";
+import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, H3, OL, P, UL } from "@/components/prose";
 import { McCard, McButton, McMap, McToggle } from "@/components/mc";
 import type { DocPage } from "../types";
 
@@ -437,6 +437,119 @@ public ProfileScreen() {
   );
 }
 
+function Internationalization() {
+  return (
+    <>
+      <P>
+        Quill UI does not define a second translation system. It uses Minecraft&apos;s language files and{" "}
+        <C>Component.translatable</C>, so a language change applies consistently to Quill and to the host
+        mod. <C>QuillLanguage</C> is only a thin bridge for listing and switching the active language.
+      </P>
+
+      <H2>Language files</H2>
+      <CodeBlock
+        lang="text"
+        status="none"
+        title="resources"
+        code={`
+src/main/resources/assets/<modid>/lang/en_us.json
+src/main/resources/assets/<modid>/lang/pt_br.json`}
+      />
+      <CodeBlock
+        lang="json"
+        status="none"
+        title="en_us.json"
+        code={`
+{
+  "mymod.config.title": "Configuration",
+  "mymod.config.language": "Language",
+  "mymod.config.save": "Save"
+}`}
+      />
+      <CodeBlock
+        code={`
+QuillButton save = new QuillButton(
+        x, y, width, 20,
+        Component.translatable("mymod.config.save"),
+        QuillButton.Variant.PRIMARY,
+        action
+);`}
+      />
+      <P>
+        Keep the <C>Component</C> instead of calling <C>getString()</C>; the text resolves against the
+        current language when it is rendered. Avoid <C>Component.literal</C> for user-facing text.
+      </P>
+
+      <H2>QuillLanguage</H2>
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">text(key, args...)</C>, "Shortcut for Component.translatable(key, args)."],
+          [<C key="2">selectedCode()</C>, "Current locale code, for example en_us."],
+          [<C key="3">selected()</C>, "LanguageOption for the current language, or null."],
+          [<C key="4">available()</C>, "All languages provided by the client as LanguageOption records."],
+          [<C key="5">setSelected(code)</C>, "Changes language, saves the option and reloads resources."],
+          [<C key="6">setSelected(code, Supplier&lt;Screen&gt;)</C>, "Same, then rebuilds the supplied screen after the reload."],
+        ]}
+      />
+      <P>
+        <C>LanguageOption</C> exposes <C>code</C>, <C>name</C> (Component) and <C>bidirectional</C>.
+        <C>setSelected</C> returns false for an unknown or null code.
+      </P>
+      <CodeBlock
+        code={`
+QuillLanguage.LanguageOption current = QuillLanguage.selected();
+List<QuillLanguage.LanguageOption> languages = QuillLanguage.available();
+
+QuillLanguage.setSelected("pt_br");`}
+      />
+
+      <H2>Rebuild after reload</H2>
+      <P>
+        Language switching reloads resources. Screens built only from translatable components can stay
+        open. If a screen prebuilds literal labels or cached strings, reopen it after the reload:
+      </P>
+      <CodeBlock
+        code={`
+QuillLanguage.setSelected("pt_br", MyConfigScreen::new);`}
+      />
+      <P>
+        The two-argument overload sets the language, saves the option and calls the supplier on the client
+        thread after <C>reloadResourcePacks()</C> finishes.
+      </P>
+
+      <H2>Config-screen pattern</H2>
+      <CodeBlock
+        code={`
+List<QuillLanguage.LanguageOption> languages = QuillLanguage.available();
+QuillLanguage.LanguageOption current = QuillLanguage.selected();
+
+QuillButton language = new QuillButton(
+        x, y, width, 20,
+        Component.translatable("mymod.config.language")
+                .append(Component.literal(": " + current.name().getString())),
+        QuillButton.Variant.SECONDARY,
+        () -> {
+            int index = languages.indexOf(current);
+            QuillLanguage.LanguageOption next =
+                    languages.get((index + 1) % languages.size());
+            QuillLanguage.setSelected(next.code(), MyConfigScreen::new);
+        }
+);`}
+      />
+
+      <H2>Rules</H2>
+      <UL>
+        <li>Use <C>Component.translatable</C> for visible UI strings.</li>
+        <li>Namespace keys by mod, for example <C>mymod.config.title</C>.</li>
+        <li>Provide at least <C>en_us.json</C>; missing keys fall back to the key.</li>
+        <li>Language changes are global, not per screen or per mod.</li>
+        <li>Do not translate internal IDs, command names or network values.</li>
+      </UL>
+    </>
+  );
+}
+
 function BackendActions() {
   return (
     <>
@@ -553,6 +666,12 @@ export const guides: DocPage[] = [
     title: "Theming",
     description: "Build and apply a custom QuillThemeData palette.",
     component: Theming,
+  },
+  {
+    slug: "internationalization",
+    title: "Internationalization",
+    description: "Use Minecraft language files and switch the active language at runtime.",
+    component: Internationalization,
   },
   {
     slug: "backend-actions",

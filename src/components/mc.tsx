@@ -64,6 +64,90 @@ export function McToggle({ label, on, className = "" }: { label: string; on?: bo
   );
 }
 
+export function McTextField({
+  label,
+  placeholder,
+  value,
+  className = "",
+}: {
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  className?: string;
+}) {
+  return (
+    <label className={cn("mc-input-group", className)}>
+      {label && <span className="mc-input-label">{label}</span>}
+      <input className="mc-input" placeholder={placeholder} defaultValue={value} />
+    </label>
+  );
+}
+
+export function McSlider({
+  label,
+  value = 0.64,
+  className = "",
+}: {
+  label?: string;
+  value?: number;
+  className?: string;
+}) {
+  const pct = Math.max(0, Math.min(1, value)) * 100;
+  return (
+    <div className={cn("mc-slider", className)}>
+      {label && <span className="mc-slider-label">{label}</span>}
+      <div className="mc-slider-track">
+        <div className="mc-slider-fill" style={{ width: `${pct}%` }} />
+        <span className="mc-slider-knob" style={{ left: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+export function McCheckbox({
+  label,
+  checked,
+  className = "",
+}: {
+  label: string;
+  checked?: boolean;
+  className?: string;
+}) {
+  return (
+    <span className={cn("mc-check", checked && "is-on", className)}>
+      <span className="mc-check-box" aria-hidden="true" />
+      <span>{label}</span>
+    </span>
+  );
+}
+
+export function McRadio({
+  label,
+  selected,
+  className = "",
+}: {
+  label: string;
+  selected?: boolean;
+  className?: string;
+}) {
+  return (
+    <span className={cn("mc-check", selected && "is-on", className)}>
+      <span className="mc-check-circle" aria-hidden="true" />
+      <span>{label}</span>
+    </span>
+  );
+}
+
+export function McInputs({ className = "" }: { className?: string }) {
+  return (
+    <div className={cn("space-y-2", className)}>
+      <McTextField placeholder="Display name" />
+      <McSlider label="Volume" value={0.64} />
+      <McCheckbox label="Enabled" checked />
+    </div>
+  );
+}
+
 export function McTabs({ items, active = 0, className = "" }: { items: string[]; active?: number; className?: string }) {
   return (
     <div className={cn("mc-tabs", className)} role="tablist" aria-label="Example tabs">

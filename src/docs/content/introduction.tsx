@@ -17,8 +17,11 @@ function Overview() {
 
       <Callout kind="tip" title="New in 0.2.0-alpha.5">
         <P>
-          <C>QuillTargetIndicator</C> is a generic off-screen target ring for the HUD, with a direct Fabric{" "}
-          <C>HudElementRegistry</C> adapter. See <DocLink to="hud/target-indicator">Target Indicator</DocLink>.
+          Motion, text styles with gradient text, text fields, sliders, checkboxes/radios, selection
+          styles, internationalization and the HUD target indicator. See{" "}
+          <DocLink to="fundamentals/motion">Motion</DocLink>, <DocLink to="fundamentals/text">Text</DocLink>,{" "}
+          <DocLink to="components/text-field">Inputs</DocLink> and{" "}
+          <DocLink to="hud/target-indicator">HUD</DocLink>.
         </P>
       </Callout>
 
@@ -30,9 +33,13 @@ function Overview() {
           ["Colours", "QuillColors", <C key="c">com.quillui.theme</C>],
           ["Layout", "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid", <C key="l">com.quillui.layout</C>],
           ["Drawing", "QuillRender, QuillGradient, QuillTooltips", <C key="r">com.quillui.render</C>],
-          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle", <C key="w">com.quillui.widget</C>],
+          ["Text", "QuillText, QuillTextStyle", <C key="tx">com.quillui.text</C>],
+          ["Motion", "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion", <C key="mo">com.quillui.motion</C>],
+          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio", <C key="w">com.quillui.widget</C>],
+          ["Input styles", "QuillSelectionStyle, QuillSelectionStyles", <C key="in">com.quillui.input</C>],
           ["Map", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
           ["HUD", "QuillTargetIndicator, QuillTargetIndicatorHud", <C key="h">com.quillui.hud</C>],
+          ["i18n", "QuillLanguage", <C key="i18n">com.quillui.i18n</C>],
           ["Screen", "QuillScreen, QuillScreenLayout, QuillShortcut", <C key="s">com.quillui.screen</C>],
           ["Backend boundary", "QuillActionSink, QuillCommandSink", <C key="a">com.quillui.action</C>],
           ["Compatibility", "QuillApi", <C key="q">com.quillui.api</C>],

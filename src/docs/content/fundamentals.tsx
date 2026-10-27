@@ -1,4 +1,4 @@
-import { C, Callout, CodeBlock, DocLink, DocTable, H2, P, UL } from "@/components/prose";
+import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, P, UL } from "@/components/prose";
 import type { DocPage } from "../types";
 
 function CoreConcepts() {
@@ -377,13 +377,15 @@ protected QuillScreenLayout layout() {
       <H2>Keyboard shortcuts</H2>
       <P>
         Register shortcuts from the screen. A shortcut fires when the key matches and either{" "}
-        <C>allowWhenFocused</C> is true or no child widget currently has focus.
+        <C>allowWhenFocused</C> is true or no child widget currently has focus. If the focused widget
+        captures text input (for example <C>QuillTextField</C>), shortcuts are skipped entirely so typing
+        is not intercepted, even when <C>allowWhenFocused</C> is true.
       </P>
       <DocTable
         head={["Member", "Effect"]}
         rows={[
           [<C key="1">QuillShortcut.of(key, action)</C>, "Shortcut that only fires when no child widget has focus."],
-          [<C key="2">QuillShortcut.global(key, action)</C>, "Shortcut that also fires while a child widget has focus."],
+          [<C key="2">QuillShortcut.global(key, action)</C>, "Also fires while a child widget has focus, unless that widget captures text input."],
           [<C key="3">registerShortcut(int, Runnable)</C>, "Registers a non-global shortcut."],
           [<C key="4">registerShortcut(int, Runnable, boolean)</C>, "Registers a shortcut with an explicit allowWhenFocused flag."],
           [<C key="5">registerShortcut(QuillShortcut)</C>, "Registers a pre-built shortcut record."],
@@ -398,7 +400,7 @@ registerShortcut(InputConstants.KEY_R, this::reload);
 registerShortcut(
         InputConstants.KEY_F1,
         this::toggleHelp,
-        true // also fires while a child widget has focus
+        true // also fires while a child widget has focus (not text input)
 );
 
 // Equivalent to the call above:
@@ -409,7 +411,8 @@ registerShortcut(QuillShortcut.global(InputConstants.KEY_F1, this::toggleHelp));
       <P>
         <C>QuillScreen</C> forwards non-left drag and release events to the focused widget, or to the child
         under the cursor when nothing is focused. Widgets such as <C>QuillMap</C> use this for right- or
-        middle-drag panning; left-button routing stays vanilla.
+        middle-drag panning; left-button routing stays vanilla. A left click that no widget handles
+        clears the current focus, which also lets a text field lose focus when you click outside it.
       </P>
 
       <H2>A complete screen</H2>
@@ -493,6 +496,8 @@ function Drawing() {
         rows={[
           [<C key="p">panel(graphics, x, y, w, h[, theme])</C>, "Drop shadow at +4 px, panel fill and a 1 px border."],
           [<C key="b">border(graphics, x, y, w, h, color)</C>, "A 1 px rectangle outline in an explicit colour."],
+          [<C key="l">line(graphics, x0, y0, x1, y1, color)</C>, "A 1 px line using Bresenham stepping."],
+          [<C key="ci">circle(graphics, centerX, centerY, radius, color)</C>, "A filled pixel circle."],
           [<C key="x">text(graphics, font, text, x, y, color)</C>, "Text without the drop shadow; the default for Quill widgets."],
           [<C key="c">centeredText(graphics, font, text, centerX, y, color)</C>, "Horizontally centered, shadow-free text."],
           [<C key="g">gradient(graphics, x, y, w, h, gradient)</C>, "Two-colour vertical or horizontal gradient."],
@@ -513,7 +518,9 @@ function Drawing() {
       <P>
         <C>QuillGradient</C> is a record of <C>startColor</C>, <C>endColor</C> and a{" "}
         <C>Direction</C> (<C>VERTICAL</C> or <C>HORIZONTAL</C>). Vertical gradients use Minecraft&apos;s
-        fill gradient; horizontal gradients interpolate per column, including alpha.
+        fill gradient; horizontal gradients interpolate per column, including alpha.{" "}
+        <C>colorAt(progress)</C> returns the interpolated ARGB at any point, and{" "}
+        <C>QuillText.drawGradient</C> uses it for per-glyph gradient text.
       </P>
       <CodeBlock
         code={`
@@ -522,8 +529,14 @@ QuillGradient fade = QuillGradient.vertical(
         QuillColors.fromHex("#2B3440")
 );
 
+int middle = fade.colorAt(0.5F);
 QuillRender.gradient(graphics, x, y, width, 64, fade);`}
       />
+      <Callout kind="tip">
+        <P>
+          For wrapping, alignment and gradient text, use <DocLink to="fundamentals/text">Text and Styles</DocLink>.
+        </P>
+      </Callout>
 
       <H2>Drawing a section</H2>
       <CodeBlock
@@ -552,6 +565,211 @@ public void extractRenderState(
   );
 }
 
+function Text() {
+  return (
+    <>
+      <P>
+        <C>QuillText</C> adds layout and paint settings on top of Minecraft&apos;s bitmap font: colour,
+        shadow, alignment, wrapping, line limits and a gradient path. Normal text preserves the styles
+        of the source <C>Component</C>.
+      </P>
+      <Example
+        preview={
+          <div className="text-center">
+            <span className="bg-gradient-to-r from-[#8cc8f0] via-[#c5e5fa] to-[#e0a93b] bg-clip-text text-3xl font-semibold text-transparent">
+              Quill UI
+            </span>
+            <div className="mc-label-dim mt-2">Per-glyph gradient, one line</div>
+          </div>
+        }
+      >
+        <CodeBlock
+          code={`
+QuillTextStyle title = QuillTextStyle.of(theme, QuillThemeData.ColorRole.TITLE)
+        .withShadow(false)
+        .withAlign(QuillTextStyle.Align.CENTER)
+        .withMaxWidth(width)
+        .withMaxLines(2);
+
+int height = QuillText.draw(graphics, font, text, x, y, title);`}
+        />
+      </Example>
+
+      <H2>QuillTextStyle</H2>
+      <DocTable
+        head={["Field", "Meaning"]}
+        rows={[
+          [<C key="1">color</C>, "Fallback colour for normal text and the start hint for a gradient."],
+          [<C key="2">gradient</C>, "Optional QuillGradient; when set, the gradient path is used."],
+          [<C key="3">shadow</C>, "Vanilla drop shadow. Default false in QuillTextStyle.DEFAULT."],
+          [<C key="4">align</C>, "LEFT, CENTER or RIGHT within maxWidth."],
+          [<C key="5">maxWidth</C>, "Wrap/clip width. 0 means no wrapping."],
+          [<C key="6">maxLines</C>, "Line limit. 0 means unlimited."],
+          [<C key="7">ellipsis</C>, "Adds \"...\" when the gradient single-line text is clipped."],
+        ]}
+      />
+      <P>
+        Factories: <C>of(color)</C>, <C>of(theme, role)</C> and <C>gradient(gradient)</C>. Immutable
+        helpers: <C>withColor</C>, <C>withGradient</C>, <C>withShadow</C>, <C>withAlign</C>,{" "}
+        <C>withMaxWidth</C>, <C>withMaxLines</C> and <C>withEllipsis</C>.
+      </P>
+
+      <H2>Drawing</H2>
+      <CodeBlock
+        code={`
+// Normal text with wrapping and alignment.
+QuillText.draw(graphics, font, component, x, y, style);
+
+// Shortcut for a single colour.
+QuillText.draw(graphics, font, component, x, y, color);
+
+// Horizontal, per-glyph gradient.
+QuillGradient gradient = QuillGradient.horizontal(
+        theme.color(QuillThemeData.ColorRole.ACCENT),
+        theme.color(QuillThemeData.ColorRole.ACCENT_HOVER)
+);
+QuillText.drawGradient(graphics, font, component, x, y, gradient, style);`}
+      />
+      <P>
+        <C>draw</C> returns the drawn height (lines × font line height, or one line for gradient text).
+        Null or empty text returns 0; a null style falls back to <C>QuillTextStyle.DEFAULT</C>.
+      </P>
+
+      <H2>Gradient limitations</H2>
+      <UL>
+        <li>The gradient path is a single horizontal line, interpolated per glyph.</li>
+        <li>It uses the resolved string, so component spans/styles are not preserved on that path.</li>
+        <li>Multi-line and vertical gradient text are not approximated in this release.</li>
+        <li>
+          Ellipsis is applied to the clipped gradient line. Wrapped normal text is limited by{" "}
+          <C>maxLines</C> but does not receive an ellipsis in this release.
+        </li>
+      </UL>
+      <Callout kind="tip">
+        <P>
+          For solid colour and component styles, use <C>QuillRender.text</C> or the normal{" "}
+          <C>QuillText.draw</C> path. Use <DocLink to="fundamentals/drawing">Drawing Helpers</DocLink> for
+          rectangles and gradients, and <DocLink to="reference/colors">Colour reference</DocLink> for the
+          roles.
+        </P>
+      </Callout>
+    </>
+  );
+}
+
+function Motion() {
+  return (
+    <>
+      <P>
+        The motion package is deliberately small: a frame-delta ticker, one time-based animation, easing
+        curves and transition helpers. Widgets own their animation state; screens pass the frame delta.
+      </P>
+      <CodeBlock
+        code={`
+private final QuillTicker ticker = new QuillTicker();
+private final QuillAnimation fade = new QuillAnimation(0.18F)
+        .setCurve(QuillCurves.EASE_OUT)
+        .play(0.0F, 1.0F);
+
+@Override
+public void extractRenderState(
+        GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta
+) {
+    fade.update(ticker.tick());       // once per rendered frame
+    float progress = fade.value();
+
+    int color = QuillTransition.withOpacity(
+            theme.color(QuillThemeData.ColorRole.ACCENT), progress
+    );
+    int offsetX = QuillTransition.slideX(progress, 24, true);
+    // draw using color/offsetX...
+}`}
+      />
+
+      <H2>QuillTicker</H2>
+      <P>
+        Converts wall-clock time between frames into a capped delta in seconds (maximum 0.1 s). Call{" "}
+        <C>tick()</C> once per rendered frame; call <C>reset()</C> when the owning screen is reopened.
+      </P>
+
+      <H2>QuillAnimation</H2>
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">new QuillAnimation(durationSeconds)</C>, "Creates a stopped animation."],
+          [<C key="2">play(from, to) / playTo(target)</C>, "Starts from an explicit value or the current value."],
+          [<C key="3">update(deltaSeconds)</C>, "Advances the animation; non-running animations ignore it."],
+          [<C key="4">value() / progress()</C>, "Eased value / linear progress in 0..1."],
+          [<C key="5">stop() / jumpTo(value) / reset()</C>, "Stops, snaps, or rewinds to 0 without running."],
+          [<C key="6">setDuration / setCurve / loop</C>, "Changes duration, easing or looping."],
+          [<C key="7">running() / finished()</C>, "State checks."],
+        ]}
+      />
+      <P>
+        The default curve is <C>EASE_IN_OUT</C>. With looping enabled, elapsed time wraps at the duration;
+        without it, the animation stops at the target. A zero duration finishes immediately at{" "}
+        <C>to</C>.
+      </P>
+
+      <H2>Curves</H2>
+      <UL>
+        <li>
+          <C>QuillCurves.LINEAR</C>, <C>EASE_IN</C>, <C>EASE_OUT</C>, <C>EASE_IN_OUT</C> and{" "}
+          <C>SMOOTHSTEP</C>.
+        </li>
+        <li>
+          <C>QuillCurves.steps(n)</C> quantises progress into <C>n</C> steps.
+        </li>
+        <li>
+          <C>QuillCurve</C> is a functional interface: <C>transform(progress)</C>.
+        </li>
+      </UL>
+
+      <H2>Transition helpers</H2>
+      <DocTable
+        head={["Helper", "Result"]}
+        rows={[
+          [<C key="1">opacity(progress) / fadeIn / fadeOut</C>, "Clamped opacity values."],
+          [<C key="2">withOpacity(color, progress)</C>, "ARGB colour with animated alpha."],
+          [<C key="3">slideX(progress, distance, fromRight)</C>, "Horizontal offset for a slide-in."],
+          [<C key="4">slideY(progress, distance, fromBottom)</C>, "Vertical offset for a slide-in."],
+          [<C key="5">scale(progress, from, to)</C>, "Interpolated scale value."],
+        ]}
+      />
+      <P>
+        Pass a value already eased by <C>QuillAnimation</C>; the helpers only clamp and interpolate.
+      </P>
+
+      <H2>Reduced motion</H2>
+      <P>
+        Minecraft does not expose a portable reduced-motion flag, so Quill has an explicit global switch.
+        Bind it to your accessibility/config screen:
+      </P>
+      <CodeBlock
+        code={`
+QuillMotion.setReducedMotion(true);
+
+float duration = QuillMotion.duration(0.18F);          // 0
+float shortForm = QuillMotion.duration(0.18F, 0.05F);  // 0.05
+
+boolean reduced = QuillMotion.reducedMotion();`}
+      />
+      <P>
+        <C>QuillAnimation</C> uses this switch: when reduced motion is on, its effective duration is zero
+        and the value jumps to the target. <C>QuillButton</C> and <C>QuillToggle</C> use the motion system
+        for their hover and knob animations, so they also become instant.
+      </P>
+      <Callout kind="note">
+        <P>
+          This is not a full animation controller: there is no vsync, page/hero transition, physics
+          simulation or implicit widget animation API. Use <C>QuillTicker</C> + <C>QuillAnimation</C> in
+          the render pass and keep state in the owning screen or widget.
+        </P>
+      </Callout>
+    </>
+  );
+}
+
 export const fundamentals: DocPage[] = [
   {
     slug: "core-concepts",
@@ -570,6 +788,18 @@ export const fundamentals: DocPage[] = [
     title: "Layout Primitives",
     description: "Rectangles, insets, columns, rows and grids.",
     component: Layout,
+  },
+  {
+    slug: "text",
+    title: "Text and Styles",
+    description: "QuillText, wrapping, alignment and gradient text.",
+    component: Text,
+  },
+  {
+    slug: "motion",
+    title: "Motion",
+    description: "Tickers, animations, curves, transitions and reduced motion.",
+    component: Motion,
   },
   {
     slug: "screen",

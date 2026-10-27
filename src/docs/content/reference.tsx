@@ -21,9 +21,13 @@ function Api() {
           [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
           [<C key="3">com.quillui.layout</C>, "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid"],
           [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips"],
-          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle"],
+          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio"],
+          [<C key="10">com.quillui.text</C>, "QuillText, QuillTextStyle (Align)"],
+          [<C key="11">com.quillui.motion</C>, "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion"],
+          [<C key="12">com.quillui.input</C>, "QuillSelectionStyle (Type, Context), QuillSelectionStyles"],
           [<C key="6">com.quillui.map</C>, "QuillMap (Layer, InteractionMode, MouseAction, MouseBindings), QuillMapZone, QuillMapMarker"],
           [<C key="9">com.quillui.hud</C>, "QuillTargetIndicator (IconRenderer), QuillTargetIndicatorHud"],
+          [<C key="13">com.quillui.i18n</C>, "QuillLanguage (LanguageOption)"],
           [<C key="7">com.quillui.screen</C>, "QuillScreen, QuillScreenLayout, QuillShortcut"],
           [<C key="8">com.quillui.action</C>, "QuillActionSink, QuillCommandSink"],
         ]}
@@ -60,8 +64,8 @@ public static boolean supports(int requiredLevel);`}
         <P>
           The current release is <C>0.2.0-alpha.5</C> with API level <C>2</C>. The package reorganisation
           and <C>QuillThemeData</C> landed together; screen layouts, shortcuts, gradients, contrast helpers,
-          configurable click sounds and the <C>com.quillui.map</C> / <C>com.quillui.hud</C> packages are
-          additive and keep the level at <C>2</C>.
+          click sounds and the map, HUD, motion, text, input and i18n packages are additive and keep the
+          level at <C>2</C>.
         </P>
       </Callout>
 
@@ -190,6 +194,9 @@ function Colors() {
           [<C key="29">SURFACE_HEADER</C>, "#FF10161E", "Card top highlight."],
           [<C key="30">CHIP_BG</C>, "#FF1B242E", "Tab strip background."],
           [<C key="31">CHIP_BORDER</C>, "#FF33404E", "Tab strip border."],
+          [<C key="32">MAP_BG</C>, "#FF0B1118", "Map background and empty tiles."],
+          [<C key="33">MAP_GRID</C>, "#661E2936", "Map chunk grid overlay."],
+          [<C key="34">MAP_UNKNOWN</C>, "#FF18202A", "Map columns with no map colour."],
         ]}
       />
 
@@ -222,6 +229,7 @@ function Colors() {
 QuillColors.rgb(224, 169, 59);        // 0xFFE0A93B
 QuillColors.argb(128, 224, 169, 59);  // 0x80E0A93B
 QuillColors.fromHex("#8CC8F0");       // accepts #RGB, #RRGGBB, #AARRGGBB, 0x...
+QuillColors.lerp(start, end, 0.5F);   // interpolates ARGB channels
 QuillColors.withAlpha(color, 0.5F);
 QuillColors.alpha(color);             // 0..255
 QuillColors.red(color);
