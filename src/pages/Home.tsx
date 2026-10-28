@@ -72,7 +72,7 @@ function HeroScene() {
 
 const QUICK_STEPS = [
   { t: "Install the jar", d: "Minecraft 26.3, Fabric Loader 0.19.5+, Fabric API and Java 25.", to: "introduction/installation" },
-  { t: "Extend QuillScreen", d: "Build the content in buildContent() with real widgets.", to: "introduction/quick-start" },
+  { t: "Extend QuillScreen", d: "Build content from contentBounds() with real widgets.", to: "introduction/quick-start" },
   { t: "Send actions", d: "Route every change through an action sink, never client state.", to: "guides/backend-actions" },
 ];
 
@@ -122,9 +122,9 @@ const COMPONENTS: { name: string; desc: string; to: string; preview: React.React
     ),
   },
   {
-    name: "Scroll lists",
-    desc: "Fixed-row lists with wheel scrolling, clipping and a passive scrollbar.",
-    to: "components/scroll-list",
+    name: "Scrolling",
+    desc: "Fixed-row lists plus clipped custom content, draggable bars and edge hints.",
+    to: "components/scroll-view",
     preview: <McList className="w-40" items={["General", "Controls", "Audio"]} />,
   },
   {
@@ -168,13 +168,19 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "layers",
     title: "Layout primitives",
-    body: "Rects, insets, columns, rows and grids that keep screens on the 4 px grid.",
+    body: "Flex, wrap, stack, breakpoints and constraints on a consistent 4 px grid.",
     to: "fundamentals/layout",
+  },
+  {
+    icon: "layers",
+    title: "Measured layout",
+    body: "Box constraints plus measure/arrange nodes for content-aware, responsive screens.",
+    to: "fundamentals/layout-engine",
   },
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, cards, panels, inputs, dropdowns, scroll lists, tabs, toggles, maps and HUD indicators.",
+    body: "Themed buttons, cards, panels, inputs, dropdowns, scrolling, tabs, toggles, maps and HUD indicators.",
     to: "components/overview",
   },
   {
@@ -256,9 +262,9 @@ export function Home({ onSearch }: { onSearch: () => void }) {
                 Build consistent <span className="whitespace-nowrap">Minecraft</span> interfaces.
               </h1>
               <p className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-muted">
-                Quill UI gives Fabric mods a shared visual language: theme tokens, layout, text, motion,
-                inputs, dropdowns, overlays, panels, cards, tabs, buttons, scroll lists, maps, HUD target
-                indicators and a clean backend action boundary.
+                Quill UI gives Fabric mods a shared visual language: theme tokens, responsive layout, text,
+                motion, inputs, dropdowns, overlays, scrolling, panels, cards, tabs, buttons, maps, HUD
+                target indicators and a clean backend action boundary.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-on-primary shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-primary-hover">
@@ -310,10 +316,9 @@ public final class ExampleScreen extends QuillScreen {
 
     @Override
     protected void buildContent() {
+        QuillRect content = contentBounds();
         QuillColumn column = new QuillColumn(
-                panelX + QuillSpacing.SPACE_4,
-                panelY + 60,
-                panelWidth() - QuillSpacing.SPACE_4 * 2,
+                content.x(), content.y(), content.width(),
                 QuillSpacing.SPACE_2
         );
 

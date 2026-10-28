@@ -1,4 +1,5 @@
 import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, P, UL } from "@/components/prose";
+import { layoutEngine } from "./layout-engine";
 import type { DocPage } from "../types";
 
 function CoreConcepts() {
@@ -247,13 +248,36 @@ function Layout() {
     <>
       <P>
         Layout primitives replace repeated magic coordinates with rectangles. They are pure Java and do not
-        need a live screen, which makes them easy to test.
+        need a live screen, which makes them easy to test. The measured layout engine is covered separately
+        in <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink>.
+      </P>
+
+      <H2>Screen panel</H2>
+      <P>
+        <C>QuillScreen</C> treats the width and height passed to its constructor as a preferred size. On
+        every <C>init()</C>, including window resizes, the panel is clamped to the viewport minus{" "}
+        <C>screenMargin()</C> (16 px by default) and centered. Read <C>panelWidth()</C> and{" "}
+        <C>panelHeight()</C> inside <C>buildContent()</C> instead of keeping your own constants, so content
+        reflows on small windows.
+      </P>
+      <CodeBlock
+        code={`
+QuillRect content = contentBounds(); // header to footer, default inset
+QuillRect narrow = contentBounds(16); // custom horizontal inset
+QuillRect withActions = contentBounds(24, 64); // reserve space for fixed actions`}
+      />
+      <P>
+        <C>contentTop()</C> starts 18 px below the real header. <C>contentBottom()</C> sits above the
+        footer. With no subtitle, the header collapses from 48 px to about 34 px through{" "}
+        <C>QuillScreenLayout.titleOnlyHeaderHeight()</C>.
       </P>
 
       <H2>QuillRect</H2>
       <P>
         <C>QuillRect(x, y, width, height)</C> is an immutable record with <C>right()</C>, <C>bottom()</C>,{" "}
-        <C>contains(mouseX, mouseY)</C>, <C>inset(insets)</C> and <C>offset(dx, dy)</C>.
+        <C>centerX()</C>, <C>centerY()</C>, <C>contains(mouseX, mouseY)</C>, <C>inset(insets)</C>,{" "}
+        <C>offset(dx, dy)</C>, <C>intersects(other)</C> and <C>intersection(other)</C>. Intersection
+        returns a zero-sized rectangle when the two do not overlap.
       </P>
 
       <H2>QuillInsets</H2>
@@ -292,6 +316,107 @@ QuillRect b = grid.cell(1); // column 1, row 0
 QuillRect c = grid.cell(2); // column 0, row 1`}
       />
 
+      <H2>QuillFlex</H2>
+      <P>
+        One-dimensional flex layout for a row with a fixed control and a flexible filler. Fixed items keep
+        their basis; flexible items share the remaining space by weight. If fixed items overflow, positive
+        bases shrink proportionally so the layout stays inside the bounds.
+      </P>
+      <CodeBlock
+        code={`
+List<QuillRect> slots = QuillFlex.row(content, QuillSpacing.SPACE_2)
+        .add(120)          // fixed width
+        .addFlexible(1)    // equal share
+        .addFlexible(2)    // twice the share
+        .layout();
+
+QuillRect toolbar = QuillFlex.column(content, QuillSpacing.SPACE_1)
+        .add(20)
+        .addFlexible(1)
+        .layout().get(1);`}
+      />
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">row(bounds, gap) / column(bounds, gap)</C>, "Creates the flex container on either axis."],
+          [<C key="2">add(basis)</C>, "Fixed main-axis size."],
+          [<C key="3">addFlexible(weight)</C>, "Zero basis plus a share of the free space."],
+          [<C key="4">add(basis, weight, constraints)</C>, "Fixed preference with a weight and per-item bounds."],
+          [<C key="5">layout()</C>, "Returns immutable rectangles in item order."],
+        ]}
+      />
+
+      <H2>QuillWrap</H2>
+      <P>
+        Wraps equal-sized items into rows inside fixed bounds. The item width is clamped to the available
+        width; columns are derived from the bounds and gap.
+      </P>
+      <CodeBlock
+        code={`
+QuillWrap wrap = new QuillWrap(content, 180, 64, QuillSpacing.SPACE_3);
+QuillRect first = wrap.cell(0);
+int height = wrap.contentHeight(itemCount);`}
+      />
+      <P>
+        <C>columns()</C>, <C>rows(count)</C>, <C>cell(index)</C> and <C>contentHeight(count)</C> are
+        available for virtualised or custom-drawn grids.
+      </P>
+
+      <H2>QuillStack and QuillAlign</H2>
+      <P>
+        <C>QuillStack</C> places a child rectangle inside a parent. It clamps the child to the parent and
+        uses <C>QuillAlign.START</C>, <C>CENTER</C> or <C>END</C> on each axis.
+      </P>
+      <CodeBlock
+        code={`
+QuillRect dialog = new QuillStack(content).center(360, 190);
+QuillRect footer = new QuillStack(content).place(
+        220, 20, QuillAlign.END, QuillAlign.END
+);
+QuillRect padded = new QuillStack(content).fill(QuillInsets.all(12));`}
+      />
+
+      <H2>QuillConstraints</H2>
+      <P>
+        Applies minimum and maximum width/height to a rectangle. The constructor rejects negative minimums
+        and maximums smaller than the minimums. <C>QuillFlex.add(basis, weight, constraints)</C> accepts the
+        same object per item.
+      </P>
+      <CodeBlock
+        code={`
+QuillConstraints limits = QuillConstraints.of(160, 40, 420, 120);
+int width = limits.clampWidth(candidate.width());
+QuillRect clamped = limits.clamp(candidate);
+
+QuillConstraints none = QuillConstraints.none();`}
+      />
+
+      <H2>Breakpoints</H2>
+      <P>
+        <C>QuillBreakpoints</C> names three viewport classes and provides a column helper. The thresholds
+        are <C>480</C> for <C>MEDIUM</C> and <C>840</C> for <C>EXPANDED</C>; the column calculation is
+        independent of the names.
+      </P>
+      <CodeBlock
+        code={`
+QuillBreakpoints.Breakpoint size = QuillBreakpoints.of(viewportWidth);
+
+int columns = QuillBreakpoints.columns(contentWidth, 180, 4, gap);
+QuillGrid grid = new QuillGrid(
+        x, y, contentWidth, columns, gap, rowHeight
+);
+if (size == QuillBreakpoints.Breakpoint.COMPACT) {
+    // stack controls instead of using columns
+}`}
+      />
+      <Callout kind="note">
+        <P>
+          These helpers return plain <C>QuillRect</C> values and do not measure content. Use the{" "}
+          <DocLink to="fundamentals/layout-engine">layout engine</DocLink> when children must size
+          themselves from constraints, such as wrapped text or nested flexible rows.
+        </P>
+      </Callout>
+
       <H2>Composition</H2>
       <P>
         Prefer a few named regions per screen. Cards, buttons and lists should all be positioned from the
@@ -299,9 +424,16 @@ QuillRect c = grid.cell(2); // column 0, row 1`}
       </P>
       <CodeBlock
         code={`
-int contentY = panelY + 60;
-QuillGrid fields = new QuillGrid(x, contentY, width, 2, QuillSpacing.SPACE_3, 22);
-QuillRect actions = new QuillRect(x, panelY + panelHeight() - 40, width, 20);`}
+QuillRect content = contentBounds(24, 64); // leave room for an action row
+QuillGrid fields = new QuillGrid(
+        content.x(), content.y(), content.width(),
+        2, QuillSpacing.SPACE_3, 22
+);
+QuillRect actions = new QuillRect(
+        content.x(),
+        content.bottom() + QuillSpacing.SPACE_3,
+        content.width(), 20
+);`}
       />
       <Callout kind="tip">
         <P>
@@ -325,25 +457,34 @@ function Screen() {
       <DocTable
         head={["Member", "Purpose"]}
         rows={[
-          [<C key="a">QuillScreen(title, width, height)</C>, "Sets the window title and the fixed panel size; uses QuillThemeData.DEFAULT."],
+          [<C key="a">QuillScreen(title, width, height)</C>, "Preferred panel size and window title; uses QuillThemeData.DEFAULT."],
           [<C key="h">QuillScreen(title, width, height, theme)</C>, "Same, with a custom QuillThemeData for the whole shell."],
           [<C key="j">QuillScreen(title, width, height, theme, layout)</C>, "Full constructor: custom theme and a QuillScreenLayout."],
           [<C key="b">buildContent()</C>, "Abstract. Called from init(); register widgets here."],
           [<C key="c">subtitle()</C>, "Optional second header line."],
           [<C key="d">footer()</C>, "Optional centered footer; a divider is drawn automatically when non-blank."],
-          [<C key="e">panelX / panelY</C>, "Protected content origin, recalculated on resize."],
-          [<C key="f">panelWidth() / panelHeight()</C>, "Panel dimensions."],
+          [<C key="e">panelX / panelY</C>, "Current panel origin, recomputed on resize."],
+          [<C key="f">panelWidth() / panelHeight()</C>, "Current panel size after viewport clamping."],
+          [<C key="m">screenMargin()</C>, "Gap kept around the panel; 16 px by default."],
+          [<C key="n">contentTop() / contentBottom()</C>, "Content edges derived from the real header and footer."],
+          [<C key="q">contentBounds([hInset[, bottomInset]])</C>, "Content rectangle between header and footer."],
+          [<C key="r">contentInset() / footerHeight() / hasSubtitle()</C>, "Shell measurements; override contentInset() to change the default 24 px inset."],
           [<C key="i">layout() / headerHeight()</C>, "Override layout() to move the header, title, subtitle or close button."],
           [<C key="k">registerShortcut(...)</C>, "Registers a keyboard shortcut; see below."],
           [<C key="g">closeButton(action)</C>, "Builds the header close button; you register it."],
         ]}
       />
       <P>
-        The default layout uses a 48 px header, the title at <C>+22,+14</C>, the subtitle at{" "}
-        <C>+22,+29</C> and a 20×20 close button inset 10 px from the right and 8 px from the top. A 3 px
-        accent bar is drawn to the left of the title. The screen fills <C>SCREEN_BG</C> first when that role
-        is not fully transparent, then draws the panel. Every colour and measurement comes from the theme
-        and layout passed to the constructor.
+        The constructor size is a <strong>preferred</strong> size. On every <C>init()</C> the panel is
+        clamped to the viewport minus <C>screenMargin()</C> and centered, so small windows never cut off the
+        shell. The header is 48 px with a subtitle and about 34 px without one. The title sits at <C>+22,+14</C>,
+        the subtitle at <C>+22,+29</C>, and the close button is 20x20 at 10 px from the right and 8 px from
+        the top. The accent bar scales with the collapsed header and stays inside it.
+      </P>
+      <P>
+        Content starts at <C>contentTop()</C>, 18 px below the real header. <C>contentBounds()</C> applies{" "}
+        <C>contentInset()</C> horizontally and reserves the footer plus 12 px at the bottom. Use{" "}
+        <C>contentBounds(24, 64)</C> when a fixed action row needs its own space.
       </P>
 
       <H2>Custom layout</H2>
@@ -371,8 +512,18 @@ private static final QuillScreenLayout COMPACT =
 @Override
 protected QuillScreenLayout layout() {
     return COMPACT;
+}
+
+@Override
+protected int screenMargin() {
+    return 8; // keep the panel closer to the edge
 }`}
       />
+      <P>
+        <C>QuillScreenLayout.titleOnlyHeaderHeight()</C> derives the collapsed header from{" "}
+        <C>titleInsetY</C> and <C>headerHeight</C>; it is used automatically when <C>subtitle()</C> is
+        blank. Override <C>headerHeight()</C> only when the derived value is not what you want.
+      </P>
 
       <H2>Keyboard shortcuts</H2>
       <P>
@@ -409,10 +560,11 @@ registerShortcut(QuillShortcut.global(InputConstants.KEY_F1, this::toggleHelp));
 
       <H2>Mouse forwarding</H2>
       <P>
-        <C>QuillScreen</C> forwards non-left drag and release events to the focused widget, or to the child
-        under the cursor when nothing is focused. Widgets such as <C>QuillMap</C> use this for right- or
-        middle-drag panning; left-button routing stays vanilla. A left click that no widget handles
-        clears the current focus, which also lets a text field lose focus when you click outside it.
+        <C>QuillScreen</C> forwards drag and release events to the focused widget, or to the child under
+        the cursor when nothing is focused. This is how <C>QuillMap</C> pans with the right or middle
+        button and how <C>QuillScrollView</C>, <C>QuillScrollBar</C> and <C>QuillScrollList</C> keep
+        dragging their thumb after the pointer leaves it. A click that no widget handles clears the
+        current focus, which also lets a text field lose focus when you click outside it.
       </P>
 
       <H2>Overlays and toasts</H2>
@@ -486,9 +638,10 @@ public final class SettingsScreen extends QuillScreen {
 
     @Override
     protected void buildContent() {
-        int x = panelX + QuillSpacing.SPACE_4;
-        int width = panelWidth() - QuillSpacing.SPACE_4 * 2;
-        QuillColumn column = new QuillColumn(x, panelY + 60, width, QuillSpacing.SPACE_2);
+        QuillRect content = contentBounds();
+        QuillColumn column = new QuillColumn(
+                content.x(), content.y(), content.width(), QuillSpacing.SPACE_2
+        );
 
         QuillRect toggleSlot = column.next(20);
         addRenderableWidget(new QuillToggle(
@@ -556,6 +709,7 @@ function Drawing() {
           [<C key="t">tabStrip(graphics, x, y, w, h[, theme])</C>, "Chip surface with a CHIP_BORDER outline."],
           [<C key="s">section(graphics, x, y, w, h[, theme])</C>, "Card surface, a top highlight and a SURFACE_BORDER outline."],
           [<C key="i">inset(graphics, x, y, w, h[, theme])</C>, "Low-contrast inner row using SURFACE_ALT."],
+          [<C key="s2">QuillScrollHints.render(...)</C>, "Top/bottom fade and chevrons for hidden scroll content."],
         ]}
       />
       <P>
@@ -563,6 +717,23 @@ function Drawing() {
         theme, which is why a custom <C>QuillThemeData</C> applies to the panel and header. The text helpers
         deliberately disable Minecraft&apos;s drop shadow so custom palettes can meet contrast targets.
       </P>
+
+      <H2>Scroll hints</H2>
+      <P>
+        <C>QuillScrollHints.render(graphics, viewport, moreAbove, moreBelow, theme)</C> paints a short
+        gradient and a chevron at the top or bottom of a viewport. It draws nothing when both flags are
+        false and uses <C>PANEL_BG</C> plus <C>TEXT_SOFT</C>, so it works in both light and dark palettes.
+      </P>
+      <CodeBlock
+        code={`
+QuillScrollHints.render(
+        graphics,
+        viewport,
+        scrollOffset() > 0,
+        scrollOffset() < maxScroll(),
+        theme
+);`}
+      />
 
       <H2>Gradients</H2>
       <P>
@@ -836,9 +1007,10 @@ export const fundamentals: DocPage[] = [
   {
     slug: "layout",
     title: "Layout Primitives",
-    description: "Rectangles, insets, columns, rows and grids.",
+    description: "Rectangles, insets, flex, wrap, stack, breakpoints and screen regions.",
     component: Layout,
   },
+  ...layoutEngine,
   {
     slug: "text",
     title: "Text and Styles",

@@ -44,9 +44,9 @@ public final class ProfileScreen extends QuillScreen {
 
     @Override
     protected void buildContent() {
-        int x = panelX + QuillSpacing.SPACE_4;
-        int width = panelWidth() - QuillSpacing.SPACE_4 * 2;
-        card = new QuillCard(x, panelY + 60, width, 120, Component.literal("Profile"));
+        int x = panelX + contentInset();
+        int width = panelWidth() - contentInset() * 2;
+        card = new QuillCard(x, contentTop(), width, 120, Component.literal("Profile"));
 
         QuillRect body = card.content();
         QuillColumn column = new QuillColumn(
@@ -107,7 +107,7 @@ public final class ProfileScreen extends QuillScreen {
       <H2>What each part does</H2>
       <OL>
         <li>
-          <strong>The constructor</strong> sets the window title and a fixed 360×240 panel.
+          <strong>The constructor</strong> sets the window title and a preferred 360x240 panel; the panel shrinks to fit smaller windows without cutting off the shell.
         </li>
         <li>
           <strong>buildContent()</strong> derives <C>x</C> / <C>width</C> from the panel, so the content
@@ -160,8 +160,8 @@ import com.quillui.action.QuillCommandSink;
 import com.quillui.map.QuillMap;
 import com.quillui.map.QuillMapMarker;
 import com.quillui.map.QuillMapZone;
+import com.quillui.layout.QuillRect;
 import com.quillui.screen.QuillScreen;
-import com.quillui.theme.QuillSpacing;
 import com.quillui.theme.QuillColors;
 import com.quillui.theme.QuillThemeData;
 import java.util.List;
@@ -181,13 +181,16 @@ public final class MapScreen extends QuillScreen {
 
     @Override
     protected void buildContent() {
-        int x = panelX + QuillSpacing.SPACE_4;
-        int width = panelWidth() - QuillSpacing.SPACE_4 * 2;
+        QuillRect content = contentBounds();
 
         LocalPlayer player = Minecraft.getInstance().player;
         BlockPos center = player != null ? player.blockPosition() : BlockPos.ZERO;
 
-        map = new QuillMap(x, panelY + 60, width, 220, center, 64, 32, THEME);
+        map = new QuillMap(
+                content.x(), content.y(), content.width(),
+                Math.min(220, content.height()),
+                center, 64, 32, THEME
+        );
 
         int success = THEME.color(QuillThemeData.ColorRole.SUCCESS);
         map.setZones(List.of(new QuillMapZone(

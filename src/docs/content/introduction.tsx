@@ -6,8 +6,9 @@ function Overview() {
     <>
       <P>
         Quill UI is a small, opinionated <strong>client-side UI framework for Fabric</strong> on Minecraft{" "}
-        <C>26.3</C> and Java <C>25</C>. It provides the visual and layout foundation for mod screens: theme
-        tokens, panels and headers, cards, tabs, buttons, scrollable lists and a backend action boundary.
+        <C>26.3</C> and Java <C>25</C>. It provides the visual and layout foundation for mod screens:
+        theme tokens, responsive layout, panels and headers, cards, tabs, buttons, overlays, scrollable
+        views and a backend action boundary.
       </P>
       <P>
         It is deliberately independent from gameplay code. A screen reads a state snapshot and emits actions
@@ -15,13 +16,15 @@ function Overview() {
         state itself.
       </P>
 
-      <Callout kind="tip" title="New in 0.2.0-alpha.6">
+      <Callout kind="tip" title="New in 0.2.0-alpha.7">
         <P>
-          Screen overlays with <C>QuillPopupMenu</C>, <C>QuillModal</C> and <C>QuillToast</C>, plus the{" "}
-          <C>QuillDropdown</C> select control and <C>QuillRadioGroup</C> exclusivity helper. See{" "}
-          <DocLink to="components/overlays">Overlays</DocLink>,{" "}
-          <DocLink to="components/dropdown">Dropdowns</DocLink> and{" "}
-          <DocLink to="components/checkbox-radio">Checkboxes and Radios</DocLink>.
+          Responsive screen sizing with a preferred panel and <C>contentBounds()</C>, immediate layout
+          helpers (<C>QuillFlex</C>, <C>QuillWrap</C>, <C>QuillStack</C>, <C>QuillConstraints</C>,{" "}
+          <C>QuillBreakpoints</C>), the measured layout engine, and the <C>QuillScrollView</C> /{" "}
+          <C>QuillClipView</C> scroll hosts. See{" "}
+          <DocLink to="fundamentals/layout">Layout</DocLink>,{" "}
+          <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink> and{" "}
+          <DocLink to="components/scroll-view">Scroll Views</DocLink>.
         </P>
       </Callout>
 
@@ -31,11 +34,12 @@ function Overview() {
         rows={[
           ["Theme", "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation", <C key="t">com.quillui.theme</C>],
           ["Colours", "QuillColors", <C key="c">com.quillui.theme</C>],
-          ["Layout", "QuillRect, QuillInsets, QuillColumn, QuillRow, QuillGrid", <C key="l">com.quillui.layout</C>],
-          ["Drawing", "QuillRender, QuillGradient, QuillTooltips", <C key="r">com.quillui.render</C>],
+          ["Layout", "QuillRect, QuillInsets, QuillConstraints, QuillAlign, QuillStack, QuillFlex, QuillWrap, QuillBreakpoints, QuillColumn, QuillRow, QuillGrid", <C key="l">com.quillui.layout</C>],
+          ["Layout engine", "QuillBoxConstraints, QuillLayoutNode, QuillNode, QuillSize, QuillSizedBox, QuillPaddingBox, QuillMarginBox, QuillConstrainedBox, QuillFlexBox, QuillWrapBox, QuillStackBox, QuillScrollBox, QuillLayoutValidator", <C key="le">com.quillui.layout</C>],
+          ["Drawing", "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints", <C key="r">com.quillui.render</C>],
           ["Text", "QuillText, QuillTextStyle", <C key="tx">com.quillui.text</C>],
           ["Motion", "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion", <C key="mo">com.quillui.motion</C>],
-          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
+          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView, QuillScrollBar, QuillClipView, QuillWidgetBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
           ["Input styles", "QuillSelectionStyle, QuillSelectionStyles", <C key="in">com.quillui.input</C>],
           ["Overlays", "QuillOverlay, QuillPopupMenu, QuillModal, QuillToast", <C key="o">com.quillui.overlay</C>],
           ["Map", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
@@ -50,14 +54,15 @@ function Overview() {
       <H2>Design rules</H2>
       <UL>
         <li>Use <C>QuillThemeData</C> / token groups instead of literal colours, spacing and radii.</li>
-        <li>Derive positions with layout primitives; do not repeat magic <C>x/y</C> values across screens.</li>
+        <li>Derive positions with layout primitives and screen regions; do not repeat magic x/y values.</li>
+        <li>Prefer <C>contentBounds()</C> and breakpoints so screens can shrink with the window.</li>
         <li>A screen renders state; every action goes through an <C>QuillActionSink</C>.</li>
         <li>Keep cards and action rows on the same 4 px grid.</li>
       </UL>
 
       <H2>Status</H2>
       <P>
-        The current release is <C>0.2.0-alpha.6</C> with binary API level <C>2</C>. The API is intentionally
+        The current release is <C>0.2.0-alpha.7</C> with binary API level <C>2</C>. The API is intentionally
         small and may evolve before <C>1.0.0</C>. See <DocLink to="reference/api">API reference</DocLink> and{" "}
         <DocLink to="reference/compatibility">Compatibility</DocLink>.
       </P>
@@ -103,7 +108,7 @@ function Installation() {
       <H2>Build the jar</H2>
       <CodeBlock lang="bash" status="none" code={`gradlew.bat build --console=plain --no-daemon`} />
       <P>
-        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.6.jar</C>. Put it in the instance&apos;s{" "}
+        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.7.jar</C>. Put it in the instance&apos;s{" "}
         <C>mods/</C> folder.
       </P>
 
@@ -117,7 +122,7 @@ function Installation() {
         title="build.gradle"
         code={`
 dependencies {
-    implementation files("libs/quill-ui-0.2.0-alpha.6.jar")
+    implementation files("libs/quill-ui-0.2.0-alpha.7.jar")
 }`}
       />
 
@@ -135,7 +140,7 @@ dependencies {
       </P>
       <CodeBlock
         code={`
-String version = QuillApi.version(); // "0.2.0-alpha.6" in a Fabric runtime
+String version = QuillApi.version(); // "0.2.0-alpha.7" in a Fabric runtime
 boolean level1 = QuillApi.supports(1);`}
       />
     </>
@@ -173,9 +178,10 @@ public final class ExampleScreen extends QuillScreen {
 
     @Override
     protected void buildContent() {
-        int x = panelX + QuillSpacing.SPACE_4;
-        int width = panelWidth() - QuillSpacing.SPACE_4 * 2;
-        QuillColumn column = new QuillColumn(x, panelY + 60, width, QuillSpacing.SPACE_2);
+        QuillRect content = contentBounds();
+        QuillColumn column = new QuillColumn(
+                content.x(), content.y(), content.width(), QuillSpacing.SPACE_2
+        );
 
         QuillRect slot = column.next(24);
         addRenderableWidget(new QuillButton(
@@ -207,8 +213,9 @@ Minecraft.getInstance().setScreen(new ExampleScreen());`}
       <Callout kind="note">
         <P>
           <C>buildContent()</C> runs from <C>init()</C>, so you can safely use <C>panelX</C>,{" "}
-          <C>panelY</C>, <C>panelWidth()</C> and <C>panelHeight()</C> there. They are recalculated whenever the
-          window or GUI scale changes.
+          <C>panelY</C>, <C>contentTop()</C>, <C>contentBounds()</C>, <C>panelWidth()</C> and{" "}
+          <C>panelHeight()</C> there. The panel size is a preference: it is clamped to the window minus{" "}
+          <C>screenMargin()</C> and recalculated whenever the window or GUI scale changes.
         </P>
       </Callout>
 

@@ -3,6 +3,7 @@ import { McButton, McCard, McList, McMap, McTabs, McTipButton, McToggle, McToolt
 import { inputComponents } from "./inputs";
 import { dropdownComponents } from "./dropdown";
 import { overlayComponents } from "./overlays";
+import { scrollViewComponents } from "./scroll-view";
 import type { DocPage } from "../types";
 
 const PREVIEW_NOTE = (
@@ -19,7 +20,7 @@ function Overview() {
     <>
       <P>
         Quill UI ships a deliberately small widget set. Everything below is a real class in the widget,
-        HUD, render, input or overlay packages.
+        HUD, render, input, overlay or layout packages.
       </P>
       {PREVIEW_NOTE}
       <H2>Component list</H2>
@@ -37,6 +38,10 @@ function Overview() {
           ["Dropdown", <C key="dd">QuillDropdown</C>, "Widget", <DocLink key="ddl" to="components/dropdown">Dropdowns</DocLink>],
           ["Selection style", <C key="ss">QuillSelectionStyle</C>, "Input style", <DocLink key="ssl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
           ["Scroll list", <C key="s">QuillScrollList&lt;T&gt;</C>, "Widget", <DocLink key="sl" to="components/scroll-list">Scroll lists</DocLink>],
+          ["Scroll view", <C key="sv">QuillScrollView</C>, "Widget", <DocLink key="svl" to="components/scroll-view">Scroll views</DocLink>],
+          ["Clip view", <C key="cv">QuillClipView</C>, "Widget host", <DocLink key="cvl" to="components/scroll-view">Scroll views</DocLink>],
+          ["Scroll bar", <C key="sb">QuillScrollBar</C>, "Widget", <DocLink key="sbl" to="components/scroll-view">Scroll views</DocLink>],
+          ["Widget box", <C key="wb">QuillWidgetBox</C>, "Layout adapter", <DocLink key="wbl" to="fundamentals/layout-engine">Layout engine</DocLink>],
           ["Tab bar", <C key="t">QuillTabBar</C>, "Helper", <DocLink key="tl" to="components/tabs">Tabs</DocLink>],
           ["Toggle", <C key="g">QuillToggle</C>, "Widget", <DocLink key="gl" to="components/toggle">Toggles</DocLink>],
           ["Map", <C key="m">QuillMap</C>, "Widget", <DocLink key="ml" to="components/map">Map</DocLink>],
@@ -52,8 +57,8 @@ function Overview() {
         There is no color picker, date/time control, tree view or table in the current API. A{" "}
         <C>QuillCard</C> is a drawing helper, not a layout container; use <C>QuillPanel</C> for a card
         with a vertical flow and a two-column action row, or <C>QuillColumn</C> / <C>QuillRow</C> for
-        custom layouts. Text fields, sliders, checkboxes, radios, radio groups, dropdowns, overlays and
-        toasts are available in this release.
+        custom layouts. Text fields, sliders, checkboxes, radios, radio groups, dropdowns, overlays, toasts,
+        scroll lists and custom scroll views are available in this release.
       </P>
 
       <H2>Shared conventions</H2>
@@ -61,8 +66,9 @@ function Overview() {
         <li>
           Most widgets accept an optional <C>QuillThemeData</C>. The input controls (
           <C>QuillTextField</C>, <C>QuillSlider</C>, <C>QuillCheckbox</C>, <C>QuillRadio</C>),{" "}
-          <C>QuillDropdown</C> and the overlay constructors require a theme argument; null falls back
-          to <C>QuillThemeData.DEFAULT</C>.
+          <C>QuillDropdown</C>, <C>QuillScrollView</C>, <C>QuillClipView</C>, <C>QuillScrollBar</C> and
+          the overlay constructors require a theme argument; null falls back to{" "}
+          <C>QuillThemeData.DEFAULT</C>.
         </li>
         <li>Buttons, toggles, checkboxes and radios respond to Enter and Space when focused.</li>
         <li>Widgets draw their own hover, focus, selected and disabled states; no vanilla button texture is used.</li>
@@ -277,7 +283,7 @@ function Panels() {
 QuillThemeData theme = QuillThemeData.DEFAULT; // or a custom palette
 
 QuillPanel panel = new QuillPanel(
-        x, panelY + 60, width, 140,
+        x, contentTop(), width, 140,
         Component.literal("Settings"),
         theme
 );
@@ -623,8 +629,9 @@ function ScrollList() {
   return (
     <>
       <P>
-        <C>QuillScrollList&lt;T&gt;</C> is a fixed-row list with a thin passive scrollbar. The caller draws
-        each row and handles clicks; the list handles clipping, wheel scrolling and the scrollbar.
+        <C>QuillScrollList&lt;T&gt;</C> is a fixed-row list with a thin scrollbar. The caller draws each row
+        and handles clicks; the list handles clipping, wheel scrolling and the scrollbar, including thumb
+        dragging.
       </P>
       {PREVIEW_NOTE}
       <Example
@@ -685,8 +692,9 @@ void select(Entry entry) {
       />
       <Callout kind="note">
         <P>
-          The mouse wheel scrolls by one row height per notch and only while the cursor is over the list. A
-          click on the scrollbar jumps the scroll position instead of selecting a row.
+          The mouse wheel scrolls by one row height per notch and only while the cursor is over the list.
+          Clicking the scrollbar track jumps the position, and dragging the thumb keeps scrolling after
+          the pointer leaves the track. Scrollbar input never selects a row.
         </P>
       </Callout>
     </>
@@ -882,6 +890,7 @@ export const components: DocPage[] = [
     description: "Fixed-row lists with scrolling and click handling.",
     component: ScrollList,
   },
+  ...scrollViewComponents,
   {
     slug: "tabs",
     title: "Tabs",
