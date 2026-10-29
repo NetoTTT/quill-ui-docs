@@ -70,6 +70,11 @@ public interface QuillLayoutNode {
         ]}
       />
 
+      <P>
+        Composite nodes expose <C>childSizes()</C> after measurement. <C>QuillSizedBox</C>,{" "}
+        <C>QuillPaddingBox</C>, <C>QuillMarginBox</C> and <C>QuillConstrainedBox</C> also expose{" "}
+        <C>childSize()</C>; padding and margin boxes expose their insets.
+      </P>
       <H2>Flex and cross-axis alignment</H2>
       <P>
         <C>QuillFlexBox.row(gap)</C> and <C>column(gap)</C> accept content-sized nodes with{" "}
@@ -136,7 +141,8 @@ QuillRect first = row.children().get(0).bounds();`}
         <C>QuillWidgetBox</C> reads the widget&apos;s current size during measure and applies{" "}
         <C>setX</C>, <C>setY</C>, <C>setWidth</C> and <C>setHeight</C> during arrange. A widget with a
         zero size falls back to the constraint minimums. <C>clipTo(rect)</C> hides a widget that falls
-        outside the clip rectangle; it does not scissor partially visible widgets.
+        outside the clip rectangle; it does not scissor partially visible widgets. <C>widget()</C> returns
+        the adapted widget.
       </P>
       <Callout kind="note">
         <P>

@@ -476,11 +476,28 @@ map.setRadiusLimitVisible(true);   // dashed MAX_RADIUS outline`}
       </P>
       <Callout kind="note">
         <P>
-          Non-left drag and release events are forwarded by <C>QuillScreen</C> to the focused widget (or
-          the child under the cursor). That is what allows the map to pan with right or middle drag while
-          left clicks keep their normal routing.
+          Drag and release events are forwarded by <C>QuillScreen</C> to the focused widget (or the child
+          under the cursor). That is what allows the map to pan with right or middle drag while left clicks
+          keep their normal routing.
         </P>
       </Callout>
+
+      <H2>Clip hosts</H2>
+      <P>
+        The map normally clips itself with a scissor. When it is nested in <C>QuillClipView</C> or another
+        clipped host, the outer host already clips the viewport, so disable the internal scissor. The map
+        still translates its clip rectangle through <C>QuillRenderContext</C>, keeping nested scissoring
+        aligned with the host offset.
+      </P>
+      <CodeBlock
+        code={`
+map.setScissorEnabled(false); // the outer clip host owns the scissor
+clip.add(map);`}
+      />
+      <P>
+        <C>setScissorEnabled(boolean)</C> defaults to <C>true</C>. It changes clipping only; map drawing,
+        hit-testing and panning keep using the same content coordinates.
+      </P>
 
       <H2>Selection</H2>
       <P>

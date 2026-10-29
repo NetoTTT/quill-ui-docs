@@ -73,7 +73,8 @@ screen.showToast(Component.translatable("mymod.saved"));`}
         <P>
           Input is routed from the newest overlay to the oldest. A consumed event stops the chain; a
           blocking overlay stops it without handling the event; only after the overlay stack passes does
-          the screen forward input to widgets and shortcuts.
+          the screen forward input to widgets and shortcuts. While a blocking overlay is open, widgets are
+          rendered with off-screen mouse coordinates, so hover highlights do not light up behind a modal.
         </P>
       </Callout>
 

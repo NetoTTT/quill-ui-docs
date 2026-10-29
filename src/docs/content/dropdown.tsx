@@ -75,6 +75,11 @@ mode.setSelectedIndex(snapshot.mode());`}
           in a vanilla <C>Screen</C> keeps the closed control visible but the option list will not open.
         </P>
       </Callout>
+      <P>
+        The popup is anchored in screen coordinates through <C>QuillRenderContext</C>. Inside a{" "}
+        <DocLink to="components/scroll-view">scroll host</DocLink> it still opens under the visible control
+        instead of shifting by the content offset.
+      </P>
       <Callout kind="note">
         <P>
           The popup is owned by the screen, not the widget. Calling{" "}

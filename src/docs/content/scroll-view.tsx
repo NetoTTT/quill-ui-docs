@@ -129,7 +129,37 @@ addRenderableWidget(clip);`}
           The right 6 px are excluded from <C>isMouseOver</C>, leaving room for a{" "}
           <C>QuillScrollBar</C>.
         </li>
+        <li>
+          Key presses, typed characters and <C>capturesInput()</C> are forwarded to the focused child, so
+          text fields keep working inside the host.
+        </li>
+        <li>
+          A plain wheel scrolls the host. With Ctrl or Shift held, the event is offered to children first,
+          which lets a nested <C>QuillMap</C> handle zoom.
+        </li>
       </UL>
+
+      <H2>Clip context</H2>
+      <P>
+        Children keep content coordinates while the host renders with a translation. <C>QuillClipView</C>{" "}
+        pushes that offset into <C>QuillRenderContext</C>, which lets nested widgets convert back to screen
+        coordinates. Tooltips anchor to the real cursor, <C>QuillDropdown</C> opens its popup at the screen
+        position, and <C>QuillMap</C> translates its internal scissor.
+      </P>
+      <CodeBlock
+        code={`
+// Inside an outer clip host, let the host own the scissor.
+map.setScissorEnabled(false);
+clip.add(map);`}
+      />
+      <Callout kind="note">
+        <P>
+          <C>QuillRenderContext.pushClipOffset(...)</C> / <C>popClipOffset()</C> are public for custom hosts.
+          Most screens never call them directly. See{" "}
+          <DocLink to="fundamentals/drawing">Drawing Helpers</DocLink> and{" "}
+          <DocLink to="components/map">Map</DocLink>.
+        </P>
+      </Callout>
 
       <H2>Scroll bar</H2>
       <P>

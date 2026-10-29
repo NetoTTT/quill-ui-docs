@@ -284,7 +284,8 @@ QuillRect withActions = contentBounds(24, 64); // reserve space for fixed action
       <P>
         <C>QuillInsets(top, right, bottom, left)</C> with <C>all(value)</C> and{" "}
         <C>symmetric(vertical, horizontal)</C>. Use <C>horizontal()</C> and <C>vertical()</C> to subtract
-        padding from a width or height.
+        padding from a width or height, or <C>contentRect(bounds)</C> to apply the insets and clamp the
+        result to the parent rectangle.
       </P>
 
       <H2>QuillColumn and QuillRow</H2>
@@ -606,7 +607,8 @@ showToast(Component.translatable("mymod.saved"), 2.5F);`}
       <P>
         A consumed click or key stops the routing chain. A blocking overlay swallows the event without
         handling it, so widgets, shortcuts and text fields below do not react. Passive overlays such as
-        toasts consume nothing and let input pass through.
+        toasts consume nothing and let input pass through. While a blocking overlay is open, the screen
+        also suppresses widget hover by rendering the widget tree with off-screen mouse coordinates.
       </P>
       <Callout kind="note">
         <P>
@@ -734,6 +736,35 @@ QuillScrollHints.render(
         theme
 );`}
       />
+
+      <H2>Clip offsets</H2>
+      <P>
+        <C>QuillRenderContext</C> tracks the content-to-screen translation while a clipped host renders.
+        <C>pushClipOffset(x, y)</C> and <C>popClipOffset()</C> form a nestable stack;{" "}
+        <C>screenX(contentX)</C> and <C>screenY(contentY)</C> convert back to screen coordinates.{" "}
+        <C>QuillClipView</C> drives this automatically. Use it only for custom clipped hosts or widgets
+        that draw their own scissor or place screen-anchored UI.
+      </P>
+      <CodeBlock
+        code={`
+QuillRenderContext.pushClipOffset(0, scrollOffset);
+try {
+    // A widget inside the clip host needs the real screen position.
+    int anchorX = QuillRenderContext.screenX(widget.getX());
+    int anchorY = QuillRenderContext.screenY(widget.getY() + widget.getHeight());
+    // Use anchorX/anchorY for a screen-level overlay.
+}
+finally {
+    QuillRenderContext.popClipOffset();
+}`}
+      />
+      <Callout kind="note">
+        <P>
+          <C>QuillMap</C>, <C>QuillDropdown</C> and widget tooltips already use the shared context, so they
+          stay aligned inside a <DocLink to="components/scroll-view">scroll host</DocLink> without extra
+          work. Disable the map&apos;s internal scissor when an outer host clips it.
+        </P>
+      </Callout>
 
       <H2>Gradients</H2>
       <P>
