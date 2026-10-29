@@ -70,10 +70,17 @@ public static boolean supports(int requiredLevel);`}
       </UL>
       <Callout kind="note">
         <P>
-          The current release is <C>0.2.0-alpha.7</C> with API level <C>2</C>. The package reorganisation
+          The current release is <C>0.2.0-alpha.8</C> with API level <C>2</C>. The package reorganisation
           and <C>QuillThemeData</C> landed together; screen layouts, shortcuts, gradients, contrast helpers,
           click sounds, motion, text, input, i18n, overlays, form controls, responsive layout and scroll
           hosts are additive and keep the level at <C>2</C>.
+        </P>
+      </Callout>
+      <Callout kind="warning" title="0.3.0-alpha.1 raises API_LEVEL to 3">
+        <P>
+          The next line removes the <C>QuillTheme</C> static aliases, adds theme factories, component themes,
+          typed actions and a measured text node, and splits map/HUD out of the core. Plan the migration
+          with <DocLink to="introduction/roadmap">Roadmap and 0.3.0</DocLink>.
         </P>
       </Callout>
 
@@ -137,8 +144,18 @@ function Compatibility() {
           CI compares each build against the previous release with japicmp and fails on incompatible changes
           that were not declared.
         </li>
-        <li>Existing static <C>QuillTheme</C> values remain available during the theme transition.</li>
+        <li>
+          Existing static <C>QuillTheme</C> values remain available in the 0.2 line;{" "}
+          <C>0.3.0-alpha.1</C> removes them.
+        </li>
       </UL>
+      <Callout kind="warning" title="Next binary generation">
+        <P>
+          <C>QuillTheme</C> aliases, component themes, typed actions and the map/HUD split will raise{" "}
+          <C>API_LEVEL</C> to <C>3</C>. See{" "}
+          <DocLink to="introduction/roadmap">Roadmap and 0.3.0</DocLink>.
+        </P>
+      </Callout>
       <Callout kind="warning">
         <P>
           Do not assume NeoForge support or multi-version jars. See{" "}

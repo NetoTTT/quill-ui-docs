@@ -760,9 +760,10 @@ finally {
       />
       <Callout kind="note">
         <P>
-          <C>QuillMap</C>, <C>QuillDropdown</C> and widget tooltips already use the shared context, so they
-          stay aligned inside a <DocLink to="components/scroll-view">scroll host</DocLink> without extra
-          work. Disable the map&apos;s internal scissor when an outer host clips it.
+          <C>QuillDropdown</C> and widget tooltips already use the shared context, so they stay aligned
+          inside a <DocLink to="components/scroll-view">scroll host</DocLink> without extra work.{" "}
+          <C>QuillMap</C> keeps its nested scissor in content space; disable its internal scissor when an
+          outer host clips it.
         </P>
       </Callout>
 

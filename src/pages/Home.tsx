@@ -123,7 +123,7 @@ const COMPONENTS: { name: string; desc: string; to: string; preview: React.React
   },
   {
     name: "Scrolling",
-    desc: "Fixed-row lists plus clipped custom content, draggable bars and edge hints.",
+    desc: "Fixed-row lists plus clipped custom content, draggable bars, focus traversal and edge hints.",
     to: "components/scroll-view",
     preview: <McList className="w-40" items={["General", "Controls", "Audio"]} />,
   },
@@ -198,7 +198,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "compass",
     title: "Screen shell",
-    body: "Layout-driven headers, keyboard shortcuts and an optional screen backdrop.",
+    body: "Layout-driven headers, keyboard shortcuts, tab focus and an optional screen backdrop.",
     to: "fundamentals/screen",
   },
   {
@@ -279,6 +279,12 @@ export function Home({ onSearch }: { onSearch: () => void }) {
                 <a href={SITE.repoUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-link hover:underline">
                   {SITE.repoUrl.replace("https://github.com/", "github.com/")}
                 </a>
+              </p>
+              <p className="mt-3 max-w-[34rem] text-[0.8125rem] leading-relaxed text-muted">
+                <a href={href("introduction/roadmap")} className="font-medium text-link hover:underline">
+                  0.3.0-alpha.1 is a breaking base.
+                </a>{" "}
+                Plan the migration before building new integrations.
               </p>
             </div>
             <HeroScene />

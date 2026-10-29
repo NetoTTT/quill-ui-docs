@@ -144,6 +144,14 @@ addRenderableWidget(clip);`}
           text fields keep working inside the host.
         </li>
         <li>
+          Tab and Shift+Tab cycle through visible, active children. Focusing the host when no child is
+          focused moves focus to the first child.
+        </li>
+        <li>
+          Changing focus calls <C>onScroll</C> when needed so the focused control is scrolled fully into
+          the viewport.
+        </li>
+        <li>
           A plain wheel scrolls the host. With Ctrl or Shift held, the event is offered to children first,
           which lets a nested <C>QuillMap</C> handle zoom.
         </li>
@@ -153,8 +161,9 @@ addRenderableWidget(clip);`}
       <P>
         Children keep content coordinates while the host renders with a translation. <C>QuillClipView</C>{" "}
         pushes that offset into <C>QuillRenderContext</C>, which lets nested widgets convert back to screen
-        coordinates. Tooltips anchor to the real cursor, <C>QuillDropdown</C> opens its popup at the screen
-        position, and <C>QuillMap</C> translates its internal scissor.
+        coordinates. Tooltips anchor to the real cursor and <C>QuillDropdown</C> opens its popup at the
+        screen position. <C>QuillMap</C> keeps its nested scissor in content space, so disabling its internal
+        scissor lets the host clip it correctly while scrolling.
       </P>
       <CodeBlock
         code={`

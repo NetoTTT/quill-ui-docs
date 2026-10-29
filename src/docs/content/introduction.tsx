@@ -1,4 +1,5 @@
 import { C, Callout, CodeBlock, DocLink, DocTable, H2, H3, OL, P, UL } from "@/components/prose";
+import { roadmap } from "./roadmap";
 import type { DocPage } from "../types";
 
 function Overview() {
@@ -16,15 +17,21 @@ function Overview() {
         state itself.
       </P>
 
-      <Callout kind="tip" title="New in 0.2.0-alpha.7">
+      <Callout kind="tip" title="New in 0.2.0-alpha.8">
         <P>
-          Responsive screen sizing with a preferred panel and <C>contentBounds()</C>, immediate layout
-          helpers (<C>QuillFlex</C>, <C>QuillWrap</C>, <C>QuillStack</C>, <C>QuillConstraints</C>,{" "}
-          <C>QuillBreakpoints</C>), the measured layout engine, and the <C>QuillClipView</C> scroll host
-          plus <C>QuillScrollBar</C>. <C>QuillScrollView</C> is now legacy. See{" "}
-          <DocLink to="fundamentals/layout">Layout</DocLink>,{" "}
-          <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink> and{" "}
-          <DocLink to="components/scroll-view">Scroll Views</DocLink>.
+          Focus traversal in <C>QuillClipView</C>: Tab and Shift+Tab cycle visible controls, the host focuses
+          its first child when it gains focus, and the focused control scrolls into view. The map now fills
+          its viewport at the initial zoom and keeps nested scissors in content space. See{" "}
+          <DocLink to="components/scroll-view">Scroll Views</DocLink> and{" "}
+          <DocLink to="components/map">Map</DocLink>.
+        </P>
+      </Callout>
+      <Callout kind="warning" title="Next: 0.3.0-alpha.1 is a breaking base">
+        <P>
+          The next line reworks the public API before LaborCraft migration: theme factories, component
+          themes, typed actions, a measured text node, API-level 3 and a split of map/HUD from the core.
+          Read <DocLink to="introduction/roadmap">Roadmap and 0.3.0</DocLink> before building new
+          integrations.
         </P>
       </Callout>
 
@@ -62,7 +69,7 @@ function Overview() {
 
       <H2>Status</H2>
       <P>
-        The current release is <C>0.2.0-alpha.7</C> with binary API level <C>2</C>. The API is intentionally
+        The current release is <C>0.2.0-alpha.8</C> with binary API level <C>2</C>. The API is intentionally
         small and may evolve before <C>1.0.0</C>. See <DocLink to="reference/api">API reference</DocLink> and{" "}
         <DocLink to="reference/compatibility">Compatibility</DocLink>.
       </P>
@@ -108,7 +115,7 @@ function Installation() {
       <H2>Build the jar</H2>
       <CodeBlock lang="bash" status="none" code={`gradlew.bat build --console=plain --no-daemon`} />
       <P>
-        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.7.jar</C>. Put it in the instance&apos;s{" "}
+        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.8.jar</C>. Put it in the instance&apos;s{" "}
         <C>mods/</C> folder.
       </P>
 
@@ -122,7 +129,7 @@ function Installation() {
         title="build.gradle"
         code={`
 dependencies {
-    implementation files("libs/quill-ui-0.2.0-alpha.7.jar")
+    implementation files("libs/quill-ui-0.2.0-alpha.8.jar")
 }`}
       />
 
@@ -140,7 +147,7 @@ dependencies {
       </P>
       <CodeBlock
         code={`
-String version = QuillApi.version(); // "0.2.0-alpha.7" in a Fabric runtime
+String version = QuillApi.version(); // "0.2.0-alpha.8" in a Fabric runtime
 boolean level1 = QuillApi.supports(1);`}
       />
     </>
@@ -242,6 +249,7 @@ export const introduction: DocPage[] = [
     description: "What Quill UI is, and how the framework is organised.",
     component: Overview,
   },
+  ...roadmap,
   {
     slug: "installation",
     title: "Installation",

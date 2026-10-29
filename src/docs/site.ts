@@ -4,7 +4,7 @@
 export const SITE = {
   name: "Quill UI",
   tagline: "A small client-side UI framework for Fabric.",
-  version: "0.2.0-alpha.7",
+  version: "0.2.0-alpha.8",
   minecraftVersion: "26.3",
   javaVersion: "25",
   /** The mod repository. */

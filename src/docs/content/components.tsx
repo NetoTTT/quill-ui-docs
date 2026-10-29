@@ -406,8 +406,9 @@ QuillMap(x, y, width, height, center, maxRadius, maxSelectionSize, theme)`}
           real <C>BlockPos</C> at construction.
         </li>
         <li>
-          <C>maxRadius</C> is clamped to 1–128 and sets the dashed radius overlay and the initial
-          pixels-per-block. It does not clamp panning.
+          <C>maxRadius</C> is clamped to 1-128 and sets the dashed radius overlay. At construction and
+          resize, the initial zoom is chosen to fill the viewport:
+          <C>ceil(max(width, height) / (maxRadius * 2 + 1))</C>, clamped to 1-4. It does not clamp panning.
         </li>
         <li>
           <C>maxSelectionSize</C> is clamped to 1–64 and controls <C>selectionFitsLimit()</C>.
@@ -485,9 +486,9 @@ map.setRadiusLimitVisible(true);   // dashed MAX_RADIUS outline`}
       <H2>Clip hosts</H2>
       <P>
         The map normally clips itself with a scissor. When it is nested in <C>QuillClipView</C> or another
-        clipped host, the outer host already clips the viewport, so disable the internal scissor. The map
-        still translates its clip rectangle through <C>QuillRenderContext</C>, keeping nested scissoring
-        aligned with the host offset.
+        clipped host, the outer host already clips the viewport, so disable the internal scissor. In that
+        mode the map&apos;s nested scissor stays in content space, and the host translation keeps it aligned
+        while scrolling.
       </P>
       <CodeBlock
         code={`
