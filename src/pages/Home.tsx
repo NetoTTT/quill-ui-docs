@@ -123,7 +123,7 @@ const COMPONENTS: { name: string; desc: string; to: string; preview: React.React
   },
   {
     name: "Scrolling",
-    desc: "Fixed-row lists plus clipped custom content, draggable bars, focus traversal and edge hints.",
+    desc: "Scroll lists, node-based list views, clipped content and draggable bars.",
     to: "components/scroll-view",
     preview: <McList className="w-40" items={["General", "Controls", "Audio"]} />,
   },
@@ -180,7 +180,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, styles, cards, inputs, scrolling, overlays, maps and HUD extras.",
+    body: "Themed buttons, styles, lists, cards, inputs, scrolling, overlays, maps and HUD extras.",
     to: "components/overview",
   },
   {

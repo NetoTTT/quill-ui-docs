@@ -4,6 +4,7 @@ import { inputComponents } from "./inputs";
 import { dropdownComponents } from "./dropdown";
 import { overlayComponents } from "./overlays";
 import { scrollViewComponents } from "./scroll-view";
+import { listViewComponents } from "./list-view";
 import type { DocPage } from "../types";
 
 const PREVIEW_NOTE = (
@@ -41,6 +42,7 @@ function Overview() {
           ["Dropdown", <C key="dd">QuillDropdown</C>, "Widget", <DocLink key="ddl" to="components/dropdown">Dropdowns</DocLink>],
           ["Selection style", <C key="ss">QuillSelectionStyle</C>, "Input style", <DocLink key="ssl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
           ["Scroll list", <C key="s">QuillScrollList&lt;T&gt;</C>, "Widget", <DocLink key="sl" to="components/scroll-list">Scroll lists</DocLink>],
+          ["List view", <C key="lv">QuillListView&lt;T&gt;</C>, "Widget", <DocLink key="lvl" to="components/list-view">List views</DocLink>],
           ["Scroll view", <C key="sv">QuillScrollView</C>, "Deprecated", <DocLink key="svl" to="components/scroll-view">Scroll views</DocLink>],
           ["Clip view", <C key="cv">QuillClipView</C>, "Widget host (recommended)", <DocLink key="cvl" to="components/scroll-view">Scroll views</DocLink>],
           ["Scroll bar", <C key="sb">QuillScrollBar</C>, "Widget", <DocLink key="sbl" to="components/scroll-view">Scroll views</DocLink>],
@@ -205,6 +207,7 @@ QuillButton(
           [<C key="2">tip(Tooltip)</C>, "Shows a tooltip while the cursor is over the button."],
           [<C key="3">clickSound(SoundEvent)</C>, "Overrides the default UI down sound."],
           [<C key="4">style(QuillButtonStyle)</C>, "Replaces the resolved colours for every hover/disabled state."],
+          [<C key="4b">enabled(boolean)</C>, "Fluent replacement for the public active field; returns this button."],
           [<C key="5">setActive(boolean)</C>, "Inherited. Disables input and switches to the disabled palette."],
         ]}
       />
@@ -758,11 +761,18 @@ void select(Entry entry) {
           [<C key="0">Constructor</C>, "x, y, width, height, row height, RowRenderer<T>, ClickHandler<T>, optional QuillThemeData."],
           [<C key="1">replaceItems(List&lt;T&gt;)</C>, "Replaces the contents and resets the scroll to the top."],
           [<C key="2">size() / isEmpty() / get(int)</C>, "Read access to the backing items."],
+          [<C key="6">setSelected(item) / selectedItem() / isSelected(item)</C>, "Selection by item value; replacing items clears a missing selection."],
+          [<C key="7">scrollOffset() / setScrollOffset(int)</C>, "Preserve or restore the row scroll across content rebuilds."],
           [<C key="3">rowWidth()</C>, "Width available to rows, excluding the scrollbar when shown."],
           [<C key="4">rowTop(int)</C>, "Screen Y of a row at the current scroll offset."],
           [<C key="5">rowAt(mouseX, mouseY)</C>, "Row index under the cursor, or -1 outside the list."],
         ]}
       />
+      <P>
+        Selection and scroll are item-based: <C>setSelected(item)</C> survives filtering, and{" "}
+        <C>scrollOffset()</C>/<C>setScrollOffset(int)</C> let a screen preserve the row position across a
+        content rebuild.
+      </P>
       <Callout kind="note">
         <P>
           The mouse wheel scrolls by one row height per notch and only while the cursor is over the list.
@@ -781,6 +791,11 @@ function Tabs() {
         <C>QuillTabBar</C> creates a row of equal-width <C>GHOST</C> buttons and keeps the selected visual in
         sync. It is a helper that builds buttons for you; you still register them on the screen. A custom
         click sound is applied to every tab.
+      </P>
+      <P>
+        For measured content trees, <C>QuillNodes.tabs(gap, labels, selected, onChange)</C> returns a{" "}
+        <C>QuillFlexBox</C> of equal-width primary/ghost buttons. The caller owns the selected index and
+        usually calls <C>refreshContent()</C> after a change.
       </P>
       {PREVIEW_NOTE}
       <Example
@@ -964,6 +979,7 @@ export const components: DocPage[] = [
     component: ScrollList,
   },
   ...scrollViewComponents,
+  ...listViewComponents,
   {
     slug: "tabs",
     title: "Tabs",

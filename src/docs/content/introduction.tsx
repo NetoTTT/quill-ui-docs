@@ -44,7 +44,7 @@ function Overview() {
           ["Drawing", "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext, QuillPaintable", <C key="r">com.quillui.render</C>],
           ["Text", "QuillText, QuillTextStyle, QuillTextMeasurer, QuillTextNode", <C key="tx">com.quillui.text</C>],
           ["Motion", "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion", <C key="mo">com.quillui.motion</C>],
-          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillLabel, QuillButtonStyle, QuillCardBox, QuillNodes, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
+          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillListView, QuillNodes, QuillLabel, QuillButtonStyle, QuillCardBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
           ["Input styles", "QuillSelectionStyle, QuillSelectionStyles", <C key="in">com.quillui.input</C>],
           ["Overlays", "QuillOverlay, QuillOverlayStack, QuillPopupMenu, QuillModal, QuillToast", <C key="o">com.quillui.overlay</C>],
           ["Map (extras)", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
@@ -126,19 +126,24 @@ function Installation() {
 
       <H2>Add the dependency</H2>
       <P>
-        From Maven/Modrinth, depend on <C>quill-ui</C> and add <C>quill-ui-extras</C> only when the map or
-        HUD is used:
+        During development, copy the built jars into your project&apos;s <C>libs/</C> folder and declare
+        file dependencies. Add extras only when the mod uses the map or HUD:
       </P>
       <CodeBlock
         lang="groovy"
         title="build.gradle"
         code={`
 dependencies {
-    implementation "maven.modrinth:quill-ui:0.3.0-alpha.1"
+    implementation files("libs/quill-ui-0.3.0-alpha.1.jar")
     // only for QuillMap / HUD:
-    implementation "maven.modrinth:quill-ui-extras:0.3.0-alpha.1"
+    implementation files("libs/quill-ui-extras-0.3.0-alpha.1.jar")
 }`}
       />
+      <P>
+        If you consume the published Maven/Modrinth artifacts instead, use{" "}
+        <C>maven.modrinth:quill-ui:0.3.0-alpha.1</C> and, when needed,{" "}
+        <C>maven.modrinth:quill-ui-extras:0.3.0-alpha.1</C>.
+      </P>
 
       <H3>Declare the dependency in your mod metadata</H3>
       <P>

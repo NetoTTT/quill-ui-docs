@@ -156,6 +156,11 @@ QuillThemeScope.run(screenTheme, () -> {
     // both use screenTheme through the scope
 });
 
+// Scoped variant for builders that return a value.
+QuillFlexBox tree = QuillThemeScope.supply(screenTheme, () ->
+        QuillNodes.column(8, text(Component.literal("Status")))
+);
+
 QuillThemeData current = QuillThemeScope.current();`}
       />
       <Callout kind="note">
@@ -522,7 +527,8 @@ function Screen() {
           [<C key="t">theme() / contentColumn(gap) / contentRow(gap)</C>, "Screen theme and layout helpers that start at contentBounds()."],
           [<C key="u">add(widget, rect)</C>, "Applies the rectangle and registers the widget in one call."],
           [<C key="v">setContent(root[, content])</C>, "Measures and arranges a tree, registers its widgets and scrolls it when needed."],
-          [<C key="x">control(widget[, height]) / text(component[, style])</C>, "Measured leaves for setContent trees."],
+          [<C key="x">control(widget[, height]) / text(component[, style|role])</C>, "Measured leaves for setContent trees."],
+          [<C key="l2">label(component) / color(role)</C>, "Fluent QuillLabel and the screen theme colour for a role."],
           [<C key="y">refreshContent() / contentScrollOffset() / contentMaxScroll()</C>, "Next-tick rebuild and measured-content scroll state."],
           [<C key="i">layout() / headerHeight()</C>, "Override layout() to move the header, title, subtitle or close button."],
           [<C key="k">registerShortcut(...)</C>, "Registers a keyboard shortcut; see below."],
@@ -794,6 +800,7 @@ function Drawing() {
         rows={[
           [<C key="p">panel(graphics, x, y, w, h[, theme])</C>, "Drop shadow at +4 px, panel fill and a 1 px border."],
           [<C key="b">border(graphics, x, y, w, h, color)</C>, "A 1 px rectangle outline in an explicit colour."],
+          [<C key="bx">box(graphics, x, y, w, h, theme, bgRole, borderRole)</C>, "Fills and outlines using theme roles; an int overload accepts raw colours."],
           [<C key="l">line(graphics, x0, y0, x1, y1, color)</C>, "A 1 px line using Bresenham stepping."],
           [<C key="ci">circle(graphics, centerX, centerY, radius, color)</C>, "A filled pixel circle."],
           [<C key="x">text(graphics, font, text, x, y, color)</C>, "Text without the drop shadow; the default for Quill widgets."],

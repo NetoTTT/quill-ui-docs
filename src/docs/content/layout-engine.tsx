@@ -64,6 +64,7 @@ public interface QuillLayoutNode {
           [<C key="3">QuillMarginBox</C>, "Adds outer spacing around a child."],
           [<C key="4">QuillConstrainedBox</C>, "Applies additional minimum and maximum constraints."],
           [<C key="5">QuillFlexBox</C>, "Row or column with content-sized and weighted children."],
+          [<C key="5b">QuillFlexible</C>, "Marks a child and weight for QuillFlexBox.add(...), which unwraps it."],
           [<C key="6">QuillWrapBox</C>, "Content-sized children wrapped into rows."],
           [<C key="7">QuillStackBox</C>, "Overlays children with horizontal and vertical alignment."],
           [<C key="8">QuillScrollBox</C>, "Measures unbounded content and exposes a scroll offset."],
@@ -100,6 +101,20 @@ QuillLayoutNode card = QuillNodes.sized(260, 120,
         Other helpers: <C>spacer([width])</C>, <C>sized(width, height, child)</C>,{" "}
         <C>fixedWidth(width, child)</C>, <C>fixedHeight(height, child)</C> and <C>widget(...)</C>.
       </P>
+      <P>
+        <C>tabs(gap, labels, selected, onChange)</C> builds an equal-width tab row. The selected tab uses
+        the primary variant and the rest use ghost; selection stays with the caller, usually followed by{" "}
+        <C>refreshContent()</C>.
+      </P>
+      <CodeBlock
+        code={`
+root.add(QuillNodes.tabs(
+        QuillSpacing.SPACE_1,
+        List.of(Component.literal("Work"), Component.literal("Config")),
+        tab.ordinal(),
+        index -> switchTab(Tab.values()[index])
+));`}
+      />
 
       <H2>Measured text</H2>
       <P>
@@ -128,7 +143,9 @@ label.render(graphics, font);`}
       />
       <P>
         <C>QuillLabel</C> is the widget form: non-interactive, never focused, and{" "}
-        <C>measure(font, maxWidth)</C> returns its preferred size. <C>QuillWidgetBox</C> detects{" "}
+        <C>measure(font, maxWidth)</C> returns its preferred size. Use <C>label(component)</C> from a
+        screen and chain <C>muted()</C>, <C>title()</C>, <C>accent()</C>, <C>color(role)</C> or{" "}
+        <C>style(...)</C> for fluent styles. <C>QuillWidgetBox</C> detects{" "}
         <C>QuillMeasuredWidget</C>, so labels and other measured widgets size themselves inside a tree.
       </P>
 

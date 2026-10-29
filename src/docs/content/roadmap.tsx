@@ -23,7 +23,9 @@ function Roadmap() {
         rows={[
           ["Themes", "QuillTheme was removed; QuillThemeData and QuillThemeScope replace it.", "Use QuillThemeData.DEFAULT or an explicit instance. Screens scope their theme automatically."],
           ["Theme metrics", "QuillThemeMetrics controls standard control sizes, gaps and content insets.", "Use the concise factories and content helpers; override metrics only when needed."],
-          ["Components", "QuillButtonStyle, measured labels/cards and concise input factories.", "Prefer style objects and factories over ad-hoc variant patches."],
+          ["Components", "QuillButtonStyle, QuillListView, measured labels/cards and concise input factories.", "Prefer style objects and factories over ad-hoc variant patches."],
+          ["Lists", "QuillListView rows are measured trees with real widgets; QuillScrollList also tracks selection and scroll.", "Use item-based selection and restore scrollOffset after a rebuild."],
+          ["Tree builders", "QuillNodes tree/tab builders and QuillFlexible weights.", "Build measured content without repeated constructor noise."],
           ["Actions", "QuillActionSink is generic: QuillActionSink<A>.", "Use QuillCommandSink for commands or your own typed payload sink."],
           ["Text", "QuillTextMeasurer and QuillTextNode add real Font-based measurement.", "Use QuillLabel or text(...) inside measured content instead of hardcoded widths."],
           ["Layout", "QuillScreen can mount and scroll a measured tree with setContent(...).", "Use add(widget, rect), contentColumn/contentRow and setContent."],
