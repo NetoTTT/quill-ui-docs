@@ -87,15 +87,16 @@ function Theme() {
   return (
     <>
       <P>
-        Visual constants live in <C>com.quillui.theme</C>. New code should pass a <C>QuillThemeData</C>{" "}
-        instance to widgets and screens; <C>QuillTheme</C> remains as a static compatibility facade that
-        resolves to the default palette.
+        Visual constants live in <C>com.quillui.theme</C>. Themes are immutable <C>QuillThemeData</C>{" "}
+        instances. The static <C>QuillTheme</C> facade was removed in <C>0.3.0-alpha.1</C>; use{" "}
+        <C>QuillThemeData.DEFAULT</C> or pass an explicit theme.
       </P>
 
       <H2>QuillThemeData</H2>
       <P>
         An immutable palette keyed by <C>ColorRole</C>. Derive a variant with <C>with(...)</C>, or build a
-        custom palette with the builder. Every widget constructor accepts an optional theme.
+        custom palette with the builder. Most widgets accept a theme; factories and constructors without
+        one inherit <C>QuillThemeScope</C>.
       </P>
       <CodeBlock
         code={`
@@ -137,12 +138,60 @@ QuillThemeData light = QuillThemeData.builder()
         </P>
       </Callout>
 
-      <H2>Static facade</H2>
+      <H2>Theme scope</H2>
       <P>
-        <C>QuillTheme</C> exposes <C>SPACE_1</C>…<C>SPACE_6</C> and every colour role as a static constant.
-        It is kept for source compatibility; prefer <C>QuillSpacing</C> and <C>QuillThemeData</C> in new
-        code. <C>QuillScreen</C> and every widget accept a <C>QuillThemeData</C> instance.
+        <C>QuillThemeScope</C> is an ambient theme for widget construction. <C>QuillScreen</C> runs{" "}
+        <C>buildContent()</C> inside <C>QuillThemeScope.run(screenTheme, ...)</C>, so widgets created
+        during that pass inherit the screen theme even when the constructor omits a theme. Explicit theme
+        arguments still win.
       </P>
+      <CodeBlock
+        code={`
+QuillThemeData screenTheme = QuillThemeData.DEFAULT
+        .with(QuillThemeData.ColorRole.ACCENT, myAccent);
+
+QuillThemeScope.run(screenTheme, () -> {
+    QuillButton save = QuillButton.primary("Save", this::save);
+    QuillTextField field = QuillTextField.of(font, hint);
+    // both use screenTheme through the scope
+});
+
+QuillThemeData current = QuillThemeScope.current();`}
+      />
+      <Callout kind="note">
+        <P>
+          The scope is thread-local and nests. Outside a screen build, <C>current()</C> returns{" "}
+          <C>QuillThemeData.DEFAULT</C>. Do not use the scope as a global theme switch for unrelated
+          screens.
+        </P>
+      </Callout>
+
+      <H2>Metrics</H2>
+      <P>
+        <C>QuillThemeData</C> carries a <C>QuillThemeMetrics</C> record. Concise button/input factories,
+        the content inset and card padding read it, so a theme can change control sizes globally.
+      </P>
+      <DocTable
+        head={["Field", "Default", "Used by"]}
+        rows={[
+          [<C key="1">controlHeight</C>, "20", "Buttons and input controls."],
+          [<C key="2">fieldWidth</C>, "220", "Text fields, checkboxes, radios and dropdowns."],
+          [<C key="3">sliderWidth</C>, "320", "Slider factory."],
+          [<C key="4">buttonWidth</C>, "120", "Button factories."],
+          [<C key="5">rowGap</C>, "8", "Panel rows and measured content defaults."],
+          [<C key="6">contentInset</C>, "24", "QuillScreen.contentInset() and contentBounds()."],
+          [<C key="7">cardPadding</C>, "8", "QuillCard and QuillCardBox padding."],
+        ]}
+      />
+      <CodeBlock
+        code={`
+QuillThemeMetrics compact = new QuillThemeMetrics(
+        18, 180, 260, 100, 6, 16, 6
+);
+
+QuillThemeData theme = QuillThemeData.DEFAULT.withMetrics(compact);
+int height = theme.metrics().controlHeight();`}
+      />
 
       <H2>Spacing</H2>
       <DocTable
@@ -469,7 +518,12 @@ function Screen() {
           [<C key="m">screenMargin()</C>, "Gap kept around the panel; 16 px by default."],
           [<C key="n">contentTop() / contentBottom()</C>, "Content edges derived from the real header and footer."],
           [<C key="q">contentBounds([hInset[, bottomInset]])</C>, "Content rectangle between header and footer."],
-          [<C key="r">contentInset() / footerHeight() / hasSubtitle()</C>, "Shell measurements; override contentInset() to change the default 24 px inset."],
+          [<C key="r">contentInset() / footerHeight() / hasSubtitle()</C>, "Shell measurements; contentInset() reads QuillThemeMetrics."],
+          [<C key="t">theme() / contentColumn(gap) / contentRow(gap)</C>, "Screen theme and layout helpers that start at contentBounds()."],
+          [<C key="u">add(widget, rect)</C>, "Applies the rectangle and registers the widget in one call."],
+          [<C key="v">setContent(root[, content])</C>, "Measures and arranges a tree, registers its widgets and scrolls it when needed."],
+          [<C key="x">control(widget[, height]) / text(component[, style])</C>, "Measured leaves for setContent trees."],
+          [<C key="y">refreshContent() / contentScrollOffset() / contentMaxScroll()</C>, "Next-tick rebuild and measured-content scroll state."],
           [<C key="i">layout() / headerHeight()</C>, "Override layout() to move the header, title, subtitle or close button."],
           [<C key="k">registerShortcut(...)</C>, "Registers a keyboard shortcut; see below."],
           [<C key="g">closeButton(action)</C>, "Builds the header close button; you register it."],
@@ -487,6 +541,45 @@ function Screen() {
         <C>contentInset()</C> horizontally and reserves the footer plus 12 px at the bottom. Use{" "}
         <C>contentBounds(24, 64)</C> when a fixed action row needs its own space.
       </P>
+
+      <H2>Measured content</H2>
+      <P>
+        <C>setContent(root)</C> measures a layout tree inside <C>contentBounds()</C>, arranges it and
+        registers every widget it contains. If the natural height is taller than the viewport, the screen
+        wraps it in a <C>QuillClipView</C> plus <C>QuillScrollBar</C> automatically, including focus and
+        typed-input handling.
+      </P>
+      <CodeBlock
+        code={`
+@Override
+protected void buildContent() {
+    QuillFlexBox column = QuillFlexBox.column(QuillSpacing.SPACE_2)
+            .crossAxisAlignment(QuillCrossAxisAlignment.STRETCH);
+
+    column.add(text(Component.literal("Configuration")));
+    column.add(control(QuillDropdown.of(
+            Component.literal("Mode"), modes, selected, this::setMode
+    )));
+    column.add(control(QuillButton.primary("Save", this::save), 20));
+
+    setContent(new QuillPaddingBox(
+            QuillInsets.all(QuillSpacing.SPACE_3), column
+    ));
+}`}
+      />
+      <P>
+        Use <C>setContent(root, contentBounds(24, 64))</C> when fixed controls sit below the scrolled area.
+        Use <C>control(widget, height)</C> to fix a row height and <C>text(component)</C> for measured
+        labels. <C>refreshContent()</C> rebuilds on the next tick and preserves the scroll offset.
+      </P>
+      <Callout kind="note">
+        <P>
+          Measured content is the 0.3 path for forms that should size and scroll themselves. The absolute
+          path remains available through <C>contentBounds()</C>, <C>contentColumn()</C>,{" "}
+          <C>contentRow()</C> and <C>add(widget, rect)</C>. See{" "}
+          <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink> for the node types.
+        </P>
+      </Callout>
 
       <H2>Custom layout</H2>
       <P>
@@ -865,6 +958,32 @@ int height = QuillText.draw(graphics, font, text, x, y, title);`}
         Factories: <C>of(color)</C>, <C>of(theme, role)</C> and <C>gradient(gradient)</C>. Immutable
         helpers: <C>withColor</C>, <C>withGradient</C>, <C>withShadow</C>, <C>withAlign</C>,{" "}
         <C>withMaxWidth</C>, <C>withMaxLines</C> and <C>withEllipsis</C>.
+      </P>
+
+      <H2>Measured text nodes</H2>
+      <P>
+        For layout-driven screens, <C>QuillTextNode</C> wraps the same styles in a measured leaf. It uses a{" "}
+        <C>QuillTextMeasurer</C> backed by a <C>Font</C>, wraps at the tightest of the style width and the
+        incoming constraints, and reports its size before arrangement.
+      </P>
+      <CodeBlock
+        code={`
+QuillTextMeasurer measurer = QuillTextMeasurer.of(font);
+QuillTextNode node = new QuillTextNode(
+        Component.literal("A longer description"),
+        QuillTextStyle.DEFAULT,
+        measurer
+);
+
+QuillSize size = node.measure(QuillBoxConstraints.loose(160, 200));
+node.arrange(new QuillRect(x, y, size.width(), size.height()));
+node.render(graphics, font);`}
+      />
+      <P>
+        <C>QuillLabel</C> is the widget form and can be wrapped with <C>control(...)</C> or{" "}
+        <C>text(...)</C> inside <C>setContent</C>. The measurer is an interface, so layout tests can supply
+        deterministic widths without a live font. See{" "}
+        <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink>.
       </P>
 
       <H2>Drawing</H2>

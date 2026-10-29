@@ -5,85 +5,76 @@ function Roadmap() {
   return (
     <>
       <P>
-        <C>0.2.0-alpha.8</C> is the current release. The next line, <C>0.3.0-alpha.1</C>, is a deliberate
-        breaking base: it cleans up the public API before the LaborCraft migration starts. Nothing on this
-        page is available in alpha.8 yet; treat it as a migration checklist, not as current API.
+        <C>0.3.0-alpha.1</C> is the current release and the clean base for future work. It raises{" "}
+        <C>API_LEVEL</C> to <C>3</C>, removes the static <C>QuillTheme</C> facade, splits map/HUD into the
+        optional <C>quill-ui-extras</C> jar and adds theme inheritance, component styles, typed actions and
+        measured text/layout.
       </P>
-      <Callout kind="warning" title="0.3.0-alpha.1 is not source compatible">
+      <Callout kind="warning" title="API 3 is source and binary breaking">
         <P>
-          <C>API_LEVEL</C> rises from <C>2</C> to <C>3</C>. Expect removed aliases, changed constructors,
-          new style objects and a different module boundary. Pin alpha.8 for existing screens until the
-          0.3 line is ready, then recompile against it.
+          Recompile against the 0.3 artifacts. Code that imports <C>QuillTheme</C>, relies on map/HUD being
+          in the core jar, or uses the old non-generic action boundary must migrate before it will run.
         </P>
       </Callout>
 
-      <H2>Planned for 0.3.0-alpha.1</H2>
+      <H2>What changed</H2>
       <DocTable
-        head={["Area", "Planned change", "What it means for consumers"]}
+        head={["Area", "Change", "Action"]}
         rows={[
-          ["API ergonomics", "Complete pass over constructors, factories and builder names.", "Expect shorter construction and fewer optional nulls."],
-          ["Layout attachment", "Definitive add(widget, rect) for placing widgets.", "Widget attachment becomes explicit instead of ad-hoc setX/setY/setWidth/setHeight."],
-          ["Themes", "Theme factories and theme inheritance.", "Derive palettes and variants instead of copying every role."],
-          ["Static aliases", "Remove QuillTheme and the static compatibility aliases.", "Migrate now to QuillThemeData and explicit theme arguments."],
-          ["Component themes", "Per-component theme/style objects.", "A component can override its own surface without cloning the whole palette."],
-          ["Buttons", "Introduce QuillButtonStyle.", "Button variants become style data rather than only enum branches."],
-          ["Actions", "Typed actions.", "Callbacks can carry typed payloads instead of command strings or ad-hoc consumers."],
-          ["Text", "A text node with Font measurement.", "Wrapping and layout can measure real glyph widths; no adapter-side guesswork."],
-          ["Constraints", "Handle UNBOUNDED without overflow.", "Intrinsic and scroll layouts become safe at unbounded sizes."],
-          ["Modules", "Split QuillMap and HUD out of the core.", "Core consumers no longer pull map/HUD classes; map and HUD ship separately."],
-          ["Compatibility", "API_LEVEL = 3.", "Binary compatibility breaks at 0.3.0-alpha.1 by design."],
+          ["Themes", "QuillTheme was removed; QuillThemeData and QuillThemeScope replace it.", "Use QuillThemeData.DEFAULT or an explicit instance. Screens scope their theme automatically."],
+          ["Theme metrics", "QuillThemeMetrics controls standard control sizes, gaps and content insets.", "Use the concise factories and content helpers; override metrics only when needed."],
+          ["Components", "QuillButtonStyle, measured labels/cards and concise input factories.", "Prefer style objects and factories over ad-hoc variant patches."],
+          ["Actions", "QuillActionSink is generic: QuillActionSink<A>.", "Use QuillCommandSink for commands or your own typed payload sink."],
+          ["Text", "QuillTextMeasurer and QuillTextNode add real Font-based measurement.", "Use QuillLabel or text(...) inside measured content instead of hardcoded widths."],
+          ["Layout", "QuillScreen can mount and scroll a measured tree with setContent(...).", "Use add(widget, rect), contentColumn/contentRow and setContent."],
+          ["Modules", "Map and HUD moved to quill-ui-extras.", "Add the extras jar/dependency only when using QuillMap or the HUD indicator."],
+          ["Compatibility", "API_LEVEL = 3.", "Recompile and test against the 0.3 line."],
         ]}
       />
 
-      <H2>Prepare now</H2>
+      <H2>Migration checklist</H2>
       <UL>
         <li>
-          Replace <C>QuillTheme</C> static access with <C>QuillThemeData.DEFAULT</C> or an explicit theme
-          instance. See <DocLink to="fundamentals/theme">Theme and Tokens</DocLink>.
+          Replace every <C>QuillTheme</C> use with <C>QuillThemeData</C>. See{" "}
+          <DocLink to="fundamentals/theme">Theme and Tokens</DocLink>.
         </li>
         <li>
-          Move off the deprecated <C>QuillScrollView</C> now: use <C>QuillClipView</C> with a{" "}
-          <C>ContentRenderer</C> and <C>QuillScrollBar</C>. See{" "}
-          <DocLink to="components/scroll-view">Scroll Views</DocLink>.
+          Add <C>quill-ui-extras</C> to consumers that use <C>QuillMap</C>, <C>QuillTargetIndicator</C> or
+          the HUD adapter. See <DocLink to="introduction/installation">Installation</DocLink>.
         </li>
         <li>
-          Pass a theme to every widget and screen constructor instead of relying on implicit defaults. That
-          keeps the migration to factories and inheritance mechanical.
+          Change action sinks to <C>QuillActionSink&lt;A&gt;</C>, or keep <C>QuillCommandSink</C> for
+          command-first flows. See <DocLink to="guides/backend-actions">Backend Actions</DocLink>.
         </li>
         <li>
-          Keep visual overrides in one place per screen. Component themes and <C>QuillButtonStyle</C> will
-          replace scattered role overrides and variant-specific patches.
+          Move form screens to the concise factories and measured content where it reduces magic numbers.
+          See <DocLink to="components/text-field">Inputs</DocLink> and{" "}
+          <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink>.
         </li>
         <li>
-          Keep actions behind <C>QuillActionSink</C>/<C>QuillCommandSink</C> for now. Typed actions will
-          replace the payload plumbing, not the screens that emit them.
+          Use <C>QuillScreen.add(widget, rect)</C> and <C>contentColumn/contentRow</C> for absolute
+          screens; use <C>setContent(root)</C> when content should measure and scroll itself.
         </li>
         <li>
-          Isolate map and HUD code behind small adapters. The 0.3 split removes them from the core jar, so
-          core screens should not import them directly.
-        </li>
-        <li>
-          Avoid layout assumptions that break at <C>UNBOUNDED</C> sizes; measure with constraints and test
-          the scroll path. See <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink>.
-        </li>
-        <li>
-          Do not start the LaborCraft migration yet. The agreed order is: finish 0.3.0-alpha.1, validate the
-          clean base, then migrate LaborCraft screens.
+          Re-test custom component styles with <C>QuillButtonStyle</C>, and verify contrast after changing
+          theme metrics or roles.
         </li>
       </UL>
 
-      <H2>What stays</H2>
-      <P>
-        The direction is unchanged: theme tokens, absolute and measured layout, clipped scroll hosts,
-        overlays, typed actions and the backend boundary remain the foundation. The alpha.8 behavior
-        documented on this site, including focus traversal, scroll-following focus and the map fixes,
-        carries into the 0.3 base unless a specific breaking change says otherwise.
-      </P>
+      <H2>What comes next</H2>
+      <UL>
+        <li>Widget/golden tests and a public demo mod.</li>
+        <li>Migrate LaborCraft screens only after the 0.3 base is validated.</li>
+        <li>
+          Further work stays in the existing <C>core</C>/<C>extras</C> split; no new module is planned at
+          this point. New optional surfaces should follow the extras pattern rather than bloating core.
+        </li>
+      </UL>
       <Callout kind="note">
         <P>
-          Use <DocLink to="reference/compatibility">Compatibility</DocLink> for the current API level and
-          <DocLink to="reference/api">API Reference</DocLink> for the 0.2 surface. This roadmap is updated
-          when the 0.3 branch becomes real.
+          Use <DocLink to="reference/compatibility">Compatibility</DocLink> for the support matrix and{" "}
+          <DocLink to="reference/api">API Reference</DocLink> for the current package surface. This page is
+          updated when the next compatibility line starts.
         </P>
       </Callout>
     </>
@@ -93,8 +84,8 @@ function Roadmap() {
 export const roadmap: DocPage[] = [
   {
     slug: "roadmap",
-    title: "Roadmap and 0.3.0",
-    description: "Planned breaking changes for the next API line and how to prepare.",
+    title: "Roadmap and migration",
+    description: "What changed in API 3, how to migrate, and what comes next.",
     component: Roadmap,
   },
 ];

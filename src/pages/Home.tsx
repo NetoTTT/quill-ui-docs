@@ -72,7 +72,7 @@ function HeroScene() {
 
 const QUICK_STEPS = [
   { t: "Install the jar", d: "Minecraft 26.3, Fabric Loader 0.19.5+, Fabric API and Java 25.", to: "introduction/installation" },
-  { t: "Extend QuillScreen", d: "Build content from contentBounds() with real widgets.", to: "introduction/quick-start" },
+  { t: "Extend QuillScreen", d: "Use contentColumn/add or setContent with real widgets.", to: "introduction/quick-start" },
   { t: "Send actions", d: "Route every change through an action sink, never client state.", to: "guides/backend-actions" },
 ];
 
@@ -140,7 +140,7 @@ const COMPONENTS: { name: string; desc: string; to: string; preview: React.React
   },
   {
     name: "Map",
-    desc: "Interactive surface/underground map with selections, zones and markers.",
+    desc: "Interactive surface/underground map with selections, zones and markers in extras.",
     to: "components/map",
     preview: <McMap className="h-24 w-44" />,
   },
@@ -162,7 +162,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "pencil",
     title: "Theme tokens",
-    body: "One immutable palette plus spacing, typography, radius, elevation and contrast checks.",
+    body: "One immutable palette plus metrics, typography, spacing, scope and contrast checks.",
     to: "fundamentals/theme",
   },
   {
@@ -174,13 +174,13 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "layers",
     title: "Measured layout",
-    body: "Box constraints plus measure/arrange nodes for content-aware, responsive screens.",
+    body: "Box constraints, measured text and measure/arrange nodes for content-aware screens.",
     to: "fundamentals/layout-engine",
   },
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, cards, panels, inputs, dropdowns, scrolling, tabs, toggles, maps and HUD indicators.",
+    body: "Themed buttons, styles, cards, inputs, scrolling, overlays, maps and HUD extras.",
     to: "components/overview",
   },
   {
@@ -192,19 +192,19 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "branch",
     title: "Backend boundary",
-    body: "Screens emit actions through QuillActionSink and never mutate game state.",
+    body: "Typed QuillActionSink payloads or command sinks; the client never mutates state.",
     to: "guides/backend-actions",
   },
   {
     icon: "compass",
     title: "Screen shell",
-    body: "Layout-driven headers, keyboard shortcuts, tab focus and an optional screen backdrop.",
+    body: "Responsive headers, shortcuts, focus traversal and measured scrollable content.",
     to: "fundamentals/screen",
   },
   {
     icon: "target",
     title: "HUD overlays",
-    body: "Off-screen target rings with a direct Fabric HudElementRegistry adapter.",
+    body: "Off-screen target rings in the optional extras module with a Fabric HudElementRegistry adapter.",
     to: "hud/target-indicator",
   },
 ];
@@ -262,9 +262,9 @@ export function Home({ onSearch }: { onSearch: () => void }) {
                 Build consistent <span className="whitespace-nowrap">Minecraft</span> interfaces.
               </h1>
               <p className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-muted">
-                Quill UI gives Fabric mods a shared visual language: theme tokens, responsive layout, text,
-                motion, inputs, dropdowns, overlays, scrolling, panels, cards, tabs, buttons, maps, HUD
-                target indicators and a clean backend action boundary.
+                Quill UI gives Fabric mods a shared visual language: theme scope and metrics, responsive and
+                measured layout, text, motion, inputs, overlays, scrolling, cards, maps/HUD extras and a
+                clean backend action boundary.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={href("introduction/quick-start")} className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-[0.9375rem] font-semibold text-on-primary shadow-[0_1px_0_rgb(255_255_255/0.6)_inset,0_1px_2px_rgb(37_55_70/0.15)] transition-colors hover:bg-primary-hover">
@@ -282,9 +282,9 @@ export function Home({ onSearch }: { onSearch: () => void }) {
               </p>
               <p className="mt-3 max-w-[34rem] text-[0.8125rem] leading-relaxed text-muted">
                 <a href={href("introduction/roadmap")} className="font-medium text-link hover:underline">
-                  0.3.0-alpha.1 is a breaking base.
+                  0.3.0-alpha.1 is out.
                 </a>{" "}
-                Plan the migration before building new integrations.
+                API 3, theme scope/metrics, measured content and the core/extras split.
               </p>
             </div>
             <HeroScene />
@@ -322,19 +322,12 @@ public final class ExampleScreen extends QuillScreen {
 
     @Override
     protected void buildContent() {
-        QuillRect content = contentBounds();
-        QuillColumn column = new QuillColumn(
-                content.x(), content.y(), content.width(),
-                QuillSpacing.SPACE_2
+        QuillColumn column = contentColumn(QuillSpacing.SPACE_2);
+        add(
+                QuillButton.primary("Run action",
+                        () -> QuillCommandSink.get().execute("example run")),
+                column.next(20)
         );
-
-        QuillRect slot = column.next(24);
-        addRenderableWidget(new QuillButton(
-                slot.x(), slot.y(), slot.width(), slot.height(),
-                Component.literal("Run action"),
-                QuillButton.Variant.PRIMARY,
-                () -> QuillCommandSink.get().execute("example run")
-        ));
 
         addRenderableWidget(closeButton(this::onClose));
     }

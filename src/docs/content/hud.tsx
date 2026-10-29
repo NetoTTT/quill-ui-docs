@@ -15,6 +15,12 @@ function TargetIndicator() {
         <C>WorldHighlightManager</C>. The consumer supplies the target, optional theme/roles, icon and
         distance formatter.
       </P>
+      <Callout kind="note" title="Extras module">
+        <P>
+          The target indicator ships in <C>quill-ui-extras</C>. Add the extras dependency/jar when a HUD
+          element uses it. See <DocLink to="introduction/installation">Installation</DocLink>.
+        </P>
+      </Callout>
       <Example preview={<McTargetIndicator className="w-full max-w-md" />}>
         <CodeBlock
           title="TargetIndicator.java"

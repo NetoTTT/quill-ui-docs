@@ -34,7 +34,8 @@ public interface QuillLayoutNode {
       <P>
         A constraint has <C>minWidth</C>, <C>minHeight</C>, <C>maxWidth</C> and <C>maxHeight</C>.{" "}
         <C>QuillBoxConstraints.UNBOUNDED</C> is <C>Integer.MAX_VALUE</C>; <C>LOOSE</C> has zero minimums
-        and unbounded maximums.
+        and unbounded maximums. Layout sums saturate at <C>UNBOUNDED</C> instead of overflowing into a
+        negative size.
       </P>
       <DocTable
         head={["Factory or method", "Effect"]}
@@ -67,6 +68,8 @@ public interface QuillLayoutNode {
           [<C key="7">QuillStackBox</C>, "Overlays children with horizontal and vertical alignment."],
           [<C key="8">QuillScrollBox</C>, "Measures unbounded content and exposes a scroll offset."],
           [<C key="9">QuillWidgetBox</C>, "Adapts an AbstractWidget to the tree; see the scroll view page."],
+          [<C key="10">QuillTextNode</C>, "Measures and draws a text leaf with QuillTextMeasurer; wraps at constraints and maxWidth."],
+          [<C key="11">QuillCardBox</C>, "Card surface with an optional heading and a padded child tree; implements QuillPaintable."],
         ]}
       />
 
@@ -75,6 +78,80 @@ public interface QuillLayoutNode {
         <C>QuillPaddingBox</C>, <C>QuillMarginBox</C> and <C>QuillConstrainedBox</C> also expose{" "}
         <C>childSize()</C>; padding and margin boxes expose their insets.
       </P>
+
+      <H2>Static builders</H2>
+      <P>
+        <C>QuillNodes</C> builds measured trees without chained calls. <C>row(gap, children...)</C> and{" "}
+        <C>column(gap, children...)</C> create flex boxes; <C>flexible(node[, weight])</C> marks a child
+        for <C>QuillFlexBox</C>, which unwraps <C>QuillFlexible</C> automatically.
+      </P>
+      <CodeBlock
+        code={`
+QuillLayoutNode row = QuillNodes.row(8,
+        QuillNodes.widget(saveButton, 120, 20),
+        QuillNodes.flexible(QuillNodes.widget(nameField), 1),
+        QuillNodes.spacer(8)
+);
+
+QuillLayoutNode card = QuillNodes.sized(260, 120,
+        QuillNodes.fixedHeight(20, titleNode));`}
+      />
+      <P>
+        Other helpers: <C>spacer([width])</C>, <C>sized(width, height, child)</C>,{" "}
+        <C>fixedWidth(width, child)</C>, <C>fixedHeight(height, child)</C> and <C>widget(...)</C>.
+      </P>
+
+      <H2>Measured text</H2>
+      <P>
+        <C>QuillTextMeasurer.of(font)</C> exposes <C>lineHeight()</C>, <C>width(text)</C> and{" "}
+        <C>lineWidths(text, maxWidth)</C>. Implement the interface directly in headless tests so text
+        layout does not need a live <C>Font</C>.
+      </P>
+      <P>
+        <C>QuillTextNode</C> is the measured leaf: it wraps at the tightest of{" "}
+        <C>QuillTextStyle.maxWidth()</C> and the incoming constraint, honours <C>maxLines</C>, and exposes{" "}
+        <C>lineCount()</C>, <C>measured()</C>, <C>text()</C> and <C>style()</C>. Call <C>render(graphics,
+        font)</C> after arranging it.
+      </P>
+      <CodeBlock
+        code={`
+QuillTextMeasurer measurer = QuillTextMeasurer.of(font);
+QuillTextNode label = new QuillTextNode(
+        Component.literal("A longer description"),
+        QuillTextStyle.DEFAULT,
+        measurer
+);
+
+QuillSize size = label.measure(QuillBoxConstraints.loose(120, 200));
+label.arrange(new QuillRect(x, y, size.width(), size.height()));
+label.render(graphics, font);`}
+      />
+      <P>
+        <C>QuillLabel</C> is the widget form: non-interactive, never focused, and{" "}
+        <C>measure(font, maxWidth)</C> returns its preferred size. <C>QuillWidgetBox</C> detects{" "}
+        <C>QuillMeasuredWidget</C>, so labels and other measured widgets size themselves inside a tree.
+      </P>
+
+      <H2>Measured cards and paintables</H2>
+      <P>
+        <C>QuillCardBox.card(title, child)</C> reserves the heading and theme card padding, measures the
+        child, and implements <C>QuillPaintable</C>. Paintables draw behind the widget layer, including
+        inside the scroll host, so card surfaces stay behind their controls.
+      </P>
+      <CodeBlock
+        code={`
+QuillFlexBox form = QuillFlexBox.column(QuillSpacing.SPACE_2);
+form.add(new QuillWidgetBox(QuillTextField.of(font, hint)));
+
+QuillCardBox card = QuillCardBox.card(Component.literal("Profile"), form);
+QuillRect body = card.content();`}
+      />
+      <P>
+        Any node can implement <C>QuillPaintable.paint(graphics, font)</C>. <C>QuillScreen.setContent</C>{" "}
+        collects paintables from the tree and paints them before the widget layer. See{" "}
+        <DocLink to="fundamentals/screen">Screens</DocLink>.
+      </P>
+
       <H2>Flex and cross-axis alignment</H2>
       <P>
         <C>QuillFlexBox.row(gap)</C> and <C>column(gap)</C> accept content-sized nodes with{" "}
@@ -139,10 +216,11 @@ QuillRect first = row.children().get(0).bounds();`}
       <H2>Widget adapter</H2>
       <P>
         <C>QuillWidgetBox</C> reads the widget&apos;s current size during measure and applies{" "}
-        <C>setX</C>, <C>setY</C>, <C>setWidth</C> and <C>setHeight</C> during arrange. A widget with a
-        zero size falls back to the constraint minimums. <C>clipTo(rect)</C> hides a widget that falls
-        outside the clip rectangle; it does not scissor partially visible widgets. <C>widget()</C> returns
-        the adapted widget.
+        <C>setX</C>, <C>setY</C>, <C>setWidth</C> and <C>setHeight</C> during arrange. Widgets implementing{" "}
+        <C>QuillMeasuredWidget</C> (such as <C>QuillLabel</C>) report their own preferred size, so text
+        wraps at the incoming width. A widget with a zero size falls back to the constraint minimums.{" "}
+        <C>clipTo(rect)</C> hides a widget that falls outside the clip rectangle; it does not scissor
+        partially visible widgets. <C>widget()</C> returns the adapted widget.
       </P>
       <Callout kind="note">
         <P>
@@ -168,14 +246,20 @@ for (String issue : issues) {
 
       <H2>Current limits</H2>
       <UL>
-        <li>The engine is not wired into <C>QuillScreen</C> yet; screens still use absolute coordinates.</li>
+        <li>
+          <C>QuillScreen.setContent(root)</C> wires a measured tree into a screen, but absolute screens are
+          still supported through <C>contentBounds()</C> and <C>add(widget, rect)</C>.
+        </li>
         <li>
           <C>QuillWidgetBox.clipTo</C> hides widgets outside the rectangle but does not scissor partially
-          visible widgets. <C>QuillScrollView</C> / <C>QuillClipView</C> own real clipping.
+          visible widgets. <C>QuillClipView</C> owns real clipping.
         </li>
-        <li>Text measurement must be supplied by the screen adapter; there is no font-aware text node.</li>
         <li>
-          The older <C>QuillFlex</C>, <C>QuillWrap</C> and <C>QuillStack</C> classes remain the immediate
+          Text measurement is available through <C>QuillTextMeasurer</C> and <C>QuillTextNode</C>; custom
+          node types must supply their own measurer.
+        </li>
+        <li>
+          The older <C>QuillFlex</C>, <C>QuillWrap</C> and <C>QuillStack</C> classes remain immediate
           rectangle helpers for existing screens.
         </li>
       </UL>

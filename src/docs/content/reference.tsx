@@ -18,24 +18,28 @@ function Api() {
         head={["Package", "Public classes"]}
         rows={[
           [<C key="1">com.quillui.api</C>, "QuillApi"],
-          [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
-          [<C key="3">com.quillui.layout</C>, "QuillRect, QuillSize, QuillInsets, QuillConstraints, QuillBoxConstraints, QuillAlign, QuillLayoutNode, QuillNode, QuillStack, QuillFlex, QuillWrap, QuillBreakpoints, QuillColumn, QuillRow, QuillGrid, QuillSizedBox, QuillPaddingBox, QuillMarginBox, QuillConstrainedBox, QuillFlexBox, QuillWrapBox, QuillStackBox, QuillScrollBox, QuillCrossAxisAlignment, QuillLayoutValidator"],
-          [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext"],
-          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
-          [<C key="10">com.quillui.text</C>, "QuillText, QuillTextStyle (Align)"],
+          [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillThemeMetrics, QuillThemeScope, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
+          [<C key="3">com.quillui.layout</C>, "QuillRect, QuillSize, QuillInsets, QuillConstraints, QuillBoxConstraints, QuillAlign, QuillLayoutNode, QuillNode, QuillStack, QuillFlex, QuillFlexible, QuillWrap, QuillBreakpoints, QuillColumn, QuillRow, QuillGrid, QuillSizedBox, QuillPaddingBox, QuillMarginBox, QuillConstrainedBox, QuillFlexBox, QuillWrapBox, QuillStackBox, QuillScrollBox, QuillCrossAxisAlignment, QuillLayoutValidator"],
+          [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext, QuillPaintable"],
+          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillLabel, QuillButtonStyle, QuillCardBox, QuillNodes, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
+          [<C key="10">com.quillui.text</C>, "QuillText, QuillTextStyle (Align), QuillTextMeasurer, QuillTextNode"],
           [<C key="11">com.quillui.motion</C>, "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion"],
           [<C key="12">com.quillui.input</C>, "QuillSelectionStyle (Type, Context), QuillSelectionStyles"],
-          [<C key="14">com.quillui.overlay</C>, "QuillOverlay, QuillPopupMenu, QuillModal, QuillToast"],
-          [<C key="6">com.quillui.map</C>, "QuillMap (Layer, InteractionMode, MouseAction, MouseBindings), QuillMapZone, QuillMapMarker"],
-          [<C key="9">com.quillui.hud</C>, "QuillTargetIndicator (IconRenderer), QuillTargetIndicatorHud"],
+          [<C key="14">com.quillui.overlay</C>, "QuillOverlay, QuillOverlayStack, QuillPopupMenu, QuillModal, QuillToast"],
+          [<C key="6">com.quillui.map</C>, "QuillMap (Layer, InteractionMode, MouseAction, MouseBindings), QuillMapZone, QuillMapMarker (extras jar)"],
+          [<C key="9">com.quillui.hud</C>, "QuillTargetIndicator (IconRenderer), QuillTargetIndicatorHud (extras jar)"],
           [<C key="13">com.quillui.i18n</C>, "QuillLanguage (LanguageOption)"],
           [<C key="7">com.quillui.screen</C>, "QuillScreen, QuillScreenLayout, QuillShortcut"],
-          [<C key="8">com.quillui.action</C>, "QuillActionSink, QuillCommandSink"],
+          [<C key="8">com.quillui.action</C>, "QuillActionSink<A>, QuillCommandSink"],
         ]}
       />
       <P>
         Classes outside these packages are implementation details. They may change without notice and must
         not be mixed into.
+      </P>
+      <P>
+        <C>com.quillui.map</C> and <C>com.quillui.hud</C> ship only in <C>quill-ui-extras</C>. The core jar
+        does not reference them; add extras when a screen uses a map or HUD indicator.
       </P>
       <Callout kind="note" title="Deprecated in 0.2.0-alpha.7">
         <P>
@@ -49,7 +53,7 @@ function Api() {
       <CodeBlock
         code={`
 public static final String MOD_ID = "quillui";
-public static final int API_LEVEL = 2;
+public static final int API_LEVEL = 3;
 
 public static String version();          // loaded mod version, or "unknown"
 public static boolean supports(int requiredLevel);`}
@@ -70,17 +74,16 @@ public static boolean supports(int requiredLevel);`}
       </UL>
       <Callout kind="note">
         <P>
-          The current release is <C>0.2.0-alpha.8</C> with API level <C>2</C>. The package reorganisation
-          and <C>QuillThemeData</C> landed together; screen layouts, shortcuts, gradients, contrast helpers,
-          click sounds, motion, text, input, i18n, overlays, form controls, responsive layout and scroll
-          hosts are additive and keep the level at <C>2</C>.
+          The current release is <C>0.3.0-alpha.1</C> with API level <C>3</C>. <C>QuillTheme</C> was removed;
+          themes are <C>QuillThemeData</C> instances with <C>QuillThemeScope</C>. This line adds theme
+          metrics, component styles, measured text and layout, typed actions, the reusable overlay stack,
+          and the core/extras module split.
         </P>
       </Callout>
-      <Callout kind="warning" title="0.3.0-alpha.1 raises API_LEVEL to 3">
+      <Callout kind="warning" title="API 3 migration">
         <P>
-          The next line removes the <C>QuillTheme</C> static aliases, adds theme factories, component themes,
-          typed actions and a measured text node, and splits map/HUD out of the core. Plan the migration
-          with <DocLink to="introduction/roadmap">Roadmap and 0.3.0</DocLink>.
+          Removing <C>QuillTheme</C> and moving map/HUD to <C>quill-ui-extras</C> are binary-breaking.
+          See <DocLink to="introduction/roadmap">Roadmap and migration</DocLink> before upgrading.
         </P>
       </Callout>
 
@@ -145,15 +148,14 @@ function Compatibility() {
           that were not declared.
         </li>
         <li>
-          Existing static <C>QuillTheme</C> values remain available in the 0.2 line;{" "}
-          <C>0.3.0-alpha.1</C> removes them.
+          <C>API_LEVEL</C> is <C>3</C> since <C>0.3.0-alpha.1</C>. The static <C>QuillTheme</C> facade and
+          the old non-generic action boundary were removed; map/HUD moved to extras.
         </li>
       </UL>
-      <Callout kind="warning" title="Next binary generation">
+      <Callout kind="warning" title="Current binary generation">
         <P>
-          <C>QuillTheme</C> aliases, component themes, typed actions and the map/HUD split will raise{" "}
-          <C>API_LEVEL</C> to <C>3</C>. See{" "}
-          <DocLink to="introduction/roadmap">Roadmap and 0.3.0</DocLink>.
+          Themes, actions and the map/HUD module boundary are breaking in the 0.3 line. See{" "}
+          <DocLink to="introduction/roadmap">Roadmap and migration</DocLink> for the upgrade checklist.
         </P>
       </Callout>
       <Callout kind="warning">

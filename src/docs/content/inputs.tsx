@@ -10,6 +10,11 @@ function TextField() {
         vanilla cursor, selection and IME behaviour; Quill owns the surface, focus ring, placeholder and
         validation border.
       </P>
+      <P>
+        In 0.3, <C>QuillTextField.of(font, hint)</C> creates a field at <C>0,0</C> using{" "}
+        <C>QuillThemeMetrics.fieldWidth</C> and <C>controlHeight</C>, inheriting the screen theme through{" "}
+        <C>QuillThemeScope</C>. The absolute constructor remains available.
+      </P>
       <Example
         preview={
           <div className="w-full max-w-xs space-y-3">
@@ -87,6 +92,10 @@ function Slider() {
         value-only: the caller decides whether the value is a percentage, volume, radius or any other
         domain value.
       </P>
+      <P>
+        <C>QuillSlider.of(label, value, onChange)</C> uses <C>QuillThemeMetrics.sliderWidth</C> and{" "}
+        <C>controlHeight</C>; the other controls have matching <C>of(...)</C> factories.
+      </P>
       <Example preview={<McSlider label="Volume" value={0.64} className="w-56" />}>
         <CodeBlock
           code={`
@@ -130,6 +139,10 @@ function CheckboxRadio() {
         <C>QuillCheckbox</C> and <C>QuillRadio</C> are themed selection controls with a label and
         keyboard activation. The indicator is painted by a <C>QuillSelectionStyle</C>, so applications
         can change the square/circle and its mark without subclassing the widget.
+      </P>
+      <P>
+        Use <C>QuillCheckbox.of(message, checked, onChange)</C> or <C>QuillRadio.of(...)</C> for
+        metric-sized controls that inherit the screen theme; explicit bounds are still available.
       </P>
       <Example
         preview={

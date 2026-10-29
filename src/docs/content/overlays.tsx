@@ -51,6 +51,24 @@ screen.showToast(Component.translatable("mymod.saved"));`}
         runs pending cancel callbacks.
       </P>
 
+      <H2>Reusable stack</H2>
+      <P>
+        <C>QuillOverlayStack</C> owns the same behavior outside a screen. Input dispatch walks from the
+        newest overlay to the oldest, stops at the first handler that consumes the event, and stops at a
+        blocking overlay even when it did not handle the event. Closed overlays are pruned after dispatch
+        and render.
+      </P>
+      <DocTable
+        head={["Member", "Effect"]}
+        rows={[
+          [<C key="1">add(overlay) / close(overlay) / closeAll()</C>, "Push, close one, or close every overlay."],
+          [<C key="2">top() / size()</C>, "Newest open overlay and current stack size."],
+          [<C key="3">hasBlocking()</C>, "True when any open overlay blocks input."],
+          [<C key="4">dispatch(handler)</C>, "Offers the event top-down; the handler returns true to consume it."],
+          [<C key="5">render(graphics, mouseX, mouseY, delta) / prune()</C>, "Draw open overlays and remove closed ones."],
+        ]}
+      />
+
       <H2>QuillOverlay</H2>
       <P>
         <C>QuillOverlay</C> is an interface with default no-op input methods. Implement only what the

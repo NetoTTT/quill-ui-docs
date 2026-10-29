@@ -152,6 +152,12 @@ function MapIntegration() {
         registered in <C>buildContent()</C>. This guide wires zones, markers, an entity provider and a
         selection commit.
       </P>
+      <Callout kind="note" title="Extras dependency">
+        <P>
+          <C>QuillMap</C> ships in <C>quill-ui-extras</C>. Add the extras jar or Maven dependency to the
+          client mod; core alone does not contain the map.
+        </P>
+      </Callout>
       <Example preview={<McMap className="w-full max-w-md" />}>
         <CodeBlock
           title="MapScreen.java"
@@ -298,8 +304,9 @@ function Theming() {
   return (
     <>
       <P>
-        A theme is an immutable <C>QuillThemeData</C> palette. Derive one from the default and pass it to the
-        widgets you create; no global state is changed.
+        A theme is an immutable <C>QuillThemeData</C> palette plus <C>QuillThemeMetrics</C>. Derive one from
+        the default; no global palette is mutated. Screens scope their theme while building content, and
+        widgets can still take an explicit theme.
       </P>
 
       <H2>A light palette</H2>
@@ -344,6 +351,24 @@ QuillThemeData light = QuillThemeData.builder()
         .set(ColorRole.CHIP_BG,              QuillColors.fromHex("#EAF6FF"))
         .set(ColorRole.CHIP_BORDER,          QuillColors.fromHex("#8CC8F0"))
         .build();`}
+      />
+
+      <H2>Scope and metrics</H2>
+      <P>
+        <C>QuillScreen</C> runs <C>buildContent()</C> inside <C>QuillThemeScope</C>, so widgets created
+        there inherit the screen theme. Factories also read <C>QuillThemeMetrics</C> for standard control
+        sizes. Use an explicit theme when a component needs a different palette.
+      </P>
+      <CodeBlock
+        code={`
+QuillThemeMetrics compact = new QuillThemeMetrics(
+        18, 180, 260, 100, 6, 16, 6
+);
+QuillThemeData light = light.withMetrics(compact);
+
+// In buildContent(), widgets inherit the screen theme:
+add(QuillButton.primary("Save", this::save), column.next(20));
+add(QuillTextField.of(font, hint), column.next(20));`}
       />
 
       <H2>Apply it</H2>
@@ -586,17 +611,21 @@ QuillCommandSink.get().execute("example config set page 2");`}
 
       <H2>Typed actions</H2>
       <P>
-        For forms and frequent toggles, implement <C>QuillActionSink</C> with a project-specific C2S payload.
-        The widgets do not change.
+        For forms and frequent toggles, implement <C>QuillActionSink&lt;A&gt;</C> with a project-specific C2S
+        payload. The widgets do not change.
       </P>
       <CodeBlock
         code={`
-public final class PacketSink implements QuillActionSink {
+public enum ConfigAction {
+    SAVE,
+    CANCEL
+}
+
+public final class PacketSink implements QuillActionSink<ConfigAction> {
     @Override
-    public void execute(String action) {
-        // Parse an action id, or route to a dedicated payload type,
-        // then send it to the server. Never write authoritative state here.
-        ClientPlayNetworking.send(new UiActionPayload(action));
+    public void execute(ConfigAction action) {
+        sendSafely(new ConfigActionPayload(action));
+        // The client never writes authoritative state.
     }
 }`}
       />

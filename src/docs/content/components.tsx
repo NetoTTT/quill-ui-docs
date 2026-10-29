@@ -29,7 +29,10 @@ function Overview() {
         rows={[
           ["Button", <C key="b">QuillButton</C>, "Widget", <DocLink key="bl" to="components/button">Buttons</DocLink>],
           ["Card", <C key="c">QuillCard</C>, "Render helper", <DocLink key="cl" to="components/card">Cards</DocLink>],
+          ["Card box", <C key="cbx">QuillCardBox</C>, "Measured node", <DocLink key="cbxl" to="fundamentals/layout-engine">Layout engine</DocLink>],
           ["Panel", <C key="n">QuillPanel</C>, "Layout helper", <DocLink key="nl" to="components/panels">Panels</DocLink>],
+          ["Label", <C key="lb">QuillLabel</C>, "Measured text", <DocLink key="lbl" to="fundamentals/layout-engine">Layout engine</DocLink>],
+          ["Button style", <C key="bs">QuillButtonStyle</C>, "Component theme", <DocLink key="bsl" to="components/button">Buttons</DocLink>],
           ["Text field", <C key="tf">QuillTextField</C>, "Widget", <DocLink key="tfl" to="components/text-field">Text fields</DocLink>],
           ["Slider", <C key="sl2">QuillSlider</C>, "Widget", <DocLink key="sl2l" to="components/slider">Sliders</DocLink>],
           ["Checkbox", <C key="cb">QuillCheckbox</C>, "Widget", <DocLink key="cbl" to="components/checkbox-radio">Checkboxes and Radios</DocLink>],
@@ -44,10 +47,11 @@ function Overview() {
           ["Widget box", <C key="wb">QuillWidgetBox</C>, "Layout adapter", <DocLink key="wbl" to="fundamentals/layout-engine">Layout engine</DocLink>],
           ["Tab bar", <C key="t">QuillTabBar</C>, "Helper", <DocLink key="tl" to="components/tabs">Tabs</DocLink>],
           ["Toggle", <C key="g">QuillToggle</C>, "Widget", <DocLink key="gl" to="components/toggle">Toggles</DocLink>],
-          ["Map", <C key="m">QuillMap</C>, "Widget", <DocLink key="ml" to="components/map">Map</DocLink>],
+          ["Map", <C key="m">QuillMap</C>, "Widget (extras)", <DocLink key="ml" to="components/map">Map</DocLink>],
           ["Overlay", <C key="ov">QuillOverlay</C>, "Screen layer", <DocLink key="ovl" to="components/overlays">Overlays</DocLink>],
+          ["Overlay stack", <C key="os">QuillOverlayStack</C>, "Controller", <DocLink key="osl" to="components/overlays">Overlays</DocLink>],
           ["Popup / Modal / Toast", "QuillPopupMenu, QuillModal, QuillToast", "Overlay", <DocLink key="pml" to="components/overlays">Overlays</DocLink>],
-          ["Target indicator", <C key="h">QuillTargetIndicator</C>, "HUD", <DocLink key="hl" to="hud/target-indicator">Target Indicator</DocLink>],
+          ["Target indicator", <C key="h">QuillTargetIndicator</C>, "HUD (extras)", <DocLink key="hl" to="hud/target-indicator">Target Indicator</DocLink>],
           ["Tooltip", <C key="p">QuillTooltips</C>, "Helper", <DocLink key="pl" to="components/tooltips">Tooltips</DocLink>],
         ]}
       />
@@ -55,20 +59,18 @@ function Overview() {
       <H2>What is not provided</H2>
       <P>
         There is no color picker, date/time control, tree view or table in the current API. A{" "}
-        <C>QuillCard</C> is a drawing helper, not a layout container; use <C>QuillPanel</C> for a card
-        with a vertical flow and a two-column action row, or <C>QuillColumn</C> / <C>QuillRow</C> for
-        custom layouts. Text fields, sliders, checkboxes, radios, radio groups, dropdowns, overlays, toasts,
-        scroll lists and custom scroll views are available in this release.
+        <C>QuillCard</C> is a drawing helper, not a container; use <C>QuillPanel</C> for a vertical flow,
+        or <C>QuillCardBox</C> when the card should measure inside a content tree. Text fields, sliders,
+        checkboxes, radios, measured labels/cards, dropdowns, overlays, toasts and scroll hosts are
+        available in this release.
       </P>
 
       <H2>Shared conventions</H2>
       <UL>
         <li>
-          Most widgets accept an optional <C>QuillThemeData</C>. The input controls (
-          <C>QuillTextField</C>, <C>QuillSlider</C>, <C>QuillCheckbox</C>, <C>QuillRadio</C>),{" "}
-          <C>QuillDropdown</C>, <C>QuillScrollView</C>, <C>QuillClipView</C>, <C>QuillScrollBar</C> and
-          the overlay constructors require a theme argument; null falls back to{" "}
-          <C>QuillThemeData.DEFAULT</C>.
+          Widgets created inside <C>QuillScreen.buildContent()</C> inherit the screen theme through{" "}
+          <C>QuillThemeScope</C>. Factories and constructors without a theme resolve through that scope;
+          explicit <C>QuillThemeData</C> arguments still override it.
         </li>
         <li>Buttons, toggles, checkboxes and radios respond to Enter and Space when focused.</li>
         <li>Widgets draw their own hover, focus, selected and disabled states; no vanilla button texture is used.</li>
@@ -87,10 +89,51 @@ function Buttons() {
     <>
       <P>
         <C>QuillButton</C> is a themed <C>AbstractWidget</C> with four visual variants, a persistent selected
-        state and an optional tooltip.
+        state and an optional tooltip. In 0.3, concise factories and <C>QuillButtonStyle</C> replace most
+        manual construction.
       </P>
-      {PREVIEW_NOTE}
 
+      <H2>Factories</H2>
+      <P>
+        Factory methods inherit the current <C>QuillThemeScope</C>, use <C>QuillThemeMetrics.buttonWidth</C>{" "}
+        and <C>controlHeight</C>, and return a button at <C>0,0</C>. Position it with{" "}
+        <C>add(widget, rect)</C> or a layout tree.
+      </P>
+      <CodeBlock
+        code={`
+QuillColumn column = contentColumn(QuillSpacing.SPACE_2);
+
+add(QuillButton.primary("Save", this::save), column.next(20));
+add(QuillButton.secondary("Cancel", this::onClose), column.next(20));
+add(QuillButton.danger("Delete", this::delete), column.next(20));
+add(QuillButton.ghost("Close", this::onClose), column.next(20));`}
+      />
+
+      <H2>QuillButtonStyle</H2>
+      <P>
+        A style resolves the seven colours for a button state. The built-ins are <C>primary</C>,{" "}
+        <C>secondary</C>, <C>danger</C>, <C>ghost</C>, <C>selected</C> and <C>disabled</C>; each reads
+        theme roles. Pass a style to reuse a custom component look without adding a variant.
+      </P>
+      <CodeBlock
+        code={`
+QuillButtonStyle style = new QuillButtonStyle(
+        background, backgroundHover,
+        border, borderHover,
+        text, textHover,
+        focusRing
+);
+
+QuillButton custom = new QuillButton(
+        0, 0, 120, 20,
+        Component.literal("Custom"),
+        QuillButton.Variant.SECONDARY,
+        this::run,
+        theme
+).style(style);`}
+      />
+
+      {PREVIEW_NOTE}
       <H2>Variants</H2>
       <Example
         preview={
@@ -161,7 +204,8 @@ QuillButton(
           [<C key="1">selected(boolean)</C>, "Keeps the selected background and draws a 2 px accent bar on the left."],
           [<C key="2">tip(Tooltip)</C>, "Shows a tooltip while the cursor is over the button."],
           [<C key="3">clickSound(SoundEvent)</C>, "Overrides the default UI down sound."],
-          [<C key="4">setActive(boolean)</C>, "Inherited. Disables input and switches to the disabled palette."],
+          [<C key="4">style(QuillButtonStyle)</C>, "Replaces the resolved colours for every hover/disabled state."],
+          [<C key="5">setActive(boolean)</C>, "Inherited. Disables input and switches to the disabled palette."],
         ]}
       />
 
@@ -207,7 +251,12 @@ function Card() {
       <P>
         <C>QuillCard</C> draws a bordered surface with a compact heading and gives you the interior
         rectangle for child controls. It is not a widget: it does not receive input and is not registered on
-        the screen.
+        the screen. The constructor without a theme inherits <C>QuillThemeScope</C>, and padding follows{" "}
+        <C>QuillThemeMetrics.cardPadding</C>.
+      </P>
+      <P>
+        For measured screens use <C>QuillCardBox.card(title, child)</C> instead; it measures the heading,
+        padding and child and can be passed straight to <C>setContent()</C>.
       </P>
       {PREVIEW_NOTE}
       <Example
@@ -374,6 +423,12 @@ function MapPage() {
         texture and layers a selection rectangle, zones, markers and optional entity markers on top. It is
         client-only and has no gameplay dependency.
       </P>
+      <Callout kind="note" title="Extras module">
+        <P>
+          <C>QuillMap</C> ships in <C>quill-ui-extras</C>, not the core jar. Add the extras dependency/jar
+          when the screen uses a map. See <DocLink to="introduction/installation">Installation</DocLink>.
+        </P>
+      </Callout>
       {PREVIEW_NOTE}
       <Example preview={<McMap className="w-full max-w-md" />}>
         <CodeBlock

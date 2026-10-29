@@ -19,7 +19,8 @@ function Development() {
 gradlew.bat build --console=plain --no-daemon`}
       />
       <P>
-        The jar is written to <C>build/libs/quill-ui-0.2.0-alpha.8.jar</C>. The build also runs the unit tests
+        The core jar is written to <C>core/build/libs/quill-ui-0.3.0-alpha.1.jar</C>; the optional
+        map/HUD jar is <C>extras/build/libs/quill-ui-extras-0.3.0-alpha.1.jar</C>. The build also runs the unit tests
         and the API compatibility check in CI.
       </P>
 
