@@ -21,7 +21,7 @@ function Api() {
           [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillTheme, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
           [<C key="3">com.quillui.layout</C>, "QuillRect, QuillSize, QuillInsets, QuillConstraints, QuillBoxConstraints, QuillAlign, QuillLayoutNode, QuillNode, QuillStack, QuillFlex, QuillWrap, QuillBreakpoints, QuillColumn, QuillRow, QuillGrid, QuillSizedBox, QuillPaddingBox, QuillMarginBox, QuillConstrainedBox, QuillFlexBox, QuillWrapBox, QuillStackBox, QuillScrollBox, QuillCrossAxisAlignment, QuillLayoutValidator"],
           [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext"],
-          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView, QuillScrollBar, QuillClipView, QuillWidgetBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
+          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
           [<C key="10">com.quillui.text</C>, "QuillText, QuillTextStyle (Align)"],
           [<C key="11">com.quillui.motion</C>, "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion"],
           [<C key="12">com.quillui.input</C>, "QuillSelectionStyle (Type, Context), QuillSelectionStyles"],
@@ -37,6 +37,13 @@ function Api() {
         Classes outside these packages are implementation details. They may change without notice and must
         not be mixed into.
       </P>
+      <Callout kind="note" title="Deprecated in 0.2.0-alpha.7">
+        <P>
+          <C>QuillScrollView</C> is deprecated. Use <C>QuillClipView</C> with a{" "}
+          <C>ContentRenderer</C> and a <C>QuillScrollBar</C> for new screens. The legacy class remains
+          available for existing code.
+        </P>
+      </Callout>
 
       <H2>QuillApi</H2>
       <CodeBlock

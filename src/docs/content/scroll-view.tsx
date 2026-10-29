@@ -1,4 +1,4 @@
-import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, P, UL } from "@/components/prose";
+import { C, Callout, CodeBlock, DocLink, DocTable, Example, H2, H3, P, UL } from "@/components/prose";
 import { McList } from "@/components/mc";
 import type { DocPage } from "../types";
 
@@ -6,11 +6,21 @@ function ScrollView() {
   return (
     <>
       <P>
-        <C>QuillScrollView</C> is a scrollable viewport for custom-drawn content. It clips with a scissor,
-        translates the content by the current offset, owns the wheel and scrollbar drag, and reports clicks
-        in content coordinates. The renderer receives absolute screen coordinates with scrolling already
-        applied, so rows use the same <C>x</C>/<C>y</C> as a normal widget.
+        <C>QuillClipView</C> plus <C>QuillScrollBar</C> is the recommended scroll host: it clips child
+        widgets and custom content, maps input through the scroll offset and handles focus.{" "}
+        <C>QuillScrollView</C> is the legacy single-widget viewport and remains available for existing
+        screens.
       </P>
+      <Callout kind="warning" title="QuillScrollView is deprecated">
+        <P>
+          <C>QuillScrollView</C> is deprecated since <C>0.2.0-alpha.7</C>. New screens should use{" "}
+          <C>QuillClipView</C> with a <C>ContentRenderer</C> and a <C>QuillScrollBar</C>. The legacy class
+          still clips custom content, handles wheel and scrollbar drag, and reports clicks in content
+          coordinates.
+        </P>
+      </Callout>
+
+      <H2>Legacy: QuillScrollView</H2>
       <Example preview={<McList className="w-48" items={["General", "Controls", "Audio", "Video"]} />}>
         <CodeBlock
           code={`
@@ -33,7 +43,7 @@ addRenderableWidget(view);`}
         />
       </Example>
 
-      <H2>Construction</H2>
+      <H3>Construction</H3>
       <CodeBlock
         code={`
 QuillScrollView(int x, int y, int width, int height,
@@ -57,7 +67,7 @@ QuillScrollView(int x, int y, int width, int height,
         offset already added to Y.
       </P>
 
-      <H2>State and helpers</H2>
+      <H3>State and helpers</H3>
       <DocTable
         head={["Member", "Effect"]}
         rows={[
@@ -71,7 +81,7 @@ QuillScrollView(int x, int y, int width, int height,
         ]}
       />
 
-      <H2>Rendering and input</H2>
+      <H3>Rendering and input</H3>
       <P>
         The viewport enables a scissor, pushes a translation of <C>-scrollOffset</C>, calls the renderer
         and restores both. When content overflows it paints a 4 px track with a themed thumb; hover uses{" "}
@@ -92,7 +102,7 @@ QuillScrollView(int x, int y, int width, int height,
 
       <H2>Clip view</H2>
       <P>
-        <C>QuillClipView</C> is the widget host equivalent: it owns child widgets, clips them to a viewport
+        <C>QuillClipView</C> is the recommended widget host: it owns child widgets, clips them to a viewport
         and maps mouse input through the scroll offset. Children keep content coordinates, so partially
         visible widgets are clipped instead of hidden entirely. Add children through the host; do not
         register them on the screen separately.

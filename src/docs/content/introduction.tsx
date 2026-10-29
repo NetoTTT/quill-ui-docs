@@ -20,8 +20,8 @@ function Overview() {
         <P>
           Responsive screen sizing with a preferred panel and <C>contentBounds()</C>, immediate layout
           helpers (<C>QuillFlex</C>, <C>QuillWrap</C>, <C>QuillStack</C>, <C>QuillConstraints</C>,{" "}
-          <C>QuillBreakpoints</C>), the measured layout engine, and the <C>QuillScrollView</C> /{" "}
-          <C>QuillClipView</C> scroll hosts. See{" "}
+          <C>QuillBreakpoints</C>), the measured layout engine, and the <C>QuillClipView</C> scroll host
+          plus <C>QuillScrollBar</C>. <C>QuillScrollView</C> is now legacy. See{" "}
           <DocLink to="fundamentals/layout">Layout</DocLink>,{" "}
           <DocLink to="fundamentals/layout-engine">Layout Engine</DocLink> and{" "}
           <DocLink to="components/scroll-view">Scroll Views</DocLink>.
@@ -39,7 +39,7 @@ function Overview() {
           ["Drawing", "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext", <C key="r">com.quillui.render</C>],
           ["Text", "QuillText, QuillTextStyle", <C key="tx">com.quillui.text</C>],
           ["Motion", "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion", <C key="mo">com.quillui.motion</C>],
-          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView, QuillScrollBar, QuillClipView, QuillWidgetBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
+          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
           ["Input styles", "QuillSelectionStyle, QuillSelectionStyles", <C key="in">com.quillui.input</C>],
           ["Overlays", "QuillOverlay, QuillPopupMenu, QuillModal, QuillToast", <C key="o">com.quillui.overlay</C>],
           ["Map", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
