@@ -79,7 +79,7 @@ const QUICK_STEPS = [
 const COMPONENTS: { name: string; desc: string; to: string; preview: React.ReactNode }[] = [
   {
     name: "Buttons",
-    desc: "Primary, secondary, danger and ghost variants with selection and tooltips.",
+    desc: "Primary, secondary, danger and ghost variants with icons, selection and tooltips.",
     to: "components/button",
     preview: (
       <>
@@ -180,7 +180,7 @@ const FEATURES: { icon: IconName; title: string; body: string; to: string }[] = 
   {
     icon: "box",
     title: "Real widgets",
-    body: "Themed buttons, styles, lists, cards, inputs, scrolling, overlays, maps and HUD extras.",
+    body: "Themed buttons/icons, chips, lists, cards, inputs, scrolling, overlays, maps and HUD extras.",
     to: "components/overview",
   },
   {
@@ -282,9 +282,9 @@ export function Home({ onSearch }: { onSearch: () => void }) {
               </p>
               <p className="mt-3 max-w-[34rem] text-[0.8125rem] leading-relaxed text-muted">
                 <a href={href("introduction/roadmap")} className="font-medium text-link hover:underline">
-                  0.3.0-alpha.1 is out.
+                  0.3.0-alpha.4 is out.
                 </a>{" "}
-                API 3, theme scope/metrics, measured content and the core/extras split.
+                API 3, measured content, chips/icons, header accessories and core/extras.
               </p>
             </div>
             <HeroScene />

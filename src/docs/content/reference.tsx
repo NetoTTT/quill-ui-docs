@@ -21,7 +21,7 @@ function Api() {
           [<C key="2">com.quillui.theme</C>, "QuillThemeData, QuillThemeMetrics, QuillThemeScope, QuillContrast, QuillSpacing, QuillTypography, QuillRadii, QuillElevation, QuillColors"],
           [<C key="3">com.quillui.layout</C>, "QuillRect, QuillSize, QuillInsets, QuillConstraints, QuillBoxConstraints, QuillAlign, QuillLayoutNode, QuillNode, QuillStack, QuillFlex, QuillFlexible, QuillWrap, QuillBreakpoints, QuillColumn, QuillRow, QuillGrid, QuillSizedBox, QuillPaddingBox, QuillMarginBox, QuillConstrainedBox, QuillFlexBox, QuillWrapBox, QuillStackBox, QuillScrollBox, QuillCrossAxisAlignment, QuillLayoutValidator"],
           [<C key="4">com.quillui.render</C>, "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext, QuillPaintable"],
-          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillListView, QuillNodes, QuillLabel, QuillButtonStyle, QuillCardBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
+          [<C key="5">com.quillui.widget</C>, "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillListView, QuillNodes, QuillLabel, QuillChip, QuillIcon, QuillIcons, QuillButtonStyle, QuillCardBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown"],
           [<C key="10">com.quillui.text</C>, "QuillText, QuillTextStyle (Align), QuillTextMeasurer, QuillTextNode"],
           [<C key="11">com.quillui.motion</C>, "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion"],
           [<C key="12">com.quillui.input</C>, "QuillSelectionStyle (Type, Context), QuillSelectionStyles"],
@@ -74,7 +74,7 @@ public static boolean supports(int requiredLevel);`}
       </UL>
       <Callout kind="note">
         <P>
-          The current release is <C>0.3.0-alpha.1</C> with API level <C>3</C>. <C>QuillTheme</C> was removed;
+          The current release is <C>0.3.0-alpha.4</C> with API level <C>3</C>. <C>QuillTheme</C> was removed;
           themes are <C>QuillThemeData</C> instances with <C>QuillThemeScope</C>. This line adds theme
           metrics, component styles, measured text and layout, typed actions, the reusable overlay stack,
           and the core/extras module split.

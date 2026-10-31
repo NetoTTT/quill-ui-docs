@@ -521,6 +521,8 @@ function Screen() {
           [<C key="e">panelX / panelY</C>, "Current panel origin, recomputed on resize."],
           [<C key="f">panelWidth() / panelHeight()</C>, "Current panel size after viewport clamping."],
           [<C key="m">screenMargin()</C>, "Gap kept around the panel; 16 px by default."],
+          [<C key="c2">constrainPanel()</C>, "Default true. Legacy absolute screens can return false to keep the requested panel size."],
+          [<C key="h2">headerAccessory()</C>, "Optional measured node shown in the header before the close control."],
           [<C key="n">contentTop() / contentBottom()</C>, "Content edges derived from the real header and footer."],
           [<C key="q">contentBounds([hInset[, bottomInset]])</C>, "Content rectangle between header and footer."],
           [<C key="r">contentInset() / footerHeight() / hasSubtitle()</C>, "Shell measurements; contentInset() reads QuillThemeMetrics."],
@@ -547,7 +549,19 @@ function Screen() {
         <C>contentInset()</C> horizontally and reserves the footer plus 12 px at the bottom. Use{" "}
         <C>contentBounds(24, 64)</C> when a fixed action row needs its own space.
       </P>
-
+      <P>
+        <C>constrainPanel()</C> defaults to <C>true</C>. Screens still on absolute layouts can return{" "}
+        <C>false</C> until their content is measured, so tabs, sections and slot grids are not compressed.
+        <C>headerAccessory()</C> returns an optional measured node that is right-aligned before the close
+        control, limited to half the panel width and rebuilt with the content on resize and refresh.
+      </P>
+      <CodeBlock
+        code={`
+@Override
+protected QuillLayoutNode headerAccessory() {
+    return control(QuillChip.of(Component.literal("1,240 G")).accent());
+}`}
+      />
       <H2>Measured content</H2>
       <P>
         <C>setContent(root)</C> measures a layout tree inside <C>contentBounds()</C>, arranges it and

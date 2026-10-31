@@ -5,6 +5,7 @@ import { dropdownComponents } from "./dropdown";
 import { overlayComponents } from "./overlays";
 import { scrollViewComponents } from "./scroll-view";
 import { listViewComponents } from "./list-view";
+import { chipComponents } from "./chip";
 import type { DocPage } from "../types";
 
 const PREVIEW_NOTE = (
@@ -31,6 +32,8 @@ function Overview() {
           ["Button", <C key="b">QuillButton</C>, "Widget", <DocLink key="bl" to="components/button">Buttons</DocLink>],
           ["Card", <C key="c">QuillCard</C>, "Render helper", <DocLink key="cl" to="components/card">Cards</DocLink>],
           ["Card box", <C key="cbx">QuillCardBox</C>, "Measured node", <DocLink key="cbxl" to="fundamentals/layout-engine">Layout engine</DocLink>],
+          ["Chip", <C key="ch">QuillChip</C>, "Measured read-only", <DocLink key="chl" to="components/chip">Chips</DocLink>],
+          ["Icon", <C key="ic">QuillIcon, QuillIcons</C>, "Glyph", <DocLink key="icl" to="components/chip">Chips</DocLink>],
           ["Panel", <C key="n">QuillPanel</C>, "Layout helper", <DocLink key="nl" to="components/panels">Panels</DocLink>],
           ["Label", <C key="lb">QuillLabel</C>, "Measured text", <DocLink key="lbl" to="fundamentals/layout-engine">Layout engine</DocLink>],
           ["Button style", <C key="bs">QuillButtonStyle</C>, "Component theme", <DocLink key="bsl" to="components/button">Buttons</DocLink>],
@@ -63,8 +66,8 @@ function Overview() {
         There is no color picker, date/time control, tree view or table in the current API. A{" "}
         <C>QuillCard</C> is a drawing helper, not a container; use <C>QuillPanel</C> for a vertical flow,
         or <C>QuillCardBox</C> when the card should measure inside a content tree. Text fields, sliders,
-        checkboxes, radios, measured labels/cards, dropdowns, overlays, toasts and scroll hosts are
-        available in this release.
+        checkboxes, radios, measured labels/cards, chips, icons, dropdowns, overlays, toasts, list views
+        and scroll hosts are available in this release.
       </P>
 
       <H2>Shared conventions</H2>
@@ -134,6 +137,36 @@ QuillButton custom = new QuillButton(
         theme
 ).style(style);`}
       />
+
+      <H2>Icons</H2>
+      <P>
+        Buttons can show an item or texture region before the label, or alone. <C>QuillIcon</C> is a small
+        paintable glyph (<C>width()</C>, <C>height()</C>, <C>paint(graphics, x, y)</C>);{" "}
+        <C>QuillIcons</C> builds the common variants.
+      </P>
+      <CodeBlock
+        code={`
+QuillButton pay = QuillButton.primary("Pay", this::pay)
+        .icon(new ItemStack(Items.GOLD_INGOT));
+
+QuillButton iconOnly = QuillButton.ghost("", this::open)
+        .icon(QuillIcons.texture(
+                myTexture, 0, 0, 16, 16, 64, 64
+        ))
+        .tip(QuillTooltips.of(
+                Component.literal("Open"),
+                Component.literal("Opens the panel."),
+                null
+        ));
+
+pay.iconGap(8);`}
+      />
+      <UL>
+        <li><C>QuillIcons.item(stack)</C> renders an item stack at its native 16×16 size.</li>
+        <li><C>QuillIcons.texture(id, u, v, w, h, texW, texH)</C> renders a texture region addressed in pixels.</li>
+        <li>Icons are centred; with a label they sit before the text, and disabled buttons dim them.</li>
+        <li>Give icon-only buttons a tooltip, since the label may be empty.</li>
+      </UL>
 
       {PREVIEW_NOTE}
       <H2>Variants</H2>
@@ -208,6 +241,7 @@ QuillButton(
           [<C key="3">clickSound(SoundEvent)</C>, "Overrides the default UI down sound."],
           [<C key="4">style(QuillButtonStyle)</C>, "Replaces the resolved colours for every hover/disabled state."],
           [<C key="4b">enabled(boolean)</C>, "Fluent replacement for the public active field; returns this button."],
+          [<C key="4c">icon(QuillIcon|ItemStack) / iconGap(int)</C>, "Adds or replaces the leading icon and its gap."],
           [<C key="5">setActive(boolean)</C>, "Inherited. Disables input and switches to the disabled palette."],
         ]}
       />
@@ -635,6 +669,23 @@ map.addMarker(new QuillMapMarker(
         copy. Markers follow the same pattern.
       </P>
 
+      <H2>Merged zones</H2>
+      <P>
+        When the server sends one zone per chunk or section, adjacent rectangles can show artificial
+        internal borders. <C>setMergeZones(true)</C> groups touching zones that share fill, border and dash
+        style and paints each group as one region, skipping internal edges.
+      </P>
+      <CodeBlock
+        code={`
+map.setMergeZones(true);
+boolean merged = map.mergeZones();`}
+      />
+      <UL>
+        <li>Groups are merged per style; zones with different colours or dash styles stay separate.</li>
+        <li>A single zone keeps its normal rendering, including dashed borders.</li>
+        <li>Very large groups fall back to per-zone drawing to bound the work.</li>
+      </UL>
+
       <H2>Entity providers</H2>
       <P>
         A provider turns client entities into markers. The filter and marker factory run for each render
@@ -980,6 +1031,7 @@ export const components: DocPage[] = [
   },
   ...scrollViewComponents,
   ...listViewComponents,
+  ...chipComponents,
   {
     slug: "tabs",
     title: "Tabs",

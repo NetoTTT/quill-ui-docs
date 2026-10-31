@@ -17,13 +17,12 @@ function Overview() {
         state itself.
       </P>
 
-      <Callout kind="tip" title="New in 0.3.0-alpha.1">
+      <Callout kind="tip" title="New in 0.3.0-alpha.4">
         <P>
-          API 3: <C>QuillTheme</C> is gone, replaced by <C>QuillThemeData</C> plus{" "}
-          <C>QuillThemeScope</C> and <C>QuillThemeMetrics</C>. This line also adds{" "}
-          <C>QuillButtonStyle</C>, concise input/button factories, typed <C>QuillActionSink&lt;A&gt;</C>,
-          measured text (<C>QuillTextNode</C> / <C>QuillLabel</C>), measured screen content, the reusable{" "}
-          <C>QuillOverlayStack</C>, and the optional <C>quill-ui-extras</C> jar for map/HUD.
+          The 0.3 line is still API 3, with additive updates: <C>QuillScreen.constrainPanel()</C> for legacy
+          absolute screens, header accessories, <C>QuillChip</C>, button icons (<C>QuillIcon</C> /{" "}
+          <C>QuillIcons</C>) and merged map zones. The 0.3 core changes remain: theme scope/metrics,
+          measured content, typed actions, list views and the core/extras split.
         </P>
       </Callout>
       <Callout kind="warning" title="Breaking migration">
@@ -44,7 +43,7 @@ function Overview() {
           ["Drawing", "QuillRender, QuillGradient, QuillTooltips, QuillScrollHints, QuillRenderContext, QuillPaintable", <C key="r">com.quillui.render</C>],
           ["Text", "QuillText, QuillTextStyle, QuillTextMeasurer, QuillTextNode", <C key="tx">com.quillui.text</C>],
           ["Motion", "QuillTicker, QuillAnimation, QuillCurve, QuillCurves, QuillTransition, QuillMotion", <C key="mo">com.quillui.motion</C>],
-          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillListView, QuillNodes, QuillLabel, QuillButtonStyle, QuillCardBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
+          ["Widgets", "QuillButton, QuillCard, QuillPanel, QuillScrollList, QuillScrollView (deprecated), QuillScrollBar, QuillClipView, QuillWidgetBox, QuillMeasuredWidget, QuillListView, QuillNodes, QuillLabel, QuillChip, QuillIcon, QuillIcons, QuillButtonStyle, QuillCardBox, QuillTabBar, QuillToggle, QuillTextField, QuillSlider, QuillCheckbox, QuillRadio, QuillRadioGroup, QuillDropdown", <C key="w">com.quillui.widget</C>],
           ["Input styles", "QuillSelectionStyle, QuillSelectionStyles", <C key="in">com.quillui.input</C>],
           ["Overlays", "QuillOverlay, QuillOverlayStack, QuillPopupMenu, QuillModal, QuillToast", <C key="o">com.quillui.overlay</C>],
           ["Map (extras)", "QuillMap, QuillMapZone, QuillMapMarker", <C key="m">com.quillui.map</C>],
@@ -72,7 +71,7 @@ function Overview() {
 
       <H2>Status</H2>
       <P>
-        The current release is <C>0.3.0-alpha.1</C> with binary API level <C>3</C>. The API is intentionally
+        The current release is <C>0.3.0-alpha.4</C> with binary API level <C>3</C>. The API is intentionally
         small and may evolve before <C>1.0.0</C>. See <DocLink to="reference/api">API reference</DocLink> and{" "}
         <DocLink to="reference/compatibility">Compatibility</DocLink>.
       </P>
@@ -118,9 +117,9 @@ function Installation() {
       <H2>Build the jars</H2>
       <CodeBlock lang="bash" status="none" code={`gradlew.bat build --console=plain --no-daemon`} />
       <P>
-        The core jar is written to <C>core/build/libs/quill-ui-0.3.0-alpha.1.jar</C>. Put it in the
+        The core jar is written to <C>core/build/libs/quill-ui-0.3.0-alpha.4.jar</C>. Put it in the
         instance&apos;s <C>mods/</C> folder. Add{" "}
-        <C>extras/build/libs/quill-ui-extras-0.3.0-alpha.1.jar</C> only when using <C>QuillMap</C> or the
+        <C>extras/build/libs/quill-ui-extras-0.3.0-alpha.4.jar</C> only when using <C>QuillMap</C> or the
         HUD target indicator.
       </P>
 
@@ -134,15 +133,15 @@ function Installation() {
         title="build.gradle"
         code={`
 dependencies {
-    implementation files("libs/quill-ui-0.3.0-alpha.1.jar")
+    implementation files("libs/quill-ui-0.3.0-alpha.4.jar")
     // only for QuillMap / HUD:
-    implementation files("libs/quill-ui-extras-0.3.0-alpha.1.jar")
+    implementation files("libs/quill-ui-extras-0.3.0-alpha.4.jar")
 }`}
       />
       <P>
         If you consume the published Maven/Modrinth artifacts instead, use{" "}
-        <C>maven.modrinth:quill-ui:0.3.0-alpha.1</C> and, when needed,{" "}
-        <C>maven.modrinth:quill-ui-extras:0.3.0-alpha.1</C>.
+        <C>maven.modrinth:quill-ui:0.3.0-alpha.4</C> and, when needed,{" "}
+        <C>maven.modrinth:quill-ui-extras:0.3.0-alpha.4</C>.
       </P>
 
       <H3>Declare the dependency in your mod metadata</H3>
@@ -159,7 +158,7 @@ dependencies {
       </P>
       <CodeBlock
         code={`
-String version = QuillApi.version(); // "0.3.0-alpha.1" in a Fabric runtime
+String version = QuillApi.version(); // "0.3.0-alpha.4" in a Fabric runtime
 boolean level3 = QuillApi.supports(3);`}
       />
     </>

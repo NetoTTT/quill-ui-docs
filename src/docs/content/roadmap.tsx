@@ -5,10 +5,10 @@ function Roadmap() {
   return (
     <>
       <P>
-        <C>0.3.0-alpha.1</C> is the current release and the clean base for future work. It raises{" "}
-        <C>API_LEVEL</C> to <C>3</C>, removes the static <C>QuillTheme</C> facade, splits map/HUD into the
-        optional <C>quill-ui-extras</C> jar and adds theme inheritance, component styles, typed actions and
-        measured text/layout.
+        <C>0.3.0-alpha.4</C> is the current release and keeps <C>API_LEVEL</C> at <C>3</C>.{" "}
+        <C>0.3.0-alpha.1</C> was the breaking base: it removed the static <C>QuillTheme</C> facade, split
+        map/HUD into <C>quill-ui-extras</C> and added theme inheritance, component styles, typed actions
+        and measured text/layout. The alpha.2-alpha.4 releases are additive.
       </P>
       <Callout kind="warning" title="API 3 is source and binary breaking">
         <P>
@@ -33,6 +33,13 @@ function Roadmap() {
           ["Compatibility", "API_LEVEL = 3.", "Recompile and test against the 0.3 line."],
         ]}
       />
+
+      <H2>Additive alpha.2-alpha.4</H2>
+      <UL>
+        <li><strong>alpha.2:</strong> <C>QuillScreen.constrainPanel()</C> lets legacy absolute screens opt out of panel clamping.</li>
+        <li><strong>alpha.3:</strong> button icons through <C>QuillIcon</C>, <C>QuillIcons.item(...)</C> and <C>QuillIcons.texture(...)</C>.</li>
+        <li><strong>alpha.4:</strong> <C>QuillScreen.headerAccessory()</C>, <C>QuillChip</C> and <C>QuillMap.setMergeZones(...)</C>.</li>
+      </UL>
 
       <H2>Migration checklist</H2>
       <UL>
